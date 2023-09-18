@@ -11,7 +11,7 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/theodoulou/css/theodoulou.css"
+app_include_css = "tpos.bundle.css"
 # app_include_js = "/assets/theodoulou/js/theodoulou.js"
 
 # include js, css files in header of web template
@@ -26,7 +26,9 @@ app_license = "MIT"
 # webform_include_css = {"doctype": "public/css/doctype.css"}
 
 # include js in page
-# page_js = {"page" : "public/js/file.js"}
+page_js = {
+	"point-of-sale" : "public/js/extend-point-of-sale.js"
+}
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
