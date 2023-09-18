@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include theodoulou *.css
+recursive-include theodoulou *.csv
+recursive-include theodoulou *.html
+recursive-include theodoulou *.ico
+recursive-include theodoulou *.js
+recursive-include theodoulou *.json
+recursive-include theodoulou *.md
+recursive-include theodoulou *.png
+recursive-include theodoulou *.py
+recursive-include theodoulou *.svg
+recursive-include theodoulou *.txt
+recursive-exclude theodoulou *.pyc
