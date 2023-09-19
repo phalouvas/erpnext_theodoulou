@@ -47,6 +47,76 @@ def remove_failed_jobs():
 def get_pos_profiles():
 	return frappe.get_list("POS Profile", filters={"Disabled": "No"}, fields=["name as label", "name as value"])
 
+def get_item_alternative(item_code, warehouse, price_list):
+	item_alernatives = frappe.db.get_list('Item Alternative',
+		filters={
+			'item_code': item_code
+		},
+		fields=['alternative_item_code'],
+		as_list=True
+	)
+
+	item_alernatives = item_alernatives + frappe.db.get_list('Item Alternative',
+		filters={
+			'alternative_item_code': item_code,
+			'two_way': 1
+		},
+		fields=['item_code'],
+		as_list=True
+	)
+
+	item_alternatives = list(set(item_alernatives))
+
+	items = []
+	for item_alternative in item_alternatives:
+		item_doc = frappe.get_doc("Item", item_alternative[0])
+		if not item_doc:
+			continue
+		item = {
+			"description": item_doc.description,
+			"is_stock_item": item_doc.is_stock_item,
+			"item_code": item_doc.name,
+			"item_image": item_doc.image,
+			"item_name": item_doc.item_name,
+			"stock_uom": item_doc.stock_uom,
+			"uom": item_doc.stock_uom,
+		}
+		item_stock_qty, is_stock_item = get_stock_availability(item_code, warehouse)
+		item_stock_qty = item_stock_qty // item.get("conversion_factor", 1)
+		item.update({"actual_qty": item_stock_qty})
+
+		price = frappe.get_list(
+			doctype="Item Price",
+			filters={
+				"price_list": price_list,
+				"item_code": item_code,
+			},
+			fields=["uom", "currency", "price_list_rate"],
+		)
+
+		def __sort(p):
+			p_uom = p.get("uom")
+			if p_uom == item.get("uom"):
+				return 0
+			elif p_uom == item.get("stock_uom"):
+				return 1
+			else:
+				return 2
+
+		# sort by fallback preference. always pick exact uom match if available
+		price = sorted(price, key=__sort)
+		if len(price) > 0:
+			p = price.pop(0)
+			item.update(
+				{
+					"currency": p.get("currency"),
+					"price_list_rate": p.get("price_list_rate"),
+				}
+			)
+		items.append(item)
+
+	return items
+
 @frappe.whitelist()
 def get_items(start, page_length, price_list, item_group, pos_profile, search_term=""):
 	warehouse, hide_unavailable_items = frappe.db.get_value(
@@ -138,6 +208,13 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 					"actual_qty": item_stock_qty,
 				}
 			)
-			result.append(row)    
+			result.append(row)
+
+	# I want to do run below code if the items_data is having only one item and the search_term is not empty
+	if len(items_data) == 1:
+		if search_term:
+			item_alternatives = get_item_alternative(item_code, warehouse, price_list)
+			for item_alternative in item_alternatives:
+				result.append(item_alternative)
     
 	return {"items": result}
