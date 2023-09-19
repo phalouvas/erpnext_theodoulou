@@ -210,7 +210,6 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 			)
 			result.append(row)
 
-	# I want to do run below code if the items_data is having only one item and the search_term is not empty
 	if len(items_data) == 1:
 		if search_term:
 			item_alternatives = get_item_alternative(item_code, warehouse, price_list)
