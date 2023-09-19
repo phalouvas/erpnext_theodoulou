@@ -57,7 +57,7 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 	
 	search_result = []
 	if search_term:
-		search_result = search_by_term(search_term, warehouse, price_list) or []
+		search_result = search_by_term(search_term.strip(), warehouse, price_list) or []
 		if search_result:
 			for item in search_result['items']:
 				result.append(item)
