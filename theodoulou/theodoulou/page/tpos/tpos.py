@@ -81,7 +81,7 @@ def get_item_alternative(item_code, warehouse, price_list):
 			"stock_uom": item_doc.stock_uom,
 			"uom": item_doc.stock_uom,
 		}
-		item_stock_qty, is_stock_item = get_stock_availability(item_code, warehouse)
+		item_stock_qty, is_stock_item = get_stock_availability(item['item_code'], warehouse)
 		item_stock_qty = item_stock_qty // item.get("conversion_factor", 1)
 		item.update({"actual_qty": item_stock_qty})
 
@@ -89,7 +89,7 @@ def get_item_alternative(item_code, warehouse, price_list):
 			doctype="Item Price",
 			filters={
 				"price_list": price_list,
-				"item_code": item_code,
+				"item_code": item['item_code'],
 			},
 			fields=["uom", "currency", "price_list_rate"],
 		)
