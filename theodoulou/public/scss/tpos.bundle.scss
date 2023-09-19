@@ -24,10 +24,6 @@
     margin: 5px;
 }
 
-select option {
-    font-size: xx-large;
-}
-
 .cart-container2 {
     display: flex;
     flex-direction: column;
@@ -122,20 +118,3 @@ select option {
     
 }
 
-.point-of-sale-app {
-
-    > .items-selector {
-
-		> .items-container {
-			display: grid !important;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-			gap: var(--margin-sm);
-
-            .item-wrapper .item-display {
-                min-height: auto;
-                height: auto;
-            }
-            
-		}
-	}  
-}

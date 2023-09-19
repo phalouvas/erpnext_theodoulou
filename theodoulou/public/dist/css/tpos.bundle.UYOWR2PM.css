@@ -1,4 +1,4 @@
-/* ../../../../../tmp/tmp-14340-MjdzcoCsrQRE/theodoulou/theodoulou/public/scss/tpos.bundle.css */
+/* ../../../../../tmp/tmp-28735-jCAcW3saflh7/theodoulou/theodoulou/public/scss/tpos.bundle.css */
 .class_name {
   font-size: large;
 }
@@ -20,9 +20,6 @@
   display: flex;
   align-items: center;
   margin: 5px;
-}
-select option {
-  font-size: xx-large;
 }
 .cart-container2 {
   display: flex;
@@ -62,7 +59,7 @@ select option {
   width: 100%;
 }
 .cart-container2 > .cart-totals-section > .add-discount-wrapper .discount-icon {
-  margin-left: var(--margin-sm);
+  margin-right: var(--margin-sm);
 }
 .cart-container2 > .cart-totals-section > .add-discount-wrapper .edit-discount-btn {
   display: flex;
@@ -104,13 +101,4 @@ select option {
   font-weight: 700;
   font-size: var(--text-lg);
 }
-.point-of-sale-app > .items-selector > .items-container {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--margin-sm);
-}
-.point-of-sale-app > .items-selector > .items-container .item-wrapper .item-display {
-  min-height: auto;
-  height: auto;
-}
-/*# sourceMappingURL=tpos.bundle.M7OMR3ST.css.map */
+/*# sourceMappingURL=tpos.bundle.UYOWR2PM.css.map */

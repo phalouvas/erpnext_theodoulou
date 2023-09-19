@@ -8,20 +8,14 @@ import frappe
 from frappe.utils import cint
 from frappe.utils.nestedset import get_root_of
 
-from frappe.utils import convert_utc_to_user_timezone
-from frappe.utils.background_jobs import get_queues, get_workers
-from frappe.utils.scheduler import is_scheduler_inactive
+from frappe.utils.background_jobs import get_queues
 
 from erpnext.accounts.doctype.pos_invoice.pos_invoice import get_stock_availability
-from erpnext.accounts.doctype.pos_profile.pos_profile import get_child_nodes, get_item_groups
-from erpnext.stock.utils import scan_barcode
 
-from erpnext.selling.page.point_of_sale.point_of_sale import search_for_serial_or_batch_or_barcode_number
+from erpnext.selling.page.point_of_sale.point_of_sale import search_by_term
 from erpnext.selling.page.point_of_sale.point_of_sale import get_conditions
 from erpnext.selling.page.point_of_sale.point_of_sale import get_root_of
 from erpnext.selling.page.point_of_sale.point_of_sale import get_item_group_condition
-from erpnext.selling.page.point_of_sale.point_of_sale import search_for_serial_or_batch_or_barcode_number
-from erpnext.selling.page.point_of_sale.point_of_sale import search_for_serial_or_batch_or_barcode_number
 
 if TYPE_CHECKING:
 	from rq.job import Job
@@ -53,74 +47,6 @@ def remove_failed_jobs():
 def get_pos_profiles():
 	return frappe.get_list("POS Profile", filters={"Disabled": "No"}, fields=["name as label", "name as value"])
 
-def search_by_term(search_term, warehouse, price_list):
-	result = search_for_serial_or_batch_or_barcode_number(search_term) or {}
-	item_code = result.get("item_code", search_term)
-	serial_no = result.get("serial_no", "")
-	batch_no = result.get("batch_no", "")
-	barcode = result.get("barcode", "")
-	if not result:
-		return
-	item_doc = frappe.get_doc("Item", item_code)
-	if not item_doc:
-		return
-	item = {
-		"barcode": barcode,
-		"batch_no": batch_no,
-		"description": item_doc.description,
-		"is_stock_item": item_doc.is_stock_item,
-		"item_code": item_doc.name,
-		"item_image": item_doc.image,
-		"item_name": item_doc.item_name,
-		"serial_no": serial_no,
-		"stock_uom": item_doc.stock_uom,
-		"uom": item_doc.stock_uom,
-	}
-	if barcode:
-		barcode_info = next(filter(lambda x: x.barcode == barcode, item_doc.get("barcodes", [])), None)
-		if barcode_info and barcode_info.uom:
-			uom = next(filter(lambda x: x.uom == barcode_info.uom, item_doc.uoms), {})
-			item.update(
-				{
-					"uom": barcode_info.uom,
-					"conversion_factor": uom.get("conversion_factor", 1),
-				}
-			)
-
-	item_stock_qty, is_stock_item = get_stock_availability(item_code, warehouse)
-	item_stock_qty = item_stock_qty // item.get("conversion_factor", 1)
-	item.update({"actual_qty": item_stock_qty})
-
-	price = frappe.get_list(
-		doctype="Item Price",
-		filters={
-			"price_list": price_list,
-			"item_code": item_code,
-		},
-		fields=["uom", "currency", "price_list_rate"],
-	)
-
-	def __sort(p):
-		p_uom = p.get("uom")
-		if p_uom == item.get("uom"):
-			return 0
-		elif p_uom == item.get("stock_uom"):
-			return 1
-		else:
-			return 2
-
-	# sort by fallback preference. always pick exact uom match if available
-	price = sorted(price, key=__sort)
-	if len(price) > 0:
-		p = price.pop(0)
-		item.update(
-			{
-				"currency": p.get("currency"),
-				"price_list_rate": p.get("price_list_rate"),
-			}
-		)
-	return {"items": [item]}
-
 @frappe.whitelist()
 def get_items(start, page_length, price_list, item_group, pos_profile, search_term=""):
 	warehouse, hide_unavailable_items = frappe.db.get_value(
@@ -128,11 +54,13 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 	)
 
 	result = []
-
+	
+	search_result = []
 	if search_term:
-		result = search_by_term(search_term, warehouse, price_list) or []
-		if result:
-			return result
+		search_result = search_by_term(search_term, warehouse, price_list) or []
+		if search_result:
+			for item in search_result['items']:
+				result.append(item)
 
 	if not frappe.db.exists("Item Group", item_group):
 		item_group = get_root_of("Item Group")
@@ -210,6 +138,6 @@ def get_items(start, page_length, price_list, item_group, pos_profile, search_te
 					"actual_qty": item_stock_qty,
 				}
 			)
-			result.append(row)
-
+			result.append(row)    
+    
 	return {"items": result}
