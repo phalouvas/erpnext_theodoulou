@@ -10,10 +10,10 @@ def publish_all_items():
 
     #items = frappe.get_all('Item', filters={'published_in_website': 1}, fields=['name'])
     #for i, item in enumerate(items):
-    #    print(f'Unpublishing item {item.name}')
     #    frappe.db.set_value('Item', item.name, 'published_in_website', 0)
         # every 100 items, commit the changes
     #    if i % 100 == 0:
+    #        print(f'Unpublishing item {item.name} on row {i}')
     #        frappe.db.commit()
     #frappe.db.commit()
     #return;
@@ -26,10 +26,10 @@ def publish_all_items():
     
     # publish each item and print the name of the item and the row number of the array
     for i, item in enumerate(items):
-        print(f'Publishing item {item.name} at row {i}')
         make_website_item(frappe.get_doc('Item', item.name), save=True)
         # every 100 items, commit the changes
         if i % 100 == 0:
+            print(f'Publishing item {item.name} at row {i}')
             frappe.db.commit()
         
     frappe.db.commit()
