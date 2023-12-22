@@ -25,3 +25,9 @@ from theodoulou.theodoulou.utils import utils
 importlib.reload(utils)
 utils.publish_all_items()
 ``````
+
+## Enable RediSearch
+Need to replace in yaml file the image from "redis:6.2-alpine" to "redis/redis-stack-server"
+
+Then in webshop settings enable RediSearch and add the search fields. For example: "web_item_name,item_code,item_name,item_group"
+Be aware that the alpine image is around 45Mb and the redis/redis-stack-server is around 500Mb
