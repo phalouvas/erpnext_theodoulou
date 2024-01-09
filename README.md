@@ -41,7 +41,7 @@ bench db-console
 source /workspace/development/v15/tecdoc/CreateTablesTAF24.sql
 ```
 * In db console run the commands in file “CommonSQL_Queries_24.TXT”
-* To import data
+* To import data from shell
 * ```shell
 PATH_TO_SQL_FILES="/path_to_folder_with_sql_files/"
 for sql_file in $PATH_TO_SQL_FILES*.sql ; do echo $sql_file; bench mariadb < $sql_file ; done
