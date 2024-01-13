@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestSettings(FrappeTestCase):
+class TestTheodoulouSettings(FrappeTestCase):
 	pass

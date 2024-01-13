@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Theodoulou Parts",
  "links": [],
- "modified": "2024-01-13 08:36:46.483542",
+ "modified": "2024-01-13 08:43:37.058823",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "Theodoulou Parts",
@@ -29,7 +29,7 @@
    "color": "Grey",
    "doc_view": "List",
    "label": "Settings",
-   "link_to": "Settings",
+   "link_to": "Theodoulou Settings",
    "type": "DocType"
   }
  ],
