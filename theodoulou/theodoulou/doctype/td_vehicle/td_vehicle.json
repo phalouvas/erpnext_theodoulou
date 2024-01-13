@@ -20,48 +20,56 @@
   {
    "fieldname": "hernr",
    "fieldtype": "Int",
-   "label": "Manufacturer Number"
+   "label": "Manufacturer Number",
+   "read_only": 1
   },
   {
    "fieldname": "lbeznr",
    "fieldtype": "Data",
-   "label": "Name"
+   "label": "Name",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "pkw",
    "fieldtype": "Check",
-   "label": "PC Manufacturer"
+   "label": "PC Manufacturer",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "nkw",
    "fieldtype": "Check",
-   "label": "CV Manufacturer"
+   "label": "CV Manufacturer",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "transporter",
    "fieldtype": "Check",
-   "label": "LCV manufacturer"
+   "label": "LCV manufacturer",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "achse",
    "fieldtype": "Check",
-   "label": "Axle Manufacturer"
+   "label": "Axle Manufacturer",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "motor",
    "fieldtype": "Check",
-   "label": "Engine Manufacturer"
+   "label": "Engine Manufacturer",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "getriebe",
    "fieldtype": "Check",
-   "label": "Transmission Manufacturer"
+   "label": "Transmission Manufacturer",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_shio",
@@ -75,7 +83,7 @@
  "index_web_pages_for_search": 1,
  "is_virtual": 1,
  "links": [],
- "modified": "2024-01-13 08:55:11.147677",
+ "modified": "2024-01-13 08:57:30.844999",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "TD Vehicle",
