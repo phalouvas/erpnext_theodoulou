@@ -5,8 +5,16 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "section_break_shio",
   "hernr",
-  "lbeznr"
+  "pkw",
+  "nkw",
+  "transporter",
+  "column_break_erfz",
+  "lbeznr",
+  "motor",
+  "achse",
+  "getriebe"
  ],
  "fields": [
   {
@@ -17,13 +25,57 @@
   {
    "fieldname": "lbeznr",
    "fieldtype": "Data",
-   "label": "Description Number"
+   "label": "Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "pkw",
+   "fieldtype": "Check",
+   "label": "PC Manufacturer"
+  },
+  {
+   "default": "0",
+   "fieldname": "nkw",
+   "fieldtype": "Check",
+   "label": "CV Manufacturer"
+  },
+  {
+   "default": "0",
+   "fieldname": "transporter",
+   "fieldtype": "Check",
+   "label": "LCV manufacturer"
+  },
+  {
+   "default": "0",
+   "fieldname": "achse",
+   "fieldtype": "Check",
+   "label": "Axle Manufacturer"
+  },
+  {
+   "default": "0",
+   "fieldname": "motor",
+   "fieldtype": "Check",
+   "label": "Engine Manufacturer"
+  },
+  {
+   "default": "0",
+   "fieldname": "getriebe",
+   "fieldtype": "Check",
+   "label": "Transmission Manufacturer"
+  },
+  {
+   "fieldname": "section_break_shio",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_erfz",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_virtual": 1,
  "links": [],
- "modified": "2024-01-13 08:48:24.096704",
+ "modified": "2024-01-13 08:55:11.147677",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "TD Vehicle",
