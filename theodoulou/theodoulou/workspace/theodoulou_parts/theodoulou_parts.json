@@ -1,0 +1,37 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"LkofH7Nn5w\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Theodoulou Parts</span>\",\"col\":12}},{\"id\":\"Y53d3C0Y7-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Settings\",\"col\":3}}]",
+ "creation": "2024-01-13 08:35:21.016202",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-monthly-rank",
+ "idx": 0,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "label": "Theodoulou Parts",
+ "links": [],
+ "modified": "2024-01-13 08:36:46.483542",
+ "modified_by": "Administrator",
+ "module": "Theodoulou",
+ "name": "Theodoulou Parts",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Settings",
+   "link_to": "Settings",
+   "type": "DocType"
+  }
+ ],
+ "title": "Theodoulou Parts"
+}
