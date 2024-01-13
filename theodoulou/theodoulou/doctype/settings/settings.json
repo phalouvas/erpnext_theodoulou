@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-01-13 08:24:47.102707",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "images_url",
+  "country",
+  "language"
+ ],
+ "fields": [
+  {
+   "fieldname": "images_url",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Images Url",
+   "options": "URL",
+   "reqd": 1
+  },
+  {
+   "default": "cy",
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country",
+   "reqd": 1
+  },
+  {
+   "default": "en",
+   "fieldname": "language",
+   "fieldtype": "Link",
+   "label": "Language",
+   "options": "Language",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-01-13 08:30:27.144144",
+ "modified_by": "Administrator",
+ "module": "Theodoulou",
+ "name": "Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
