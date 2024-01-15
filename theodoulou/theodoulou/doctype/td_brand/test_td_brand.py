@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestTDVehicle(FrappeTestCase):
+class TestTDBrand(FrappeTestCase):
 	pass

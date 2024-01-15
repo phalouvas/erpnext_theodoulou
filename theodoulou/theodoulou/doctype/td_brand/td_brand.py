@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 
-class TDVehicle(Document):
+class TDBrand(Document):
 	
 	def db_insert(self, *args, **kwargs):
 		pass
@@ -22,8 +22,8 @@ class TDVehicle(Document):
 				T100.ACHSE as achse,
 				T100.MOTOR as motor,
 				T100.GETRIEBE as getriebe
-			FROM `110` AS `tabTD Vehicle`
-				JOIN `100` AS T100 ON T100.HERNR = `tabTD Vehicle`.HERNR
+			FROM `110` AS `tabTD Brand`
+				JOIN `100` AS T100 ON T100.HERNR = `tabTD Brand`.HERNR
 			WHERE T100.HERNR = '{self.name}';
 		""", as_dict=1)[0]
 
@@ -50,12 +50,12 @@ class TDVehicle(Document):
 				T100.ACHSE as achse,
 				T100.MOTOR as motor,
 				T100.GETRIEBE as getriebe
-			FROM `110` AS `tabTD Vehicle`
-				JOIN `100` AS T100 ON T100.HERNR = `tabTD Vehicle`.HERNR
+			FROM `110` AS `tabTD Brand`
+				JOIN `100` AS T100 ON T100.HERNR = `tabTD Brand`.HERNR
 			WHERE 1
 				AND (CASE
 						WHEN @NEEDYEAR = 0 OR LENGTH(@NEEDYEAR) <> 4 THEN 1
-						WHEN `tabTD Vehicle`.BJVON <= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) AND IFNULL(`tabTD Vehicle`.BJBIS, CAST(CONCAT(YEAR(NOW()),'12') AS UNSIGNED)) >= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) THEN 1
+						WHEN `tabTD Brand`.BJVON <= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) AND IFNULL(`tabTD Brand`.BJBIS, CAST(CONCAT(YEAR(NOW()),'12') AS UNSIGNED)) >= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) THEN 1
 						ELSE 0
 					END) = 1
 			ORDER BY {order_by}
@@ -69,12 +69,12 @@ class TDVehicle(Document):
 		frappe.db.sql("SET @NEEDYEAR = '0', @SPRACHNR = 4, @LKZ = 'CY';")
 		count = frappe.db.sql(f"""
 			SELECT count(distinct T100.HERNR) AS count
-			FROM `110` AS `tabTD Vehicle`
-				JOIN `100` AS T100 ON T100.HERNR = `tabTD Vehicle`.HERNR
+			FROM `110` AS `tabTD Brand`
+				JOIN `100` AS T100 ON T100.HERNR = `tabTD Brand`.HERNR
 			WHERE 1
 				AND (CASE
 						WHEN @NEEDYEAR = 0 OR LENGTH(@NEEDYEAR) <> 4 THEN 1
-						WHEN `tabTD Vehicle`.BJVON <= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) AND IFNULL(`tabTD Vehicle`.BJBIS, CAST(CONCAT(YEAR(NOW()),'12') AS UNSIGNED)) >= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) THEN 1
+						WHEN `tabTD Brand`.BJVON <= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) AND IFNULL(`tabTD Brand`.BJBIS, CAST(CONCAT(YEAR(NOW()),'12') AS UNSIGNED)) >= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) THEN 1
 						ELSE 0
 					END) = 1;
 		""", as_dict=1)[0].count

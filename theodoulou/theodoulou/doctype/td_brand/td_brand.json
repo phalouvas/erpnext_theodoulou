@@ -18,16 +18,13 @@
  ],
  "fields": [
   {
+   "fieldname": "section_break_shio",
+   "fieldtype": "Section Break"
+  },
+  {
    "fieldname": "hernr",
    "fieldtype": "Int",
    "label": "Manufacturer Number",
-   "read_only": 1
-  },
-  {
-   "fieldname": "lbeznr",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Name",
    "read_only": 1
   },
   {
@@ -52,10 +49,14 @@
    "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "achse",
-   "fieldtype": "Check",
-   "label": "Axle Manufacturer",
+   "fieldname": "column_break_erfz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lbeznr",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
    "read_only": 1
   },
   {
@@ -67,27 +68,26 @@
   },
   {
    "default": "0",
+   "fieldname": "achse",
+   "fieldtype": "Check",
+   "label": "Axle Manufacturer",
+   "read_only": 1
+  },
+  {
+   "default": "0",
    "fieldname": "getriebe",
    "fieldtype": "Check",
    "label": "Transmission Manufacturer",
    "read_only": 1
-  },
-  {
-   "fieldname": "section_break_shio",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_erfz",
-   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_virtual": 1,
  "links": [],
- "modified": "2024-01-15 08:51:22.574993",
+ "modified": "2024-01-15 08:55:45.286787",
  "modified_by": "Administrator",
  "module": "Theodoulou",
- "name": "TD Vehicle",
+ "name": "TD Brand",
  "owner": "Administrator",
  "permissions": [
   {
