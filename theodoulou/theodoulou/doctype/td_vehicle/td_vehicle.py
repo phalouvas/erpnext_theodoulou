@@ -11,7 +11,23 @@ class TDVehicle(Document):
 		pass
 
 	def load_from_db(self):
-		pass
+		frappe.db.sql("SET @NEEDYEAR = '0', @SPRACHNR = 4, @LKZ = 'CY';")
+		data = frappe.db.sql(f"""
+			SELECT distinct
+				T100.HERNR AS `hernr`,
+				GET_LBEZNR(T100.LBEZNR, @SPRACHNR) AS lbeznr,
+				T100.PKW as pkw,
+				T100.NKW as nkw,
+				T100.TRANSPORTER as transporter,
+				T100.ACHSE as achse,
+				T100.MOTOR as motor,
+				T100.GETRIEBE as getriebe
+			FROM `110` AS `tabTD Vehicle`
+				JOIN `100` AS T100 ON T100.HERNR = `tabTD Vehicle`.HERNR
+			WHERE T100.HERNR = '{self.name}';
+		""", as_dict=1)[0]
+
+		super(Document, self).__init__(data)
 
 	def db_update(self):
 		pass
