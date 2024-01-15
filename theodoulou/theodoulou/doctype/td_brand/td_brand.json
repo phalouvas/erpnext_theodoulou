@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_copy": 1,
  "allow_rename": 1,
  "creation": "2024-01-13 08:44:20.245903",
  "doctype": "DocType",
@@ -81,10 +82,11 @@
    "read_only": 1
   }
  ],
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "is_virtual": 1,
  "links": [],
- "modified": "2024-01-15 08:55:45.286787",
+ "modified": "2024-01-15 09:01:48.962712",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "TD Brand",
@@ -105,5 +107,6 @@
  ],
  "sort_field": "lbeznr",
  "sort_order": "ASC",
- "states": []
+ "states": [],
+ "title_field": "lbeznr"
 }
