@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"LkofH7Nn5w\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Theodoulou Parts</span>\",\"col\":12}},{\"id\":\"Y53d3C0Y7-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Settings\",\"col\":3}},{\"id\":\"c4IoSGHRr3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Brands\",\"col\":3}}]",
+ "content": "[{\"id\":\"LkofH7Nn5w\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Theodoulou Parts</span>\",\"col\":12}},{\"id\":\"Y53d3C0Y7-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Settings\",\"col\":3}},{\"id\":\"c4IoSGHRr3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Manufacturers\",\"col\":3}}]",
  "creation": "2024-01-13 08:35:21.016202",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Theodoulou Parts",
  "links": [],
- "modified": "2024-01-15 08:56:29.581832",
+ "modified": "2024-01-15 09:09:20.341745",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "Theodoulou Parts",
@@ -28,8 +28,8 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Brands",
-   "link_to": "TD Brand",
+   "label": "Manufacturers",
+   "link_to": "TD Manufacturer",
    "stats_filter": "[]",
    "type": "DocType"
   },
