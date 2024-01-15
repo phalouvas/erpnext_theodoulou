@@ -85,7 +85,7 @@
  "index_web_pages_for_search": 1,
  "is_virtual": 1,
  "links": [],
- "modified": "2024-01-13 09:34:18.889122",
+ "modified": "2024-01-15 07:20:36.142460",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "TD Vehicle",
@@ -104,7 +104,7 @@
    "write": 1
   }
  ],
- "sort_field": "modified",
- "sort_order": "DESC",
+ "sort_field": "lbeznr",
+ "sort_order": "ASC",
  "states": []
 }
