@@ -27,7 +27,6 @@
    "fieldname": "lbeznr",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Name",
    "read_only": 1
   },
@@ -85,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "is_virtual": 1,
  "links": [],
- "modified": "2024-01-15 07:20:36.142460",
+ "modified": "2024-01-15 08:51:22.574993",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "TD Vehicle",

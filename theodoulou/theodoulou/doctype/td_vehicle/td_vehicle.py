@@ -66,7 +66,19 @@ class TDVehicle(Document):
 
 	@staticmethod
 	def get_count(args):
-		pass
+		frappe.db.sql("SET @NEEDYEAR = '0', @SPRACHNR = 4, @LKZ = 'CY';")
+		count = frappe.db.sql(f"""
+			SELECT count(distinct T100.HERNR) AS count
+			FROM `110` AS `tabTD Vehicle`
+				JOIN `100` AS T100 ON T100.HERNR = `tabTD Vehicle`.HERNR
+			WHERE 1
+				AND (CASE
+						WHEN @NEEDYEAR = 0 OR LENGTH(@NEEDYEAR) <> 4 THEN 1
+						WHEN `tabTD Vehicle`.BJVON <= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) AND IFNULL(`tabTD Vehicle`.BJBIS, CAST(CONCAT(YEAR(NOW()),'12') AS UNSIGNED)) >= CAST(CONCAT(@NEEDYEAR,'01') AS UNSIGNED) THEN 1
+						ELSE 0
+					END) = 1;
+		""", as_dict=1)[0].count
+		return count
 
 	@staticmethod
 	def get_stats(args):
