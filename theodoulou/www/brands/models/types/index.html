@@ -13,10 +13,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for type in types %}
+                {% for item in types %}
                 <tr>
-                    <td>{{ type.TYPE }}</td>
-                    <td>{{ type.YEARS }}</td>
+                    <td><a href="/vehicles?ID={{ item.ID }}&type={{ type }}">{{ item.TYPE }}</a></td>
+                    <td>{{ item.YEARS }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

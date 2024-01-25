@@ -62,7 +62,7 @@ class TheodoulouQuery():
             NEEDYEAR = 0
         data = frappe.db.sql(f"""
             SELECT
-                T120.KTYPNR,  -- ID TYPE
+                T120.KTYPNR AS ID,  -- ID TYPE
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                 GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE
@@ -88,7 +88,7 @@ class TheodoulouQuery():
             NEEDYEAR = 0
         data = frappe.db.sql(f"""
             SELECT
-                T532.NTYPNR,  -- ID TYPE
+                T532.NTYPNR AS ID,  -- ID TYPE
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                 GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE
