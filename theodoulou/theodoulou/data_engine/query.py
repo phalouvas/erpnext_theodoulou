@@ -112,15 +112,15 @@ class TheodoulouQuery():
                 GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                 T120.BJVON AS `FROM_YEAR`, 
                 IFNULL(T120.BJBIS, 'now') AS `TO_YEAR`, 
-                IFNULL(T120.KW, '') AS `KW`, 
-                IFNULL(T120.PS, '') AS `PS`, 
-                IFNULL(T120.CCMSTEUER, '') AS `CCMSTEUER`, 
-                IFNULL(T120.CCMTECH, '') AS `CCMTECH`, 
-                IFNULL(T120.LIT, '') AS `LIT`, 
-                IFNULL(T120.ZYL, '') AS `ZYL`, 
-                IFNULL(T120.TUEREN, '') AS `TUEREN`, 
-                IFNULL(T120.TANKINHALT, '') AS `TANKINHALT`, 
-                IFNULL(T120.SPANNUNG, '') AS `SPANNUNG`, 
+                IFNULL(T120.KW, '') AS `Engine output in kW`, 
+                IFNULL(T120.PS, '') AS `Engine output in HP`, 
+                IFNULL(T120.CCMSTEUER, '') AS `Engine capacity in cc (taxation value)`, 
+                IFNULL(T120.CCMTECH, '') AS `Engine capacity in cc (technical value)`, 
+                IFNULL(T120.LIT, '') AS `Engine capacity in litre *100 (99V99)`, 
+                IFNULL(T120.ZYL, '') AS `Number of cylinders`, 
+                IFNULL(T120.TUEREN, '') AS `Number of doors`, 
+                IFNULL(T120.TANKINHALT, '') AS `Fuel tank capacity`, 
+                IFNULL(T120.SPANNUNG, '') AS `Main current voltage`, 
                 IFNULL((CASE
                         WHEN T120.ABS = 0 THEN 'NO'
                         WHEN T120.ABS = 1 THEN 'YES'
@@ -135,21 +135,21 @@ class TheodoulouQuery():
                         WHEN T120.ASR = 9 THEN 'UNKNOWN'
                         ELSE NULL
                         END), '') AS `ASR`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T120.MOTART, { self.language }), '') AS `MOTART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(97, T120.KRAFTSTOFFAUFBEREITUNGSPRINZIP, { self.language }), '') AS `KRAFTSTOFFAUFBEREITUNGSPRINZIP`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(82, T120.ANTRART, { self.language }), '') AS `ANTRART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(83, T120.BREMSART, { self.language }), '') AS `BREMSART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(84, T120.BREMSSYS, { self.language }), '') AS `BREMSSYS`, 
-                IFNULL(T120.VENTILE_BRENNRAUM, '') AS `VENTILE_BRENNRAUM`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(182, T120.KRSTOFFART, { self.language }), '') AS `KRSTOFFART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(89, T120.KATART, { self.language }), '') AS `KATART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(85, T120.GETRART, { self.language }), '') AS `GETRART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(86, T120.AUFBAUART, { self.language }), '') AS `AUFBAUART`,
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T120.MOTART, { self.language }), '') AS `Engine type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(97, T120.KRAFTSTOFFAUFBEREITUNGSPRINZIP, { self.language }), '') AS `Fuel mixture formation`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(82, T120.ANTRART, { self.language }), '') AS `Drive type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(83, T120.BREMSART, { self.language }), '') AS `Brake type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(84, T120.BREMSSYS, { self.language }), '') AS `Brake system`, 
+                IFNULL(T120.VENTILE_BRENNRAUM, '') AS `Number of valves`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(182, T120.KRSTOFFART, { self.language }), '') AS `Fuel type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(89, T120.KATART, { self.language }), '') AS `Catalyst converter type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(85, T120.GETRART, { self.language }), '') AS `Transmission type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(86, T120.AUFBAUART, { self.language }), '') AS `Body type`,
                 IFNULL((SELECT 
                             GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
                         FROM `125` AS T125
                             JOIN `155` AS T155 ON T155.MOTNR = T125.MOTNR
-                        WHERE T125.KTYPNR = T120.KTYPNR), '') AS LISTENGINES
+                        WHERE T125.KTYPNR = T120.KTYPNR), '') AS `Engine numbers`
             FROM `120` AS T120		
                 JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR			
                 JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
