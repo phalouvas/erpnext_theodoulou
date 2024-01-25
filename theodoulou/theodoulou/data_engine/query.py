@@ -110,8 +110,8 @@ class TheodoulouQuery():
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                 GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
-                T120.BJVON AS `BJVON`, 
-                IFNULL(T120.BJBIS, 'to now') AS `BJBIS`, 
+                T120.BJVON AS `FROM_YEAR`, 
+                IFNULL(T120.BJBIS, 'now') AS `TO_YEAR`, 
                 IFNULL(T120.KW, '') AS `KW`, 
                 IFNULL(T120.PS, '') AS `PS`, 
                 IFNULL(T120.CCMSTEUER, '') AS `CCMSTEUER`, 
@@ -165,8 +165,8 @@ class TheodoulouQuery():
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                 GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
-                T532.BJVON AS `BJVON`, 
-                IFNULL(T532.BJBIS, 'to now') AS `BJBIS`, 			
+                T532.BJVON AS `FROM_YEAR`, 
+                IFNULL(T532.BJBIS, 'now') AS `TO_YEAR`, 			
                 IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `BAUART`, 
                 IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `MOTART`, 
                 IFNULL(T532.KWVON, '') AS `KWVON`, 

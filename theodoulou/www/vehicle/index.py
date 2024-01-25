@@ -20,3 +20,4 @@ def get_context(context):
         vehicle = query_engine.get_vehicle_commercial(context.ID)
     
     context.vehicle = vehicle[0]
+    context.vehicle.YEARS = f"{str(context.vehicle.FROM_YEAR)[:4]} - {str(context.vehicle.TO_YEAR)[:4]}"
