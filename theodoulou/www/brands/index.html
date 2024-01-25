@@ -2,5 +2,19 @@
 
 {% block page_content %}
 <h1>{{ _('Brands') }}</h1>
-<!-- Your content goes here -->
+<div class="container">
+    <div class="row">
+    {% for item in passenger_cars %}
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card">
+                <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.NAME }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.NAME }}</h5>
+                    <a href="/brands/{{ item.HERNR }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
 {% endblock %}
