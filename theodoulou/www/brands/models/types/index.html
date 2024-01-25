@@ -1,0 +1,26 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<h1>{{ _('Models') }}</h1>
+<div class="container">
+    <h2>{{ brand }} - {{ model }}</h2>
+    <div class="row pt-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Years</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for type in types %}
+                <tr>
+                    <td>{{ type.TYPE }}</td>
+                    <td>{{ type.YEARS }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
