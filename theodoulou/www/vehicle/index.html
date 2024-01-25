@@ -1,0 +1,11 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<h1>{{ _('Vehicle') }}</h1>
+<div class="container">
+    <h2>{{ vehicle.MANUFACTURER }} - {{ vehicle.MODEL }} - {{ vehicle.TYPE }}</h2>    
+    {{ vehicle }}
+</div>
+{% endblock %}
+                    
+                    

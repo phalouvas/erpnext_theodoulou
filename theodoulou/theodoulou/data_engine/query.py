@@ -33,8 +33,6 @@ class TheodoulouQuery():
         return data
     
     def get_models(self, type, HERNR, NEEDYEAR = 0):
-            if not NEEDYEAR:
-                NEEDYEAR = 0
             data = frappe.db.sql(f"""
                 SELECT
                     T110.KMODNR,  -- ID MODEL
@@ -58,8 +56,6 @@ class TheodoulouQuery():
             return data
     
     def get_types_passenger_cars(self, KMODNR, NEEDYEAR = 0):
-        if not NEEDYEAR:
-            NEEDYEAR = 0
         data = frappe.db.sql(f"""
             SELECT
                 T120.KTYPNR AS ID,  -- ID TYPE
@@ -84,8 +80,6 @@ class TheodoulouQuery():
         return data
     
     def get_types_commercial_cars(self, KMODNR, NEEDYEAR = 0):
-        if not NEEDYEAR:
-            NEEDYEAR = 0
         data = frappe.db.sql(f"""
             SELECT
                 T532.NTYPNR AS ID,  -- ID TYPE
@@ -105,6 +99,92 @@ class TheodoulouQuery():
                         ELSE 0
                     END) = 1
             ORDER BY T532.SORT;		
+        """, as_dict=True)
+
+        return data
+    
+    def get_vehicle_passenger(self, ID):
+        data = frappe.db.sql(f"""
+            SELECT			
+			T120.KTYPNR AS `ID`, 
+                GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
+                GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
+                T120.BJVON AS `BJVON`, 
+                IFNULL(T120.BJBIS, 'to now') AS `BJBIS`, 
+                IFNULL(T120.KW, '') AS `KW`, 
+                IFNULL(T120.PS, '') AS `PS`, 
+                IFNULL(T120.CCMSTEUER, '') AS `CCMSTEUER`, 
+                IFNULL(T120.CCMTECH, '') AS `CCMTECH`, 
+                IFNULL(T120.LIT, '') AS `LIT`, 
+                IFNULL(T120.ZYL, '') AS `ZYL`, 
+                IFNULL(T120.TUEREN, '') AS `TUEREN`, 
+                IFNULL(T120.TANKINHALT, '') AS `TANKINHALT`, 
+                IFNULL(T120.SPANNUNG, '') AS `SPANNUNG`, 
+                IFNULL((CASE
+                        WHEN T120.ABS = 0 THEN 'NO'
+                        WHEN T120.ABS = 1 THEN 'YES'
+                        WHEN T120.ABS = 2 THEN 'OPTIONAL'
+                        WHEN T120.ABS = 9 THEN 'UNKNOWN'
+                        ELSE NULL
+                        END), '') AS `ABS`, 
+                IFNULL((CASE
+                        WHEN T120.ASR = 0 THEN 'NO'
+                        WHEN T120.ASR = 1 THEN 'YES'
+                        WHEN T120.ASR = 2 THEN 'OPTIONAL'
+                        WHEN T120.ASR = 9 THEN 'UNKNOWN'
+                        ELSE NULL
+                        END), '') AS `ASR`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T120.MOTART, { self.language }), '') AS `MOTART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(97, T120.KRAFTSTOFFAUFBEREITUNGSPRINZIP, { self.language }), '') AS `KRAFTSTOFFAUFBEREITUNGSPRINZIP`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(82, T120.ANTRART, { self.language }), '') AS `ANTRART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(83, T120.BREMSART, { self.language }), '') AS `BREMSART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(84, T120.BREMSSYS, { self.language }), '') AS `BREMSSYS`, 
+                IFNULL(T120.VENTILE_BRENNRAUM, '') AS `VENTILE_BRENNRAUM`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(182, T120.KRSTOFFART, { self.language }), '') AS `KRSTOFFART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(89, T120.KATART, { self.language }), '') AS `KATART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(85, T120.GETRART, { self.language }), '') AS `GETRART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(86, T120.AUFBAUART, { self.language }), '') AS `AUFBAUART`,
+                IFNULL((SELECT 
+                            GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
+                        FROM `125` AS T125
+                            JOIN `155` AS T155 ON T155.MOTNR = T125.MOTNR
+                        WHERE T125.KTYPNR = T120.KTYPNR), '') AS LISTENGINES
+            FROM `120` AS T120		
+                JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR			
+                JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+            WHERE T120.KTYPNR = { ID };	
+        """, as_dict=True)
+
+        return data
+    
+    def get_vehicle_commercial(self, ID):
+        data = frappe.db.sql(f"""
+            SELECT			
+                T532.NTYPNR AS `ID`, 
+                GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
+                GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
+                T532.BJVON AS `BJVON`, 
+                IFNULL(T532.BJBIS, 'to now') AS `BJBIS`, 			
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `BAUART`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `MOTART`, 
+                IFNULL(T532.KWVON, '') AS `KWVON`, 
+                IFNULL(T532.KWBIS, '') AS `KWBIS`, 
+                IFNULL(T532.PSVON, '') AS `PSVON`, 
+                IFNULL(T532.PSBIS, '') AS `PSBIS`, 
+                IFNULL(T532.CCMTECH, '') AS `CCMTECH`, 
+                IFNULL(T532.TONNAGE, '') AS `TONNAGE`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(65, T532.ACHSCONFIG, { self.language }), '') AS `ACHSCONFIG`,
+                IFNULL((SELECT 
+                            GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
+                        FROM `537` AS T537
+                            JOIN `155` AS T155 ON T155.MOTNR = T537.MOTNR
+                        WHERE T537.NTYPNR = T532.NTYPNR), '') AS LISTENGINES						
+            FROM `532` AS T532		
+                JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
+                JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+            WHERE T532.NTYPNR = { ID };		
         """, as_dict=True)
 
         return data
