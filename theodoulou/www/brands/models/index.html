@@ -29,7 +29,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ item.MODEL }}</h5>
                     <p>{{ item.YEARS }}</p>
-                    <a href="/models?KMODNR={{ item.KMODNR }}&type=PKW" class="btn btn-primary">View Details</a>
+                    <a href="/brands/models/types?type={{ type }}&KMODNR={{ item.KMODNR }}&NEEDYEAR={{ NEEDYEAR }}" class="btn btn-primary">View Details</a>
                 </div>
             </div>
         </div>
