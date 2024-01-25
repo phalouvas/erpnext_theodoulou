@@ -35,8 +35,8 @@ class TheodoulouQuery():
                     T110.KMODNR,  -- ID MODEL
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                    T110.BJVON, -- MODEL PRODUCTING FROM YEAR+MONTH
-                    IFNULL(T110.BJBIS, 'to now') -- MODEL PRODUCTING TO YEAR+MONTH
+                    T110.BJVON AS FROM_YEAR, -- MODEL PRODUCTING FROM YEAR+MONTH
+                    IFNULL(T110.BJBIS, 'now') AS TO_YEAR -- MODEL PRODUCTING TO YEAR+MONTH
                 FROM `110` AS T110
                     JOIN `100` AS T100 ON T100.HERNR = T110.HERNR			
                 WHERE 1 
