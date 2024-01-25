@@ -3,9 +3,12 @@
 {% block page_content %}
 <h1>{{ _('Brands') }}</h1>
 <div class="container">
-    <div class="row">
-    {% for item in passenger_cars %}
-        <div class="col-12 col-md-6 col-lg-3 py-3">
+    <div class="row" id="passenger_cars">
+        <h2>Passenger Cars</h2>
+        <input type="text" class="form-control" id="passenger_cars_searchKey" placeholder="Search...">
+        {% for item in passenger_cars %}
+        <div class="col-12 col-md-6 col-lg-3 py-3 card-container passenger_cars_card_container"
+            data-name="{{ item.NAME | lower }}">
             <div class="card border">
                 <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.NAME }}">
                 <div class="card-body">
@@ -14,7 +17,24 @@
                 </div>
             </div>
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div class="row" id="commercial_cars">
+        <h2>Commercial Cars</h2>
+        <input type="text" class="form-control" id="commercial_cars_searchKey" placeholder="Search...">
+        {% for item in commercial_cars %}
+        <div class="col-12 col-md-6 col-lg-3 py-3 card-container commercial_cars_card_container"
+            data-name="{{ item.NAME | lower }}">
+            <div class="card border">
+                <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.NAME }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.NAME }}</h5>
+                    <a href="/brands/{{ item.HERNR }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
