@@ -167,20 +167,20 @@ class TheodoulouQuery():
                 GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                 T532.BJVON AS `FROM_YEAR`, 
                 IFNULL(T532.BJBIS, 'now') AS `TO_YEAR`, 			
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `BAUART`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `MOTART`, 
-                IFNULL(T532.KWVON, '') AS `KWVON`, 
-                IFNULL(T532.KWBIS, '') AS `KWBIS`, 
-                IFNULL(T532.PSVON, '') AS `PSVON`, 
-                IFNULL(T532.PSBIS, '') AS `PSBIS`, 
-                IFNULL(T532.CCMTECH, '') AS `CCMTECH`, 
-                IFNULL(T532.TONNAGE, '') AS `TONNAGE`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(65, T532.ACHSCONFIG, { self.language }), '') AS `ACHSCONFIG`,
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `Body Type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `Engine Type`, 
+                IFNULL(T532.KWVON, '') AS `Engine output in kW from`, 
+                IFNULL(T532.KWBIS, '') AS `Engine output in kW to`, 
+                IFNULL(T532.PSVON, '') AS `Engine output in HP from`, 
+                IFNULL(T532.PSBIS, '') AS `Engine output in HP to`, 
+                IFNULL(T532.CCMTECH, '') AS `Engine capacity in cc (technical)`, 
+                IFNULL(T532.TONNAGE, '') AS `Tonnage in tonnes with 2 decimal spaces`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(65, T532.ACHSCONFIG, { self.language }), '') AS `Axle Configuration`,
                 IFNULL((SELECT 
                             GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
                         FROM `537` AS T537
                             JOIN `155` AS T155 ON T155.MOTNR = T537.MOTNR
-                        WHERE T537.NTYPNR = T532.NTYPNR), '') AS LISTENGINES						
+                        WHERE T537.NTYPNR = T532.NTYPNR), '') AS `Engine numbers`						
             FROM `532` AS T532		
                 JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
                 JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
