@@ -51,7 +51,6 @@ $(document).ready(function() {
         $('#models_searchKey').val('');
         $('#models_yearFilter').val('0');
         var url = new URL(window.location.href);
-        url.searchParams.delete('NEEDYEAR');
         url.searchParams.delete('SEARCHKEY');
         window.location.href = url.toString();
     });

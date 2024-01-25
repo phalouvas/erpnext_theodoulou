@@ -46,7 +46,7 @@ class TheodoulouQuery():
                     JOIN `100` AS T100 ON T100.HERNR = T110.HERNR			
                 WHERE 1 
                     AND T100.HERNR = { HERNR }
-                    AND T100.{ type } = 1
+                    AND T110.{ type } = 1
                     AND (CASE
                             WHEN { NEEDYEAR } = 0 OR LENGTH({ NEEDYEAR }) <> 4 THEN 1					
                             WHEN T110.BJVON <= CAST(CONCAT({ NEEDYEAR },'01') AS UNSIGNED) AND IFNULL(T110.BJBIS, CAST(CONCAT(YEAR(NOW()),'12') AS UNSIGNED)) >= CAST(CONCAT({ NEEDYEAR },'01') AS UNSIGNED) THEN 1
