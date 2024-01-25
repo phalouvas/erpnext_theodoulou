@@ -14,4 +14,7 @@ def get_context(context):
     NEEDYEAR = frappe.request.args.get('NEEDYEAR')    
     # get models
     context.models = query_engine.get_models(type, HERNR, NEEDYEAR)
+    # context.models is not empty then get BRAND from first model
+    if context.models:
+        context.brand = context.models[0].MANUFACTURER
     
