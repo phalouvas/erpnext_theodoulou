@@ -1,0 +1,39 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<h1>{{ _('Models') }}</h1>
+<div class="container">
+    <h2>{{ brand }}</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="models_searchKey" placeholder="Search...">
+        </div>
+        <div class="col-md-4">
+            <select class="form-control" id="models_yearFilter">
+                <option value="0">- All Years -</option>
+                {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-secondary" id="resetFilter">Reset Filter</button>
+        </div>
+    </div>
+    <div class="row" id="models">
+        {% for item in models %}
+        <div class="col-12 col-md-6 col-lg-3 py-3 card-container models_card_container"
+            data-name="{{ item.MODEL | lower }}">
+            <div class="card border">
+                <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.MODEL }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.MODEL }}</h5>
+                    <p>{{ item.YEARS }}</p>
+                    <a href="/brands/models/types?type={{ type }}&KMODNR={{ item.KMODNR }}&NEEDYEAR={{ NEEDYEAR }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
