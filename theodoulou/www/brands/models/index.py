@@ -19,4 +19,7 @@ def get_context(context):
     # context.models is not empty then get BRAND from first model
     if context.models:
         context.brand = context.models[0].MANUFACTURER
+    # get years
+    context.years = query_engine.get_years()
+    
     

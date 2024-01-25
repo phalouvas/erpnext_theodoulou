@@ -3,9 +3,21 @@
 {% block page_content %}
 <h1>{{ _('Models') }}</h1>
 <div class="container">
+    <h2>{{ brand }}</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control" id="models_searchKey" placeholder="Search...">
+        </div>
+        <div class="col-md-6">
+            <select class="form-control" id="models_yearFilter">
+                <option value="0">- All Years -</option>
+                {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
     <div class="row" id="models">
-        <h2>{{ brand }}</h2>
-        <input type="text" class="form-control" id="models_searchKey" placeholder="Search...">
         {% for item in models %}
         <div class="col-12 col-md-6 col-lg-3 py-3 card-container models_card_container"
             data-name="{{ item.MODEL | lower }}">

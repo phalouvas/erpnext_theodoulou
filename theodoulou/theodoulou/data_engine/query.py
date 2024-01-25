@@ -1,4 +1,5 @@
 import frappe
+import datetime
 
 class TheodoulouQuery():
 
@@ -6,6 +7,10 @@ class TheodoulouQuery():
         self.settings = frappe.get_doc("Theodoulou Settings")
         self.language = self.settings.get_language()
         self.country = self.settings.get_country()
+
+    def get_years(self):
+        current_year = datetime.datetime.now().year
+        return list(range(1900, current_year + 1))[::-1]
 
     def get_brands(self, type, NEEDYEAR = 0): 
 
