@@ -1,5 +1,18 @@
 {% extends "templates/web.html" %}
 
+{% macro render_node(node) %}
+    <ul>
+        {% for name, data in node.items() %}
+            <li>
+                <strong>{{ name }}</strong> (ID: {{ data.id }})
+                {% if data.children %}  <!-- If this node has children, render them -->
+                    {{ render_node(data.children) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
 {% block page_content %}
 <h1>{{ _('Vehicle') }}</h1>
 <div class="container">
@@ -16,6 +29,10 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div class="col-9">
+            <!-- Render the tree here -->
+            {{ render_node(categories_tree) }}
         </div>
     </div>
 </div>

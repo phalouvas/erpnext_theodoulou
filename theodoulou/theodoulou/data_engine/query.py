@@ -238,4 +238,23 @@ class TheodoulouQuery():
             ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
         """, as_dict=True)
 
-        return data
+        # Initialize the categories_tree
+        categories_tree = {}
+        for row in data:
+            # Get the current node
+            node = categories_tree
+
+            # Loop through the levels
+            for level in range(1, row['STUFE'] + 1):
+                # Get the text and id for this level
+                text = row[f'STR_TEXT{level}']
+                id = row[f'NODE_ID{level}']
+
+                # If this node does not exist, create it
+                if text not in node:
+                    node[text] = {'id': id, 'children': {}}
+
+                # Move to the next level
+                node = node[text]['children']
+
+        return categories_tree
