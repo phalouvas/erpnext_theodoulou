@@ -1,16 +1,12 @@
 {% extends "templates/web.html" %}
 
 {% macro render_node(node) %}
-    <ul class="collapsible">
+    <ul>
         {% for name, data in node.items() %}
             <li>
-                <div class="collapsible-header">
-                    <strong>{{ name }}</strong> (ID: {{ data.id }})
-                </div>
+                <strong>{{ name }}</strong> (ID: {{ data.id }})
                 {% if data.children %}  <!-- If this node has children, render them -->
-                    <div class="collapsible-body">
-                        {{ render_node(data.children) }}
-                    </div>
+                    {{ render_node(data.children) }}
                 {% endif %}
             </li>
         {% endfor %}
