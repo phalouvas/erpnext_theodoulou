@@ -22,4 +22,6 @@ def get_context(context):
     context.vehicle = vehicle[0]
     context.vehicle.FROM_YEAR = query_engine.convert_yyyymm(context.vehicle.FROM_YEAR)
     context.vehicle.TO_YEAR = query_engine.convert_yyyymm(context.vehicle.TO_YEAR)
+
+    context.categories = query_engine.get_vehicle_categories(type, context.ID)
     
