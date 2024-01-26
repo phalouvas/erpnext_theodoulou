@@ -297,3 +297,65 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
+    
+    def get_product(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                -- PRODUCT TABLE
+                T200.ARTNR AS `ARTNR`, 
+                T200.DLNR AS `DLNR`, 
+                IFNULL(GET_BEZNR(T200.BEZNR, { self.language }), '') AS `PREFIXFOR_NAMEPRODUCT`, 
+                (CASE
+                    WHEN T200.KZSB = 1 THEN 'SELF-SERVICE PACKING'				
+                    ELSE ''
+                END) AS `KZSB`, 
+                (CASE
+                    WHEN T200.KZMAT = 1 THEN 'MANDATORY MATERIAL CERTIFICATION'				
+                    ELSE ''
+                END) AS `KZMAT`, 
+                (CASE
+                    WHEN T200.KZAT = 1 THEN 'REMANUFACTURED PART'				
+                    ELSE ''
+                END) AS `KZAT`, 
+                (CASE
+                    WHEN T200.KZZUB = 1 THEN 'ACCESSORY'				
+                    ELSE ''
+                END) AS `KZZUB`, 
+                IFNULL(T200.LOSGR1, '') AS `LOSGR1`, 
+                IFNULL(T200.LOSGR2, '') AS `LOSGR2`,
+                -- TRADE GROUPS
+                T320.GENARTNR,
+                IFNULL(GET_BEZNR(T320.BEZNR, { self.language }), '') AS `NAMEPRODUCT`,
+                IFNULL(GET_BEZNR(T323.BEZNR, { self.language }), '') AS STANDARD_GROUP,
+                IFNULL(GET_BEZNR(T324.BEZNR, { self.language }), '') AS ASSEMBLY_GROUP,
+                IFNULL(GET_BEZNR(T325.BEZNR, { self.language }), '') AS PURPOSE_GROUP,			
+                -- ADDITIONAL DATA
+                IFNULL((SELECT
+                            GROUP_CONCAT(DISTINCT CONCAT('[VPE:',IFNULL(T212.VPE, ''),',MENGEPROVPE:',IFNULL(T212.MENGEPROVPE, ''),',ARTSTAT:',IFNULL(GET_BEZNR_FOR_KEY_TABLE(73, T212.ARTSTAT, { self.language }), ''),',STATUSDAT:',IFNULL(T212.STATUSDAT, ''),']'))
+                        FROM `212` AS T212
+                        WHERE T212.ARTNR = T200.ARTNR AND T212.DLNR = T200.DLNR), '') AS PACKINFO, -- 212
+                IFNULL((SELECT
+                            GROUP_CONCAT(DISTINCT T209.EANNR)
+                        FROM `209` AS T209
+                        WHERE T209.ARTNR = T200.ARTNR AND T209.DLNR = T200.DLNR), '') AS EAN, -- 209
+                IFNULL((SELECT
+                            GROUP_CONCAT(DISTINCT T207.GEBRNR)
+                        FROM `207` AS T207
+                        WHERE T207.ARTNR = T200.ARTNR AND T207.DLNR = T200.DLNR
+                        ORDER BY T207.SORTNR), '') AS LIST_USERNUMBERS, -- 207
+                IFNULL((SELECT
+                            GROUP_CONCAT(DISTINCT T204.ERSATZNR)
+                        FROM `204` AS T204
+                        WHERE T204.ARTNR = T200.ARTNR AND T204.DLNR = T200.DLNR
+                        ORDER BY T204.SORT), '') AS LIST_REPLACEDNUMBERS -- 204			
+            FROM `200` AS T200
+                JOIN `211` AS T211 ON T211.ARTNR = T200.ARTNR AND T211.DLNR = T200.DLNR
+                JOIN `320` AS T320 ON T320.GENARTNR = T211.GENARTNR
+                LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
+                LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
+                LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+            WHERE T200.ARTNR = '{ artnr }'
+                AND T200.DLNR = { dlnr };
+        """, as_dict=True)
+
+        return data
