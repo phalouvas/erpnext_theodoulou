@@ -20,7 +20,6 @@ def get_context(context):
         vehicle = query_engine.get_vehicle_commercial(context.ID)
     
     context.vehicle = vehicle[0]
-    context.vehicle.Years = f"{str(context.vehicle.FROM_YEAR)[:4]} - {str(context.vehicle.TO_YEAR)[:4]}"
-    # remove FROME_YEAR and TO_YEAR from vehicle
-    del context.vehicle["FROM_YEAR"]
-    del context.vehicle["TO_YEAR"]
+    context.vehicle.FROM_YEAR = query_engine.convert_yyyymm(context.vehicle.FROM_YEAR)
+    context.vehicle.TO_YEAR = query_engine.convert_yyyymm(context.vehicle.TO_YEAR)
+    

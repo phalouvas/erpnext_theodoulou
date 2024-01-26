@@ -8,6 +8,20 @@ class TheodoulouQuery():
         self.language = self.settings.get_language()
         self.country = self.settings.get_country()
 
+    def convert_yyyymm(self, yyyymm):
+        # Convert the integer to string
+        year_month = str(yyyymm)
+
+        # Extract the year and month
+        year = year_month[:4]
+        month = year_month[4:]
+
+        # Format the string as mm.yyyy
+        formatted_date = f"{month}.{year}"
+
+        # Assign the formatted date back to the context
+        return formatted_date
+
     def get_years(self):
         current_year = datetime.datetime.now().year
         return list(range(1900, current_year + 1))[::-1]
