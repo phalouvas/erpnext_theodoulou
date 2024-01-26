@@ -27,13 +27,5 @@ $(document).ready(function() {
         });
     });
 
-    $('#toggleButton').on('click', function() {
-        $('#passenger_cars, #commercial_cars').toggle();
-
-        if ($(this).text() === 'Click to show Commercial Cars') {
-            $(this).text('Click to show Passenger Cars');
-        } else {
-            $(this).text('Click to show Commercial Cars');
-        }
-    });
+    $('#brandsTab li:first-child a').tab('show')
 });
