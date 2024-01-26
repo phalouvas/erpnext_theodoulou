@@ -258,3 +258,42 @@ class TheodoulouQuery():
                 node = node[text]['children']
 
         return categories_tree
+    
+    def get_vehicle_products(self, type, vehicle_id, node_id):
+        if type == "PKW":
+            VKNZIELART = 2
+            TREETYPNR = 1
+        else:
+            VKNZIELART = 16
+            TREETYPNR = 2
+            
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                T400.VKNZIELART,
+                T400.VKNZIELNR,
+                T400.GENARTNR,
+                T400.ARTNR,
+                T400.DLNR,
+                T001.MARKE AS MARKE,
+                T200.ARTNR AS ARTNR,				
+                IFNULL(GET_BEZNR(T324.BEZNR, { self.language }), '') AS ASSEMBLY_GROUP,
+                CONCAT(IFNULL(GET_BEZNR(T320.BEZNR, { self.language }), ''), IFNULL(CONCAT(' ', GET_BEZNR(T200.BEZNR, { self.language })), '')) AS `NAMEPRODUCT`,
+                IFNULL(GET_BEZNR(T323.BEZNR, { self.language }), '') AS STANDARD_GROUP,			
+                IFNULL(GET_BEZNR(T325.BEZNR, { self.language }), '') AS PURPOSE_GROUP
+            FROM `301` AS T301
+                JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
+                JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
+                JOIN `320` AS T320 ON T320.GENARTNR = T400.GENARTNR
+                JOIN `200` AS T200 ON T200.ARTNR = T400.ARTNR AND T200.DLNR = T400.DLNR						
+                JOIN `001` AS T001 ON T001.DLNR = T200.DLNR			
+                LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
+                LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
+                LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+            WHERE T301.TREETYPNR = { TREETYPNR }	
+                AND T301.NODE_ID = { node_id }
+                AND T400.VKNZIELART = { VKNZIELART }
+                AND T400.VKNZIELNR = { vehicle_id }
+            ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT;
+        """, as_dict=True)
+
+        return data
