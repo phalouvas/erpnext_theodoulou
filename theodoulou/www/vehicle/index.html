@@ -4,7 +4,7 @@
     <ul>
         {% for name, data in node.items() %}
             <li>
-                <strong>{{ name }}</strong> (ID: {{ data.id }})
+                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}">{{ name }}</a>
                 {% if data.children %}  <!-- If this node has children, render them -->
                     {{ render_node(data.children) }}
                 {% endif %}
