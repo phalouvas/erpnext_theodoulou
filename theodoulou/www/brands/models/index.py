@@ -9,11 +9,11 @@ def get_context(context):
 
     query_engine = TheodoulouQuery()
     # get type and HERNR from query string
-    context.type = frappe.request.args.get('type')
+    context.vehicle_type = frappe.request.args.get('vehicle_type')
     HERNR = frappe.request.args.get('HERNR')
     context.NEEDYEAR = frappe.request.args.get('NEEDYEAR')    
     # get models
-    context.models = query_engine.get_models(context.type, HERNR, context.NEEDYEAR)    
+    context.models = query_engine.get_models(context.vehicle_type, HERNR, context.NEEDYEAR)    
     for model in context.models:
         model.YEARS = f"{str(model.FROM_YEAR)[:4]} - {str(model.TO_YEAR)[:4]}"
     # context.models is not empty then get BRAND from first model
