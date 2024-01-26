@@ -4,7 +4,7 @@ $(document).ready(function () {
 
     // Add a click event listener to each header
     for (var i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", function () {
+        coll[i].addEventListener("click", function() {
             // Toggle the visibility of the body
             var body = this.nextElementSibling;
             body.style.display = body.style.display === "none" ? "block" : "none";
