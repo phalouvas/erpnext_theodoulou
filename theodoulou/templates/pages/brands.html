@@ -1,0 +1,34 @@
+{% extends "templates/web.html" %}
+
+{% block header %}
+<div class="mb-6">{{ _('Passenger Cars') }}</div>
+{% endblock header %}
+
+{% block header_actions %}
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">    
+    <div class="input-group mr-2">
+        <input type="text" class="form-control" id="searchKey" placeholder="Search..."" aria-label=" Searcg"
+            aria-describedby="btnGroupAddon">
+    </div>
+    <div class="btn-group" role="group" aria-label="First group">
+        <button type="button" class="btn btn-primary clearSearch" title="Clear">Clear</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    {% for item in items %}
+    <div class="col-12 col-md-6 col-lg-3 py-3 card-container searchContainer" data-name="{{ item.NAME | lower }}">
+        <div class="card border">
+            <a href="/brands/models?brand_id={{ item.HERNR }}" class="btn btn-secondary">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.NAME }}</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
