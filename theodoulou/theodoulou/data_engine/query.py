@@ -208,7 +208,7 @@ class TheodoulouQuery():
 
         return data
     
-    def get_vehicle_categories(self, type, ID):
+    def get_product_categories(self, type):
 
         if type == "PKW":
             VKNZIELART = 2
@@ -239,7 +239,6 @@ class TheodoulouQuery():
                 LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
             WHERE T301.TREETYPNR = { TREETYPNR }
                 AND T400.VKNZIELART = { VKNZIELART }
-                AND T400.VKNZIELNR = { ID }
             ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
         """, as_dict=True)
 
