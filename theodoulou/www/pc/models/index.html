@@ -1,1 +1,49 @@
 {% extends "templates/web.html" %}
+
+{% block header %}
+<div class="mb-6">{{ title }}</div>
+{% endblock header %}
+
+{% block header_actions %}
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">    
+    <div class="input-group mr-2">
+        <input type="text" class="form-control" id="searchKey" placeholder="Search..."" aria-label=" Searcg"
+            aria-describedby="btnGroupAddon">
+    </div>
+    <div class="input-group mr-2">
+        <select class="form-control" id="yearFilter">
+            <option value="0">- All Years -</option>
+            {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="btn-group" role="group" aria-label="First group">
+        <button type="button" class="btn btn-primary clearSearch" title="Clear">Clear</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page_content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Years</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in models %}
+        <tr class="searchContainer" data-name="{{ item.MODEL | lower }}">
+            <td>
+                <a href="/brands/models/types?vehicle_type={{ vehicle_type }}&HERNR={{ HERNR }}&KMODNR={{ item.KMODNR }}&needyear={{ needyear }}">
+                    {{ item.MODEL }}
+                </a>
+            </td>
+            <td>{{ item.FROM_YEAR }} - {{ item.TO_YEAR }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
