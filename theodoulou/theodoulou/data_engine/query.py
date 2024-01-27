@@ -219,17 +219,15 @@ class TheodoulouQuery():
     
     def get_product_categories(self, type):
 
-         # Try to get data from the cache
+        # Try to get data from the cache
         categories_tree = frappe.cache().get_value('categories_tree_' + type)
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
 
             if type == "PKW":
-                VKNZIELART = 2
                 TREETYPNR = 1
             else:
-                VKNZIELART = 16
                 TREETYPNR = 2
 
             data = frappe.db.sql(f"""
@@ -246,7 +244,6 @@ class TheodoulouQuery():
                     ELT(T301.STUFE-4, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT5,
                     ELT(T301.STUFE-4, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID5		
                 FROM `301` AS T301
-                    JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
                     LEFT JOIN `301` AS T301_2 ON T301_2.NODE_ID = T301.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
