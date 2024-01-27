@@ -12,11 +12,11 @@ def get_context(context):
 
     query_engine = TheodoulouQuery()
     # get type and KMODNR from query string
-    context.type = frappe.request.args.get('type')
+    context.vehicle_type = frappe.request.args.get('vehicle_type')
     context.KMODNR = frappe.request.args.get('KMODNR')
     context.NEEDYEAR = frappe.request.args.get('NEEDYEAR')
     # get types
-    if context.type == "PKW":
+    if context.vehicle_type == "PKW":
         context.types = query_engine.get_types_passenger_cars(context.KMODNR, context.NEEDYEAR)
     else:
         context.types = query_engine.get_types_commercial_cars(context.KMODNR, context.NEEDYEAR)
