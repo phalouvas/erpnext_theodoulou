@@ -13,10 +13,10 @@ def get_context(context):
     # if vehicle_type is not in the query string, get it from the cookies
     if not context.vehicle_type:
         context.vehicle_type = frappe.request.cookies.get('vehicle_type')
-    HERNR = frappe.request.args.get('HERNR')
+    context.HERNR = frappe.request.args.get('HERNR')
     context.needyear = frappe.request.args.get('needyear')    
     # get models
-    context.models = query_engine.get_models(context.vehicle_type, HERNR, context.needyear)    
+    context.models = query_engine.get_models(context.vehicle_type, context.HERNR, context.needyear)    
     for model in context.models:
         model.FROM_YEAR = query_engine.convert_yyyymm(model.FROM_YEAR)
         model.TO_YEAR = query_engine.convert_yyyymm(model.TO_YEAR)

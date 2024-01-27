@@ -31,7 +31,7 @@
             {% for item in models %}
             <tr class="models_card_container" data-name="{{ item.MODEL | lower }}">
                 <td>
-                    <a href="/brands/models/types?vehicle_type={{ vehicle_type }}&KMODNR={{ item.KMODNR }}&needyear={{ needyear }}">
+                    <a href="/brands/models/types?vehicle_type={{ vehicle_type }}&HERNR={{ HERNR }}&KMODNR={{ item.KMODNR }}&needyear={{ needyear }}">
                         {{ item.MODEL }}
                     </a>
                 </td>
