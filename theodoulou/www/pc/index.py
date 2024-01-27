@@ -9,3 +9,4 @@ def get_context(context):
 
     query_engine = TheodoulouQuery()
     context.items = query_engine.get_brands('PKW')
+    context.categories_tree = query_engine.get_categories_tree('PKW')

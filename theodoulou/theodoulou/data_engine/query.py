@@ -217,7 +217,7 @@ class TheodoulouQuery():
 
         return data
     
-    def get_product_categories(self, type):
+    def get_categories_tree(self, type):
 
         # Try to get data from the cache
         categories_tree = frappe.cache().get_value('categories_tree_' + type)
