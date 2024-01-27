@@ -52,6 +52,7 @@ $(document).ready(function() {
         $('#models_yearFilter').val('0');
         var url = new URL(window.location.href);
         url.searchParams.delete('SEARCHKEY');
+        url.searchParams.set('NEEDYEAR', $('#models_yearFilter').val());
         window.location.href = url.toString();
     });
 });

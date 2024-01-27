@@ -29,7 +29,6 @@ $(document).ready(function() {
 
     // Check if the vehicle_type cookie is set
     var vehicle_type = document.cookie.split('; ').find(row => row.startsWith('vehicle_type='));
-    console.log(vehicle_type);
 
     // If the vehicle_type cookie is not set, set it to "PKW"
     if (!vehicle_type) {
