@@ -10,9 +10,19 @@ def get_context(context):
     ]
 
     query_engine = TheodoulouQuery()
-    # get vehicle_type and KMODNR from query string
     context.vehicle_type = frappe.request.args.get('vehicle_type')
     context.vehicle_id = frappe.request.args.get('ID')
+    context.HERNR = frappe.request.args.get('HERNR')
+    context.needyear = frappe.request.args.get('needyear')
+    context.KMODNR = frappe.request.args.get('KMODNR')
+
+    context.parents = [
+        {"name": frappe._("Home"), "route": "/"}, 
+        {"name": frappe._("Brands"), "route": "/brands"}, 
+        {"name": frappe._("Models"), "route": f"/brands/models?vehicle_type={context.vehicle_type}&HERNR={context.HERNR}&needyear={context.needyear}"}, 
+        {"name": frappe._("Types"), "route": f"/brands/models/types?vehicle_type={context.vehicle_type}&HERNR={context.HERNR}&KMODNR={context.KMODNR}&needyear={context.needyear}"}, 
+    ]
+
     # get vehicle
     if context.vehicle_type == "PKW":
         vehicle = query_engine.get_vehicle_passenger(context.vehicle_id)
