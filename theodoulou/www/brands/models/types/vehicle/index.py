@@ -11,7 +11,7 @@ def get_context(context):
 
     query_engine = TheodoulouQuery()
     context.vehicle_type = frappe.request.args.get('vehicle_type')
-    context.vehicle_id = frappe.request.args.get('ID')
+    context.vehicle_id = frappe.request.args.get('vehicle_id')
     context.HERNR = frappe.request.args.get('HERNR')
     context.needyear = frappe.request.args.get('needyear')
     context.KMODNR = frappe.request.args.get('KMODNR')
