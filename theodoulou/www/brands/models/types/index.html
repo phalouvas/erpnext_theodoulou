@@ -15,7 +15,7 @@
             <tbody>
                 {% for item in types %}
                 <tr>
-                    <td><a href="/vehicle?ID={{ item.ID }}&type={{ type }}">{{ item.TYPE }}</a></td>
+                    <td><a href="/brands/models/types/vehicle?vehicle_id={{ item.ID }}&vehicle_type={{ vehicle_type }}&hernr={{ HERNR }}&kmodnr={{ KMODNR }}&needyear={{ needyear }}">{{ item.TYPE }}</a></td>
                     <td>{{ item.YEARS }}</td>
                 </tr>
                 {% endfor %}
