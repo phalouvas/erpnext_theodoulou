@@ -210,56 +210,63 @@ class TheodoulouQuery():
     
     def get_product_categories(self, type):
 
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
-        else:
-            VKNZIELART = 16
-            TREETYPNR = 2
+         # Try to get data from the cache
+        categories_tree = frappe.cache().get_value('categories_tree_' + type)
 
-        data = frappe.db.sql(f"""
-            SELECT DISTINCT	
-                T301.STUFE,  -- ACTIVE LEVES
-                ELT(T301.STUFE, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT1,
-                ELT(T301.STUFE, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID1,
-                ELT(T301.STUFE-1, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT2,
-                ELT(T301.STUFE-1, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID2,
-                ELT(T301.STUFE-2, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT3,
-                ELT(T301.STUFE-2, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID3,
-                ELT(T301.STUFE-3, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT4,
-                ELT(T301.STUFE-3, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID4,
-                ELT(T301.STUFE-4, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT5,
-                ELT(T301.STUFE-4, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID5		
-            FROM `301` AS T301
-                JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
-                JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR	
-                LEFT JOIN `301` AS T301_2 ON T301_2.NODE_ID = T301.NODE_PARENT_ID
-                LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
-                LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
-                LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
-            WHERE T301.TREETYPNR = { TREETYPNR }
-                AND T400.VKNZIELART = { VKNZIELART }
-            ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
-        """, as_dict=True)
+        # If data is not in the cache, fetch it from the database
+        if categories_tree is None:
 
-        # Initialize the categories_tree
-        categories_tree = {}
-        for row in data:
-            # Get the current node
-            node = categories_tree
+            if type == "PKW":
+                VKNZIELART = 2
+                TREETYPNR = 1
+            else:
+                VKNZIELART = 16
+                TREETYPNR = 2
 
-            # Loop through the levels
-            for level in range(1, row['STUFE'] + 1):
-                # Get the text and id for this level
-                text = row[f'STR_TEXT{level}']
-                id = row[f'NODE_ID{level}']
+            data = frappe.db.sql(f"""
+                SELECT DISTINCT	
+                    T301.STUFE,  -- ACTIVE LEVES
+                    ELT(T301.STUFE, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT1,
+                    ELT(T301.STUFE, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID1,
+                    ELT(T301.STUFE-1, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT2,
+                    ELT(T301.STUFE-1, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID2,
+                    ELT(T301.STUFE-2, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT3,
+                    ELT(T301.STUFE-2, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID3,
+                    ELT(T301.STUFE-3, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT4,
+                    ELT(T301.STUFE-3, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID4,
+                    ELT(T301.STUFE-4, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT5,
+                    ELT(T301.STUFE-4, T301.NODE_ID, T301_2.NODE_ID, T301_3.NODE_ID, T301_4.NODE_ID, T301_5.NODE_ID) AS NODE_ID5		
+                FROM `301` AS T301
+                    JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
+                    LEFT JOIN `301` AS T301_2 ON T301_2.NODE_ID = T301.NODE_PARENT_ID
+                    LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
+                    LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
+                    LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
+                WHERE T301.TREETYPNR = { TREETYPNR }
+                ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
+            """, as_dict=True)
 
-                # If this node does not exist, create it
-                if text not in node:
-                    node[text] = {'id': id, 'children': {}}
+            # Initialize the categories_tree
+            categories_tree = {}
+            for row in data:
+                # Get the current node
+                node = categories_tree
 
-                # Move to the next level
-                node = node[text]['children']
+                # Loop through the levels
+                for level in range(1, row['STUFE'] + 1):
+                    # Get the text and id for this level
+                    text = row[f'STR_TEXT{level}']
+                    id = row[f'NODE_ID{level}']
+
+                    # If this node does not exist, create it
+                    if text not in node:
+                        node[text] = {'id': id, 'children': {}}
+
+                    # Move to the next level
+                    node = node[text]['children']
+
+            # Set categories_tree in the cache
+            frappe.cache().set_value('categories_tree_' + type, categories_tree)
 
         return categories_tree
     
