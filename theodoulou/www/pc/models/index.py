@@ -4,10 +4,10 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 
 def get_context(context):
     query_engine = TheodoulouQuery()
-    context.vehicle_id = frappe.request.args.get('vehicle_id')
+    context.brand_id = frappe.request.args.get('brand_id')
     context.needyear = frappe.request.args.get('needyear')
     # get models
-    context.models = query_engine.get_models("PKW", context.vehicle_id, context.needyear)    
+    context.models = query_engine.get_models("PKW", context.brand_id, context.needyear)    
     for model in context.models:
         model.FROM_YEAR = query_engine.convert_yyyymm(model.FROM_YEAR)
         model.TO_YEAR = query_engine.convert_yyyymm(model.TO_YEAR)
