@@ -10,3 +10,9 @@ def get_context(context):
     query_engine = TheodoulouQuery()
     context.brands = query_engine.get_brands('PKW')
     context.categories_tree = query_engine.get_categories_tree('PKW')
+
+    popular_brands = [2, 5, 16, 20, 21, 24, 25, 35, 36, 45, 183, 54, 56, 
+                      882, 184, 63, 72, 74, 1523, 77, 80, 84, 88, 92, 93, 95, 1820,
+                      99, 104, 106, 1138, 107, 109, 111, 120, 121]
+    
+    context.popular_brands = [brand for brand in context.brands if brand['HERNR'] in popular_brands]
