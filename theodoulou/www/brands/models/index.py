@@ -18,7 +18,8 @@ def get_context(context):
     # get models
     context.models = query_engine.get_models(context.vehicle_type, HERNR, context.needyear)    
     for model in context.models:
-        model.YEARS = f"{str(model.FROM_YEAR)[:4]} - {str(model.TO_YEAR)[:4]}"
+        model.FROM_YEAR = query_engine.convert_yyyymm(model.FROM_YEAR)
+        model.TO_YEAR = query_engine.convert_yyyymm(model.TO_YEAR)
     # context.models is not empty then get BRAND from first model
     if context.models:
         context.brand = context.models[0].MANUFACTURER

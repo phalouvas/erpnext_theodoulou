@@ -9,6 +9,10 @@ class TheodoulouQuery():
         self.country = self.settings.get_country()
 
     def convert_yyyymm(self, yyyymm):
+
+        if yyyymm == 'now':
+            return 'now'
+
         # Convert the integer to string
         year_month = str(yyyymm)
 
