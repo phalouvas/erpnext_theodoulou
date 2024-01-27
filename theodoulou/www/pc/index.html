@@ -11,13 +11,15 @@
             aria-describedby="btnGroupAddon">
     </div>
     <div class="btn-group" role="group" aria-label="First group">
-        <button type="button" class="btn btn-primary clearSearch" title="Clear">Clear</button>
+        <button type="button" class="btn btn-primary clearSearch">Clear</button>
     </div>
 </div>
 
 {% endblock %}
 
 {% block page_content %}
+<button type="button" class="col btn btn-secondary showAll">Showing only popular brands. Click to show all</button>
+<button type="button" class="col btn btn-secondary showPopular">Showing all brands. Click to show only popular</button>
 <div class="row">
     {% for item in brands %}
     <div class="col-12 col-md-6 col-lg-2 py-3 card-container searchContainer" data-name="{{ item.NAME | lower }}">

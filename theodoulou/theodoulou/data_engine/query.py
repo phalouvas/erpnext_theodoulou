@@ -51,6 +51,16 @@ class TheodoulouQuery():
 
         return data
     
+    def get_popular_brands(self, type, popular_brands):
+        data = frappe.cache().get_value('popular_brands_' + type)
+
+        if data is None:
+            all_brands = self.get_brands(type)
+            data = [brand for brand in all_brands if brand['HERNR'] in popular_brands]
+            frappe.cache().set_value('popular_brands_' + type, data)
+
+        return data
+    
     def get_models(self, type, HERNR, NEEDYEAR = 0):
             
             data = frappe.cache().get_value('models_' + type + '_' + HERNR + '_' + NEEDYEAR)
