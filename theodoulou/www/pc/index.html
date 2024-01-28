@@ -19,19 +19,7 @@
 
 {% block page_content %}
 
-<div class="row">
-    <div class="col">
-        <p>{{ _('Parts Groups') }}</p>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-            {% for name, data in categories_tree.items() %}
-            <div class="card">
-                <a href="/pc/models?needyear=0&category_id={{ data.id }}" class="card-body border text-white bg-info">
-                    {{ name }}
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+<div class="row">    
     <div class="col">
         <div class="row">
             <button type="button" class="col btn btn-secondary showAll">Showing only popular brands. Click to show
@@ -41,12 +29,26 @@
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
             {% for item in brands %}
-            <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="btn btn-outline-secondary searchContainer"
-                data-name="{{ item.NAME | lower }}">
+            <div class="card searchContainer" data-name="{{ item.NAME | lower }}">
+            <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="card-body border text-white bg-info">
                 {{ item.NAME }}
             </a>
+        </div>
             {% endfor %}
         </div>
+    </div>
+    <div class="col-sm-2">
+        <table class="table table-sm">
+            <tbody>
+                {% for name, data in categories_tree.items() %}
+                <tr>
+                    <td>
+                        <a href="/pc/models?needyear=0&category_id={{ data.id }}">{{ name }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
