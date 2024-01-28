@@ -44,8 +44,8 @@ function active_vehicle() {
             element.attr('href', `/pc/models/types/vehicle?vehicle_id=${vehicle_id}&brand_id=${brand_id}&model_id=${model_id}&needyear=${needyear}`);
         }
 
-        if (element.html() == '') {
-            $('#vehicleActiveSelectionContainer').hide();
+        if (element.html() != '') {
+            $('#vehicleActiveSelectionContainer').show();
         }
     });
 
