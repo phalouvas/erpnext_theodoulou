@@ -19,21 +19,21 @@
 
 {% block page_content %}
 
-<div class="row">    
+<div class="row">
     <div class="col">
         <div class="row">
-            <button type="button" class="col btn btn-secondary showAll">Showing only popular brands. Click to show
+            <button type="button" class="col btn btn-primary showAll">Showing only popular brands. Click to show
                 all</button>
-            <button type="button" class="col btn btn-secondary showPopular">Showing all brands. Click to show only
+            <button type="button" class="col btn btn-primary showPopular">Showing all brands. Click to show only
                 popular</button>
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
             {% for item in brands %}
             <div class="card searchContainer" data-name="{{ item.NAME | lower }}">
-            <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="card-body border text-white bg-info">
-                {{ item.NAME }}
-            </a>
-        </div>
+                <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="card-body border bg-light">
+                    {{ item.NAME }}
+                </a>
+            </div>
             {% endfor %}
         </div>
     </div>
