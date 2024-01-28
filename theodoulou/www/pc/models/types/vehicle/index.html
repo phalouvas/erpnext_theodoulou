@@ -4,8 +4,10 @@
     <ul class="tree">
         {% for name, data in node.items() %}
             <li>
-                <span class="caret">{{ name }}</span>
-                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}" style="display: none;">{{ name }}</a>
+                {% if data.children %}
+                    <span class="caret"></span>
+                {% endif %}
+                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}">{{ name }}</a>
                 {% if data.children %}
                     {{ render_node(data.children) }}
                 {% endif %}

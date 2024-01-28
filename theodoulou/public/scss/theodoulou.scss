@@ -1,6 +1,11 @@
 /* Hide the nested list */
 .tree ul {
     display: none;
+    list-style-type: none;
+}
+
+.tree li {
+    list-style-type: none;
 }
 
 /* Show the nested list when the list item is expanded */
