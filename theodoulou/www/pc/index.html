@@ -5,7 +5,7 @@
 {% endblock header %}
 
 {% block header_actions %}
-<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">    
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
     <div class="input-group mr-2">
         <input type="text" class="form-control" id="searchKey" placeholder="Search..."" aria-label=" Searcg"
             aria-describedby="btnGroupAddon">
@@ -20,17 +20,12 @@
 {% block page_content %}
 <button type="button" class="col btn btn-secondary showAll">Showing only popular brands. Click to show all</button>
 <button type="button" class="col btn btn-secondary showPopular">Showing all brands. Click to show only popular</button>
-<div class="row">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
     {% for item in brands %}
-    <div class="col-12 col-md-6 col-lg-2 py-3 card-container searchContainer" data-name="{{ item.NAME | lower }}">
-        <div class="card border">
-            <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="btn btn-secondary">
-                <div class="card-body">
-                    {{ item.NAME }}
-                </div>
-            </a>
-        </div>
-    </div>
+    <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="btn btn-outline-secondary searchContainer"
+        data-name="{{ item.NAME | lower }}">
+        {{ item.NAME }}
+    </a>
     {% endfor %}
 </div>
 {% endblock %}
