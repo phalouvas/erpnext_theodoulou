@@ -1,0 +1,109 @@
+{% extends "templates/web.html" %}
+
+{% macro render_node(node) %}
+    <ul class="tree">
+        {% for name, data in node.items() %}
+            <li>
+                {% if data.children %}
+                    <span class="caret"></span>
+                {% endif %}
+                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}">{{ name }}</a>
+                {% if data.children %}
+                    {{ render_node(data.children) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% block header %}
+<div class="mb-6">{{ title }}</div>
+{% endblock header %}
+
+{% block header_actions %}
+
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card text-white bg-success mb-1">
+            <div class="card-header">Active selection</div>
+            <div class="card-body">
+                    <p class="card-text" id="vehicleActiveSelectionName" data-name="{{ title }}">
+                        <button type="button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
+                            data-name="{{ title }}" title="Delete">
+                            x
+                        </button>
+                        {{ title }}                        
+                    </p>                    
+            </div>
+        </div>
+        <div class="card text-white bg-secondary">
+            <div class="card-header">Technical data</div>
+            <div class="card-body">
+                <p class="card-text">
+                <table class="table table-sm text-white">
+                    <tbody>
+                        <tr>
+                            <th>Model year:</th>
+                            <td>{{ vehicle.FROM_YEAR }} - {{ vehicle.TO_YEAR }}</td>
+                        </tr>
+                        <tr>
+                            <th>Performance:</th>
+                            <td>{{ vehicle['Engine output in kW'] }} kW - {{ vehicle['Engine output in HP'] }} HP</td>
+                        </tr>
+                        <tr>
+                            <th>Capacity:</th>
+                            <td>{{ vehicle['Engine capacity in cc (technical value)'] }} cc - {{ vehicle['Engine
+                                capacity in litre *100 (99V99)'] }} lt</td>
+                        </tr>
+                        <tr>
+                            <th>Cylinders:</th>
+                            <td>{{ vehicle['Number of cylinders'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Valves:</th>
+                            <td>{{ vehicle['Number of valves'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Body style:</th>
+                            <td>{{ vehicle['Body type'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Drive type:</th>
+                            <td>{{ vehicle['Drive type'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Engine type:</th>
+                            <td>{{ vehicle['Engine type'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Engine codes:</th>
+                            <td>{{ vehicle['Engine numbers'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fuel type:</th>
+                            <td>{{ vehicle['Fuel type'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fuel preparation:</th>
+                            <td>{{ vehicle['Fuel mixture formation'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>TecDoc type no:</th>
+                            <td>{{ vehicle['ID'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        {{ render_node(categories_tree) }}
+    </div>
+
+</div>
+{% endblock %}

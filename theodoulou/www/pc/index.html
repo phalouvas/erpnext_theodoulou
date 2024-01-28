@@ -1,0 +1,55 @@
+{% extends "templates/web.html" %}
+
+{% block header %}
+<div class="mb-6">{{ _('Passenger Cars') }}</div>
+{% endblock header %}
+
+{% block header_actions %}
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="input-group mr-2">
+        <input type="text" class="form-control" id="searchKey" placeholder="Search..."" aria-label=" Searcg"
+            aria-describedby="btnGroupAddon">
+    </div>
+    <div class="btn-group" role="group" aria-label="First group">
+        <button type="button" class="btn btn-primary clearSearch">Clear</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page_content %}
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <button type="button" class="col btn btn-primary showAll">Showing only popular brands. Click to show
+                all</button>
+            <button type="button" class="col btn btn-primary showPopular">Showing all brands. Click to show only
+                popular</button>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
+            {% for item in brands %}
+            <div class="card searchContainer" data-name="{{ item.NAME | lower }}">
+                <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="card-body border bg-light">
+                    {{ item.NAME }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <table class="table table-sm">
+            <tbody>
+                {% for name, data in categories_tree.items() %}
+                <tr>
+                    <td>
+                        <a href="/pc/models?needyear=0&category_id={{ data.id }}">{{ name }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
