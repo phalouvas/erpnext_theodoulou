@@ -15,4 +15,9 @@ $(document).ready(function () {
         document.cookie = 'vehicleActiveSelectionName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         window.location.href = '/pc';
     });
+
+    $('.tree .caret').on('click', function () {
+        $(this).toggleClass('caret-down');
+        $(this).siblings('ul').toggle();
+    });
 });

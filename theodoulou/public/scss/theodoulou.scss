@@ -1,0 +1,14 @@
+/* Hide the nested list */
+.tree ul {
+    display: none;
+}
+
+/* Show the nested list when the list item is expanded */
+.tree .caret::before {
+    content: "▶";
+    cursor: pointer;
+}
+
+.tree .caret-down::before {
+    content: "▼";
+}
