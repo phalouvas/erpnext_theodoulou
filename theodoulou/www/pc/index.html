@@ -1,3 +1,4 @@
+{% from "theodoulou/templates/includes/macros.html" import active_vehicle %}
 {% extends "templates/web.html" %}
 
 {% block header %}
@@ -38,6 +39,7 @@
         </div>
     </div>
     <div class="col-sm-2">
+        {{ active_vehicle() }}
         <table class="table table-sm">
             <tbody>
                 {% for name, data in categories_tree.items() %}

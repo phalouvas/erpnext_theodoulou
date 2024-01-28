@@ -1,0 +1,29 @@
+{% macro render_node(node) %}
+    <ul class="tree">
+        {% for name, data in node.items() %}
+            <li>
+                {% if data.children %}
+                    <span class="caret"></span>
+                {% endif %}
+                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}">{{ name }}</a>
+                {% if data.children %}
+                    {{ render_node(data.children) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro active_vehicle() %}
+<div class="card text-white bg-success mb-1" id="vehicleActiveSelectionContainer" style="display: none;">
+    <div class="card-header">Active selection</div>
+    <div class="card-body">
+            <p class="card-text" id="vehicleActiveSelectionName"">
+                <button type="button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear" title="Delete">
+                    x
+                </button>
+                <a href="#" id="vehicleActiveSelectionNameTitle"></a>
+            </p>                    
+    </div>
+</div>
+{% endmacro %}

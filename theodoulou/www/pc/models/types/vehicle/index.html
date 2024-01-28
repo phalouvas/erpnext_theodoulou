@@ -1,20 +1,5 @@
+{% from "theodoulou/templates/includes/macros.html" import render_node, active_vehicle %}
 {% extends "templates/web.html" %}
-
-{% macro render_node(node) %}
-    <ul class="tree">
-        {% for name, data in node.items() %}
-            <li>
-                {% if data.children %}
-                    <span class="caret"></span>
-                {% endif %}
-                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}">{{ name }}</a>
-                {% if data.children %}
-                    {{ render_node(data.children) }}
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endmacro %}
 
 {% block header %}
 <div class="mb-6">{{ title }}</div>
@@ -27,18 +12,8 @@
 {% block page_content %}
 <div class="row">
     <div class="col-sm-4">
-        <div class="card text-white bg-success mb-1">
-            <div class="card-header">Active selection</div>
-            <div class="card-body">
-                    <p class="card-text" id="vehicleActiveSelectionName" data-name="{{ title }}">
-                        <button type="button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
-                            data-name="{{ title }}" title="Delete">
-                            x
-                        </button>
-                        {{ title }}                        
-                    </p>                    
-            </div>
-        </div>
+        <input type="hidden" id="vehicle_name" value="{{ title }}">
+        {{ active_vehicle() }}
         <div class="card text-white bg-secondary">
             <div class="card-header">Technical data</div>
             <div class="card-body">
