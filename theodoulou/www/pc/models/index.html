@@ -1,3 +1,4 @@
+{% from "theodoulou/templates/includes/macros.html" import active_vehicle %}
 {% extends "templates/web.html" %}
 
 {% block header %}
@@ -26,24 +27,31 @@
 {% endblock %}
 
 {% block page_content %}
-<table class="table">
-    <thead>
-        <tr>
-            <th>Model</th>
-            <th>Years</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in models %}
-        <tr class="searchContainer" data-name="{{ item.MODEL | lower }}">
-            <td>
-                <a href="/pc/models/types?brand_id={{ brand_id }}&model_id={{ item.KMODNR }}&needyear={{ needyear }}">
-                    {{ item.MODEL }}
-                </a>
-            </td>
-            <td>{{ item.FROM_YEAR }} - {{ item.TO_YEAR }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="row">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Years</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in models %}
+                <tr class="searchContainer" data-name="{{ item.MODEL | lower }}">
+                    <td>
+                        <a href="/pc/models/types?brand_id={{ brand_id }}&model_id={{ item.KMODNR }}&needyear={{ needyear }}">
+                            {{ item.MODEL }}
+                        </a>
+                    </td>
+                    <td>{{ item.FROM_YEAR }} - {{ item.TO_YEAR }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-2">
+        {{ active_vehicle() }}
+    </div>
+</div>
 {% endblock %}
