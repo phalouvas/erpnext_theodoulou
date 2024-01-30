@@ -17,3 +17,7 @@
 .tree .caret-down::before {
     content: "▼";
 }
+
+.hover-white:hover a {
+    background-color: #eee;
+}
