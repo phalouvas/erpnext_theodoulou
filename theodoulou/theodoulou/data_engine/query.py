@@ -306,7 +306,33 @@ class TheodoulouQuery():
                 IFNULL(GET_BEZNR(T324.BEZNR, { self.language }), '') AS ASSEMBLY_GROUP,
                 CONCAT(IFNULL(GET_BEZNR(T320.BEZNR, { self.language }), ''), IFNULL(CONCAT(' ', GET_BEZNR(T200.BEZNR, { self.language })), '')) AS `NAMEPRODUCT`,
                 IFNULL(GET_BEZNR(T323.BEZNR, { self.language }), '') AS STANDARD_GROUP,			
-                IFNULL(GET_BEZNR(T325.BEZNR, { self.language }), '') AS PURPOSE_GROUP
+                IFNULL(GET_BEZNR(T325.BEZNR, { self.language }), '') AS PURPOSE_GROUP,
+                IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
+                GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
+                GET_BEZNR_FOR_KEY_TABLE(141, T231.BEZNORM, { self.language }) AS `Standardised Graphic Header`, 
+                IFNULL(T231.BREIT, '') AS `Graphic width`, 
+                IFNULL(T231.HOCH, '') AS `Graphic height`, 
+                IFNULL(T231.FARBEN, '') AS `Colour Quantity`, 
+                IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
+                CONCAT(
+                    (CASE
+                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN '{ self.settings.pdf_url }' 
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN '{ self.settings.images_url }'
+                        ELSE ''
+                    END), -- URL SERVER WHERE PLACED IMAGES OR PDF
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT(T200.DLNR, '/')
+                        ELSE ''
+                    END), -- FOLDER
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN T231.BILDNAME
+                        ELSE ''
+                    END), -- NAME FILE
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT('.', T014.EXTENSION)
+                        ELSE T231.URL
+                    END) -- EXTENSION
+                    ) AS PATH
             FROM `301` AS T301
                 JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
                 JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
@@ -316,6 +342,9 @@ class TheodoulouQuery():
                 LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                JOIN `232` AS T232 ON T232.ARTNR = T200.ARTNR AND T232.DLNR = T200.DLNR
+                JOIN `231` AS T231 ON T231.BILDNR = T232.BILDNR AND T231.SPRACHNR IN ({ self.language }, 255) AND T231.DOKUMENTENART = T232.DOKUMENTENART
+                LEFT JOIN `014` AS T014 ON T014.DOKUMENTENART = T232.DOKUMENTENART
             WHERE T301.TREETYPNR = { TREETYPNR }	
                 AND T301.NODE_ID = { node_id }
                 AND T400.VKNZIELART = { VKNZIELART }
