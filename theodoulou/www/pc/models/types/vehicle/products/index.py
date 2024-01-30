@@ -3,17 +3,22 @@ from frappe import _
 from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 
 def get_context(context):
+
+    # Get the cookie value
+    vehicleActiveSelectionName = frappe.request.cookies.get('vehicleActiveSelectionName')
+
+    # If the cookie is empty, throw an exception
+    if not vehicleActiveSelectionName:
+        frappe.throw(_("Please select a vehicle first."))
+    
     vehicle_id = frappe.request.args.get('vehicle_id')
     brand_id = frappe.request.args.get('brand_id')
     needyear = frappe.request.args.get('needyear')
     model_id = frappe.request.args.get('model_id')
+    node_id = frappe.request.args.get('node_id')
 
     query_engine = TheodoulouQuery()
-    vehicle = query_engine.get_vehicle_passenger(vehicle_id)
-    
-    context.vehicle = vehicle[0]
-    context.vehicle.FROM_YEAR = query_engine.convert_yyyymm(context.vehicle.FROM_YEAR)
-    context.vehicle.TO_YEAR = query_engine.convert_yyyymm(context.vehicle.TO_YEAR)
+    context.products = query_engine.get_vehicle_products("PKW", vehicle_id, node_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
 
@@ -22,14 +27,13 @@ def get_context(context):
         "model_id": model_id,
         "needyear": needyear,
         "vehicle_id": vehicle_id,
+        "node_id": node_id,
     }
     context.no_cache = 0
-    context.title = f"{ context.vehicle.MANUFACTURER } { context.vehicle.MODEL } { context.vehicle.TYPE }"
+    context.title = f"{vehicleActiveSelectionName}"
     context.parents = [
         {"name": frappe._("Home"), "route": "/"}, 
         {"name": frappe._("Passenger Cars"), "route": "/pc"}, 
         {"name": frappe._("Models"), "route": f"/pc/models?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
         {"name": frappe._("Types"), "route": f"/pc/models/types?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
     ]
-
-    

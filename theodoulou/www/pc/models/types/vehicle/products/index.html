@@ -1,0 +1,25 @@
+{% from "theodoulou/templates/includes/macros.html" import render_node, active_vehicle %}
+{% extends "templates/web.html" %}
+
+{% block header %}
+<div class="mb-6">{{ title }}</div>
+{% endblock header %}
+
+{% block header_actions %}
+
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-sm-4">
+        <input type="hidden" id="vehicle_name" value="{{ title }}">
+        {{ active_vehicle() }}        
+        {{ render_node(categories_tree, extra) }}
+    </div>
+
+    <div class="col">
+        {{ products }}
+    </div>
+
+</div>
+{% endblock %}
