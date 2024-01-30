@@ -3,9 +3,10 @@
         {% for name, data in node.items() %}
             <li>
                 {% if data.children %}
-                    <span class="caret"></span>
+                    <span class="caret">{{ name }}</span>
+                {% else %}
+                    <a href="/pc/models/types/vehicle/products?needyear={{ extra.needyear }}&brand_id={{ extra.brand_id }}&model_id={{ extra.model_id }}&vehicle_id={{ extra.vehicle_id}}&node_id={{ data.id }}">{{ name }}</a>
                 {% endif %}
-                <a href="/pc/models/types/vehicle/products?needyear={{ extra.needyear }}&brand_id={{ extra.brand_id }}&model_id={{ extra.model_id }}&vehicle_id={{ extra.vehicle_id}}&node_id={{ data.id }}">{{ name }}</a>
                 {% if data.children %}
                     {{ render_node(data.children, extra) }}
                 {% endif %}
