@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-sm-4">
         <input type="hidden" id="vehicle_name" value="{{ title }}">
-        {{ active_vehicle() }}        
+        {{ active_vehicle() }}
         {{ render_node(categories_tree, extra) }}
     </div>
 
@@ -21,13 +21,13 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             {% for item in products %}
             <div class="card">
-                <div class="card-body border bg-light">
-                    <img src="{{ item.PATH }}" class="card-img-top">
-                    <span class="text-muted">{{ item.MARKE }}</span><br/>
-                    {{ item.ARTNR }}</br>
-                    {{ item.NAMEPRODUCT }}
+                <img src="{{ item.PATH }}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.ARTNR }}</h5>
+                    <p class="card-text">{{ item.NAMEPRODUCT }}</p>
+                    <a href="#" class="btn btn-primary">{{ item.MARKE }}</a>
                 </div>
-            </div>
+            </div>            
             {% endfor %}
         </div>
     </div>
