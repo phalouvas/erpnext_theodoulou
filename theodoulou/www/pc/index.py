@@ -8,7 +8,6 @@ def get_context(context):
     context.parents = [{"name": frappe._("Home"), "route": "/"}]
 
     query_engine = TheodoulouQuery()
-    context.categories_tree = query_engine.get_categories_tree('PKW')
 
     if 'show_all' in frappe.request.args:
         context.brands = query_engine.get_brands('PKW')
