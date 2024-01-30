@@ -18,7 +18,17 @@
     </div>
 
     <div class="col">
-        {{ products }}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+            {% for item in products %}
+            <div class="card">
+                <div class="card-body border bg-light">
+                    <span class="text-muted">{{ item.MARKE }}</span><br/>
+                    {{ item.ARTNR }}</br>
+                    {{ item.NAMEPRODUCT }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
 </div>
