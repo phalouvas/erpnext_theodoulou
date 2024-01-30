@@ -1,13 +1,13 @@
-{% macro render_node(node) %}
+{% macro render_node(node, extra) %}
     <ul class="tree">
         {% for name, data in node.items() %}
             <li>
                 {% if data.children %}
                     <span class="caret"></span>
                 {% endif %}
-                <a href="/vehicle/node-products?type={{ type }}&vehicle_id={{ vehicle_id }}&node_id={{ data.id }}">{{ name }}</a>
+                <a href="/pc/models/types/vehicle/products?needyear={{ extra.needyear }}&brand_id={{ extra.brand_id }}&model_id={{ extra.model_id }}&vehicle_id={{ extra.vehicle_id}}&node_id={{ data.id }}">{{ name }}</a>
                 {% if data.children %}
-                    {{ render_node(data.children) }}
+                    {{ render_node(data.children, extra) }}
                 {% endif %}
             </li>
         {% endfor %}

@@ -1,0 +1,36 @@
+{% from "theodoulou/templates/includes/macros.html" import render_node, active_vehicle %}
+{% extends "templates/web.html" %}
+
+{% block header %}
+<div class="mb-6">{{ title }}</div>
+{% endblock header %}
+
+{% block header_actions %}
+
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-sm-3">
+        <input type="hidden" id="vehicle_name" value="{{ title }}">
+        {{ active_vehicle() }}
+        {{ render_node(categories_tree, extra) }}
+    </div>
+
+    <div class="col">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+            {% for item in products %}
+            <div class="border">
+                <img src="{{ item.PATH }}" class="rounded mx-auto d-block" style="max-height: 200px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ item.NAMEPRODUCT }}</h5>
+                    <p class="card-text">{{ item.MARKE }}</p>
+                    <a href="#" class="btn btn-primary">{{ item.ARTNR }}</a>
+                </div>
+            </div>            
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

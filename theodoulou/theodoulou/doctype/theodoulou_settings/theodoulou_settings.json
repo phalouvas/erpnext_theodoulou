@@ -6,8 +6,12 @@
  "engine": "InnoDB",
  "field_order": [
   "images_url",
-  "country",
-  "language"
+  "column_break_wgak",
+  "pdf_url",
+  "section_break_gidc",
+  "language",
+  "column_break_nhvp",
+  "country"
  ],
  "fields": [
   {
@@ -33,12 +37,31 @@
    "label": "Language",
    "options": "Language",
    "reqd": 1
+  },
+  {
+   "fieldname": "pdf_url",
+   "fieldtype": "Data",
+   "label": "PDF Url",
+   "options": "URL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wgak",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gidc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_nhvp",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-13 08:30:27.144144",
+ "modified": "2024-01-30 10:45:03.908751",
  "modified_by": "Administrator",
  "module": "Theodoulou",
  "name": "Theodoulou Settings",
