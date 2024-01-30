@@ -4,7 +4,7 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 
 def get_context(context):
 
-    # Get the cookie value
+    # Get the cookie value.
     vehicleActiveSelectionName = frappe.request.cookies.get('vehicleActiveSelectionName')
 
     # If the cookie is empty, throw an exception
