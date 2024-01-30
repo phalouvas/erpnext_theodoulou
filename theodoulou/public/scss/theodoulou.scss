@@ -18,6 +18,10 @@
     content: "▼";
 }
 
+.caret:hover {
+    cursor: pointer;
+}
+
 .hover-white:hover a {
     background-color: #eee;
 }
