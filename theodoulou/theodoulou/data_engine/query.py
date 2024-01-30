@@ -310,9 +310,6 @@ class TheodoulouQuery():
                 IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
                 GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
                 GET_BEZNR_FOR_KEY_TABLE(141, T231.BEZNORM, { self.language }) AS `Standardised Graphic Header`, 
-                IFNULL(T231.BREIT, '') AS `Graphic width`, 
-                IFNULL(T231.HOCH, '') AS `Graphic height`, 
-                IFNULL(T231.FARBEN, '') AS `Colour Quantity`, 
                 IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
                 CONCAT(
                     (CASE
