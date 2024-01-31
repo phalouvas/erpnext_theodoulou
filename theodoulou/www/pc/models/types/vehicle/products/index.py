@@ -21,6 +21,7 @@ def get_context(context):
     context.products = query_engine.get_vehicle_products("PKW", vehicle_id, node_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
+    context.active_node = query_engine.get_node("PKW", node_id)
 
     context.no_cache = 0
     context.title = f"{vehicleActiveSelectionName}"

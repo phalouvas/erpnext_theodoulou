@@ -35,24 +35,24 @@ function active_vehicle() {
 
     // Get the span element
     // Add missing import for jQuery
-    $(document).ready(function () {
-        var element = $('#vehicleActiveSelectionNameTitle');
+    var element = $('#vehicleActiveSelectionNameTitle');
 
-        // Set the inner HTML of the span element to the cookie value
-        if (element && vehicle_name) {
-            element.html(vehicle_name);
-            element.attr('href', `/pc/models/types/vehicle?vehicle_id=${vehicle_id}&brand_id=${brand_id}&model_id=${model_id}&needyear=${needyear}`);
-        }
+    // Set the inner HTML of the span element to the cookie value
+    if (element && vehicle_name) {
+        element.html(vehicle_name);
+        element.attr('href', `/pc/models/types/vehicle?vehicle_id=${vehicle_id}&brand_id=${brand_id}&model_id=${model_id}&needyear=${needyear}`);
+    }
 
-        if (element.html() != '') {
-            $('#vehicleActiveSelectionContainer').show();
-        }
-    });
+    if (element.html() != '') {
+        $('#vehicleActiveSelectionContainer').show();
+    }
 
     $('#vehicleActiveSelectionClear').on('click', function () {
         document.cookie = 'vehicleActiveSelectionName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         window.location.href = '/pc';
     });
+}
 
+$(document).ready(function () {
     active_vehicle();
 });

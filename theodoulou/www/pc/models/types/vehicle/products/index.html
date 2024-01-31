@@ -10,6 +10,8 @@
 {% endblock %}
 
 {% block page_content %}
+<input type="hidden" id="node_name" value="{{ active_node.NAME }}">
+<input type="hidden" id="node_id" value="{{ active_node.ID }}">
 <div class="row">
     <div class="col">
         {% if products|length == 0 %}
