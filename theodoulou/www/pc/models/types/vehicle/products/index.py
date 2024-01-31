@@ -21,7 +21,7 @@ def get_context(context):
     manufacturer_id = frappe.request.args.get('manufacturer_id')
 
     query_engine = TheodoulouQuery()
-    context.total_products = query_engine.get_vehicle_products_count("PKW", vehicle_id, context.node_id)
+    context.total_products = query_engine.get_vehicle_products_count("PKW", vehicle_id, context.node_id, manufacturer_id)
     context.last_page = math.ceil(context.total_products / 16)
     context.products = query_engine.get_vehicle_products("PKW", vehicle_id, context.node_id, manufacturer_id,context.page)
 

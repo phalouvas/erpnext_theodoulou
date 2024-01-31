@@ -12,6 +12,7 @@ $(document).ready(function () {
         // Add it as a query parameter to the current URL
         var url = new URL(window.location.href);
         url.searchParams.set('manufacturer_id', manufacturer_id);
+        url.searchParams.delete('page');
 
         // Reload the page
         window.location.href = url.href;
