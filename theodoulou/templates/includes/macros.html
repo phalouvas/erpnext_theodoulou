@@ -16,19 +16,19 @@
 {% endmacro %}
 
 {% macro active_vehicle(categories_tree) %}
-<div class="col"id="vehicleActiveSelectionContainer" style="display: none;">
-    <div class="card text-white bg-success mb-1">
-        <div class="card-header">{{ _("Current Selection") }}</div>
-        <div class="card-body">
-            <p class="card-text" id="vehicleActiveSelectionName"">
-                <button type=" button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
+<div class="col" id="vehicleActiveSelectionContainer" style="display: none;">
+    <div class="border rounded mb-1 p-1">
+        <p class="h6">{{ _("Current Selection") }}</p>
+        <small id="vehicleActiveSelectionName">
+            <button type=" button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
                 title="Delete">
                 x
-                </button>
-                <a href="#" id="vehicleActiveSelectionNameTitle"></a>
-            </p>
-        </div>
+            </button>
+            <a href="#" class="text-success" id="vehicleActiveSelectionNameTitle"></a>
+        </small>
     </div>
-    {{ render_node(categories_tree) }}
+    <div class="border rounded p-1">
+        {{ render_node(categories_tree) }}
+    </div>
 </div>
 {% endmacro %}
