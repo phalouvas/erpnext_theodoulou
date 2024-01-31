@@ -228,6 +228,13 @@ class TheodoulouQuery():
         return data
     
     def get_categories_tree(self, type):
+        vehicle_id = frappe.request.args.get('vehicle_id') or frappe.request.cookies.get('vehicle_id')
+        if vehicle_id:
+            return self.get_vehicle_categories_tree(type, vehicle_id)
+        else:
+            return self.get_all_categories_tree(type)
+
+    def get_all_categories_tree(self, type):
 
         # Try to get data from the cache
         categories_tree = frappe.cache().get_value('categories_tree_' + type)
