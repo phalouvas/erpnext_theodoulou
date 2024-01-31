@@ -24,10 +24,9 @@ def get_context(context):
     context.active_node = query_engine.get_node("PKW", node_id)
 
     context.no_cache = 0
-    context.title = f"{vehicleActiveSelectionName}"
+    context.title = f"{context.active_node.NAME}"
     context.parents = [
         {"name": frappe._("Home"), "route": "/"}, 
         {"name": frappe._("Passenger Cars"), "route": "/pc"}, 
-        {"name": frappe._("Models"), "route": f"/pc/models?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
-        {"name": frappe._("Types"), "route": f"/pc/models/types?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
+        {"name": frappe._("Vehicle"), "route": f"/pc/models/types/vehicle?brand_id={brand_id}&model_id={model_id}&needyear={needyear}&vehicle_id={vehicle_id}"}, 
     ]
