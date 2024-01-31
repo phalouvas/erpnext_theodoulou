@@ -12,12 +12,12 @@
     </div>
     <div class="col-sm-1 col-md-3" id="vehicleActiveSelectionContainer" style="display: none;">
         <div class="border rounded mb-1 p-1">
-            <p class="h6">{{ _("Current Selection") }}</p>
-            <small id="vehicleActiveSelectionName">
-                <button type=" button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
-                    title="Delete">
-                    x
+            <button type=" button" class="btn btn-sm float-right" id="vehicleActiveSelectionClear"
+                    title="Clear selection">
+                    ❌
                 </button>
+            <p class="h6">{{ _("Current Selection") }}</p>
+            <small id="vehicleActiveSelectionName">                
                 <a href="#" class="text-success" id="vehicleActiveSelectionNameTitle"></a>
             </small>
         </div>
