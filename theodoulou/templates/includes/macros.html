@@ -1,5 +1,5 @@
 {% macro render_node(node) %}
-<div class="tree">
+<ul class="tree">
     {% for name, data in node.items() %}
     <li>
         {% if data.children %}
