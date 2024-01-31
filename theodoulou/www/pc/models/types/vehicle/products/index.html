@@ -12,6 +12,11 @@
 {% block page_content %}
 <div class="row">
     <div class="col">
+        {% if products|length == 0 %}
+        <div class="alert alert-warning" role="alert">
+            {{ _("No products found") }}
+        </div>
+        {% else %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
             {% for item in products %}
             <div class="border">
@@ -23,9 +28,10 @@
                     <p class="card-text">{{ item.MARKE }}</p>
                     <a href="#" class="btn btn-primary">{{ item.ARTNR }}</a>
                 </div>
-            </div>            
+            </div>
             {% endfor %}
         </div>
+        {% endif %}
     </div>
     {{ active_vehicle(categories_tree) }}
 </div>
