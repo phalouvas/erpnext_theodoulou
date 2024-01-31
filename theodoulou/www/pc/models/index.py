@@ -16,6 +16,8 @@ def get_context(context):
         context.title = context.models[0].MANUFACTURER
     # get years
     context.years = query_engine.get_years()
+
+    context.categories_tree = query_engine.get_categories_tree('PKW')
     
     context.no_cache = 0
     context.parents = [{"name": frappe._("Home"), "route": "/"}, {"name": frappe._("Personal Cars"), "route": "/pc"}]

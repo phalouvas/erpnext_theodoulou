@@ -18,6 +18,8 @@ def get_context(context):
         context.brand = context.types[0].MANUFACTURER
         context.model = context.types[0].MODEL
 
+    context.categories_tree = query_engine.get_categories_tree('PKW')
+
     context.no_cache = 0
     context.title = f"{context.brand} {context.model}"
     context.parents = [

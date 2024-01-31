@@ -227,7 +227,30 @@ class TheodoulouQuery():
 
         return data
     
+    def get_node(self, type, node_id):
+        data = frappe.db.sql(f"""
+            SELECT
+                NODE_ID AS ID,
+                GET_BEZNR(T301.BEZNR, { self.language }) AS NAME
+            FROM `301` AS T301
+            WHERE T301.NODE_ID = { node_id }
+                AND T301.TREETYPNR = (CASE
+                                        WHEN '{ type }' = 'PKW' THEN 1
+                                        WHEN '{ type }' = 'LKW' THEN 2
+                                        ELSE 0
+                                    END);
+        """, as_dict=True)
+
+        return data[0]
+
     def get_categories_tree(self, type):
+        vehicle_id = frappe.request.args.get('vehicle_id') or frappe.request.cookies.get('vehicle_id')
+        if vehicle_id:
+            return self.get_vehicle_categories_tree(type, vehicle_id)
+        else:
+            return self.get_all_categories_tree(type)
+
+    def get_all_categories_tree(self, type):
 
         # Try to get data from the cache
         categories_tree = frappe.cache().get_value('categories_tree_' + type)
@@ -289,7 +312,7 @@ class TheodoulouQuery():
     def get_vehicle_categories_tree(self, type, vehicle_id):
 
         # Try to get data from the cache
-        categories_tree = frappe.cache().get_value('categories_tree_' + type)
+        categories_tree = frappe.cache().get_value('categories_tree_' + type + '_' + vehicle_id)
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
@@ -347,7 +370,7 @@ class TheodoulouQuery():
                     node = node[text]['children']
 
             # Set categories_tree in the cache
-            frappe.cache().set_value('categories_tree_' + type, categories_tree)
+            frappe.cache().set_value('categories_tree_' + type + '_' + vehicle_id, categories_tree)
 
         return categories_tree
     

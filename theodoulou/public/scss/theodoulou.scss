@@ -1,7 +1,14 @@
+
+.tree {
+    margin: 0;
+    padding: 0;
+}
+
 /* Hide the nested list */
 .tree ul {
     display: none;
     list-style-type: none;
+    margin-left: 1rem;
 }
 
 .tree li {
@@ -20,8 +27,4 @@
 
 .caret:hover {
     cursor: pointer;
-}
-
-.hover-white:hover a {
-    background-color: #eee;
 }

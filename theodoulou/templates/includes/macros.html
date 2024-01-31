@@ -1,30 +1,34 @@
-{% macro render_node(node, extra) %}
-    <ul class="tree">
-        {% for name, data in node.items() %}
-            <li>
-                {% if data.children %}
-                    <span class="caret">{{ name }}</span>
-                {% else %}
-                    <a href="/pc/models/types/vehicle/products?needyear={{ extra.needyear }}&brand_id={{ extra.brand_id }}&model_id={{ extra.model_id }}&vehicle_id={{ extra.vehicle_id}}&node_id={{ data.id }}">{{ name }}</a>
-                {% endif %}
-                {% if data.children %}
-                    {{ render_node(data.children, extra) }}
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+{% macro render_node(node) %}
+<ul class="tree">
+    {% for name, data in node.items() %}
+    <li>
+        {% if data.children %}
+        <span class="caret">{{ name }}</span>
+        {% else %}
+        <a href="/pc/models/types/vehicle/products?node_id={{ data.id }}">{{ name }}</a>
+        {% endif %}
+        {% if data.children %}
+        {{ render_node(data.children) }}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
 {% endmacro %}
 
-{% macro active_vehicle() %}
-<div class="card text-white bg-success mb-1" id="vehicleActiveSelectionContainer" style="display: none;">
-    <div class="card-header">Active selection</div>
-    <div class="card-body">
-            <p class="card-text" id="vehicleActiveSelectionName"">
-                <button type="button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear" title="Delete">
-                    x
-                </button>
-                <a href="#" id="vehicleActiveSelectionNameTitle"></a>
-            </p>                    
+{% macro active_vehicle(categories_tree) %}
+<div class="col-sm-1 col-md-3" id="vehicleActiveSelectionContainer" style="display: none;">
+    <div class="border rounded mb-1 p-1">
+        <p class="h6">{{ _("Current Selection") }}</p>
+        <small id="vehicleActiveSelectionName">
+            <button type=" button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
+                title="Delete">
+                x
+            </button>
+            <a href="#" class="text-success" id="vehicleActiveSelectionNameTitle"></a>
+        </small>
+    </div>
+    <div class="border rounded p-1">
+        {{ render_node(categories_tree) }}
     </div>
 </div>
 {% endmacro %}

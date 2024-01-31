@@ -17,12 +17,6 @@ def get_context(context):
 
     context.categories_tree = query_engine.get_vehicle_categories_tree("PKW", vehicle_id)
 
-    context.extra = {
-        "brand_id": brand_id,
-        "model_id": model_id,
-        "needyear": needyear,
-        "vehicle_id": vehicle_id,
-    }
     context.no_cache = 0
     context.title = f"{ context.vehicle.MANUFACTURER } { context.vehicle.MODEL } { context.vehicle.TYPE }"
     context.parents = [

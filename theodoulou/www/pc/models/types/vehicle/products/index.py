@@ -11,29 +11,22 @@ def get_context(context):
     if not vehicleActiveSelectionName:
         frappe.throw(_("Please select a vehicle first."))
     
-    vehicle_id = frappe.request.args.get('vehicle_id')
-    brand_id = frappe.request.args.get('brand_id')
-    needyear = frappe.request.args.get('needyear')
-    model_id = frappe.request.args.get('model_id')
-    node_id = frappe.request.args.get('node_id')
+    vehicle_id = frappe.request.args.get('vehicle_id') or frappe.request.cookies.get('vehicle_id')
+    brand_id = frappe.request.args.get('brand_id') or frappe.request.cookies.get('brand_id')
+    needyear = frappe.request.args.get('needyear') or frappe.request.cookies.get('needyear')
+    model_id = frappe.request.args.get('model_id') or frappe.request.cookies.get('model_id')
+    node_id = frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id')
 
     query_engine = TheodoulouQuery()
     context.products = query_engine.get_vehicle_products("PKW", vehicle_id, node_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
+    context.active_node = query_engine.get_node("PKW", node_id)
 
-    context.extra = {
-        "brand_id": brand_id,
-        "model_id": model_id,
-        "needyear": needyear,
-        "vehicle_id": vehicle_id,
-        "node_id": node_id,
-    }
     context.no_cache = 0
-    context.title = f"{vehicleActiveSelectionName}"
+    context.title = f"{context.active_node.NAME}"
     context.parents = [
         {"name": frappe._("Home"), "route": "/"}, 
         {"name": frappe._("Passenger Cars"), "route": "/pc"}, 
-        {"name": frappe._("Models"), "route": f"/pc/models?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
-        {"name": frappe._("Types"), "route": f"/pc/models/types?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
+        {"name": frappe._("Vehicle"), "route": f"/pc/models/types/vehicle?brand_id={brand_id}&model_id={model_id}&needyear={needyear}&vehicle_id={vehicle_id}"}, 
     ]

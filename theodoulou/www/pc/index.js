@@ -1,4 +1,9 @@
 $(document).ready(function () {
+    $('.tree .caret').on('click', function () {
+        $(this).toggleClass('caret-down');
+        $(this).siblings('ul').toggle();
+    });
+
     $('#searchKey').on('keyup', function () {
         var searchKey = $(this).val().toLowerCase();
 

@@ -1,4 +1,4 @@
-{% from "theodoulou/templates/includes/macros.html" import render_node, active_vehicle %}
+{% from "theodoulou/templates/includes/macros.html" import active_vehicle %}
 {% extends "templates/web.html" %}
 
 {% block header %}
@@ -11,10 +11,8 @@
 
 {% block page_content %}
 <div class="row">
-    <div class="col-sm-4">
-        <input type="hidden" id="vehicle_name" value="{{ title }}">
-        {{ active_vehicle() }}
-        <div class="card text-white bg-secondary">
+    <div class="col">
+        <div class="card text-white bg-info text-white">
             <div class="card-header">Technical data</div>
             <div class="card-body">
                 <p class="card-text">
@@ -74,11 +72,8 @@
                 </p>
             </div>
         </div>
+        <input type="hidden" id="vehicle_name" value="{{ title }}">
     </div>
-
-    <div class="col">
-        {{ render_node(categories_tree, extra) }}
-    </div>
-
+    {{ active_vehicle(categories_tree) }}
 </div>
 {% endblock %}

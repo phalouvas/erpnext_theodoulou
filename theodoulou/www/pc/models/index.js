@@ -1,4 +1,10 @@
 $(document).ready(function() {
+
+    $('.tree .caret').on('click', function () {
+        $(this).toggleClass('caret-down');
+        $(this).siblings('ul').toggle();
+    });
+    
     var urlParams = new URLSearchParams(window.location.search);
     var needYear = urlParams.get('needyear');
     var searchKey = urlParams.get('searchkey');
