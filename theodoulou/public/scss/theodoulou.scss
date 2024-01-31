@@ -1,6 +1,5 @@
 
 .tree {
-    list-style-type: none;
     margin: 0;
     padding: 0;
 }
@@ -9,6 +8,7 @@
 .tree ul {
     display: none;
     list-style-type: none;
+    margin-left: 1rem;
 }
 
 .tree li {
