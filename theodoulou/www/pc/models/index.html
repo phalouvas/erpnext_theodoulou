@@ -1,9 +1,4 @@
-{% from "theodoulou/templates/includes/macros.html" import active_vehicle %}
-{% extends "templates/web.html" %}
-
-{% block header %}
-<div class="mb-6">{{ title }}</div>
-{% endblock header %}
+{% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block header_actions %}
 <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">    
@@ -26,30 +21,25 @@
 
 {% endblock %}
 
-{% block page_content %}
-<div class="row">
-    <div class="col">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Model</th>
-                    <th>Years</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in models %}
-                <tr class="searchContainer" data-name="{{ item.MODEL | lower }}">
-                    <td>
-                        <a href="/pc/models/types?brand_id={{ brand_id }}&model_id={{ item.KMODNR }}&needyear={{ needyear }}">
-                            {{ item.MODEL }}
-                        </a>
-                    </td>
-                    <td>{{ item.FROM_YEAR }} - {{ item.TO_YEAR }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {{ active_vehicle(categories_tree) }}
-</div>
+{% block left_content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Years</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in models %}
+        <tr class="searchContainer" data-name="{{ item.MODEL | lower }}">
+            <td>
+                <a href="/pc/models/types?brand_id={{ brand_id }}&model_id={{ item.KMODNR }}&needyear={{ needyear }}">
+                    {{ item.MODEL }}
+                </a>
+            </td>
+            <td>{{ item.FROM_YEAR }} - {{ item.TO_YEAR }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
