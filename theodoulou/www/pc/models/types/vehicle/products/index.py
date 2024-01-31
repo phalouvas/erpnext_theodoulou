@@ -18,12 +18,14 @@ def get_context(context):
     model_id = frappe.request.args.get('model_id') or frappe.request.cookies.get('model_id')
     context.node_id = frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id')
     context.page = int(frappe.request.args.get('page') or 1)
+    manufacturer_id = frappe.request.args.get('manufacturer_id')
 
     query_engine = TheodoulouQuery()
-    context.total_products = query_engine.get_vehicle_products_count("PKW", vehicle_id, context.node_id)
+    context.total_products = query_engine.get_vehicle_products_count("PKW", vehicle_id, context.node_id, manufacturer_id)
     context.last_page = math.ceil(context.total_products / 16)
-    context.products = query_engine.get_vehicle_products("PKW", vehicle_id, context.node_id ,context.page)
+    context.products = query_engine.get_vehicle_products("PKW", vehicle_id, context.node_id, manufacturer_id,context.page)
 
+    context.manufacturers = query_engine.get_vehicle_products_manufacturers("PKW", vehicle_id, context.node_id)
     context.categories_tree = query_engine.get_categories_tree("PKW")
     context.active_node = query_engine.get_node("PKW", context.node_id)
 

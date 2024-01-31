@@ -374,7 +374,7 @@ class TheodoulouQuery():
 
         return categories_tree
     
-    def get_vehicle_products_count(self, type, vehicle_id, node_id):
+    def get_vehicle_products_manufacturers(self, type, vehicle_id, node_id):
         if type == "PKW":
             VKNZIELART = 2
             TREETYPNR = 1
@@ -382,7 +382,39 @@ class TheodoulouQuery():
             VKNZIELART = 16
             TREETYPNR = 2
 
-        data = frappe.cache().get_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id)
+        data = frappe.cache().get_value('vehicle_products_manufacturers_' + type + '_' + node_id + '_' + vehicle_id)
+        if data is None:
+            data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                T001.DLNR,
+                T001.MARKE AS MARKE
+            FROM `301` AS T301
+                JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
+                JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
+                JOIN `001` AS T001 ON T001.DLNR = T400.DLNR			
+            WHERE T301.TREETYPNR = { TREETYPNR }	
+                AND T301.NODE_ID = { node_id }
+                AND T400.VKNZIELART = { VKNZIELART }
+                AND T400.VKNZIELNR = { vehicle_id }
+            ORDER BY T001.MARKE;
+        """, as_dict=True)
+
+        return data
+    
+    def get_vehicle_products_count(self, type, vehicle_id, node_id, manufacturer_id):
+        if type == "PKW":
+            VKNZIELART = 2
+            TREETYPNR = 1
+        else:
+            VKNZIELART = 16
+            TREETYPNR = 2
+
+        if manufacturer_id:
+            filter_manufacturer = f"AND T400.DLNR = { manufacturer_id }"
+        else:
+            filter_manufacturer = ""
+            manufacturer_id = ""
+        data = frappe.cache().get_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id + '_' + manufacturer_id)
         if data is None:
             data = frappe.db.sql(f"""
                 SELECT COUNT(*) AS TOTAL
@@ -392,13 +424,14 @@ class TheodoulouQuery():
                 WHERE T301.TREETYPNR = { TREETYPNR }	
                     AND T301.NODE_ID = { node_id }
                     AND T400.VKNZIELART = { VKNZIELART }
-                    AND T400.VKNZIELNR = { vehicle_id };
+                    AND T400.VKNZIELNR = { vehicle_id }
+                    { filter_manufacturer };
             """, as_dict=True)
             frappe.cache().set_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id, data)
 
         return data[0]['TOTAL']            
     
-    def get_vehicle_products(self, type, vehicle_id, node_id, page):
+    def get_vehicle_products(self, type, vehicle_id, node_id, manufacturer_id, page):
         if type == "PKW":
             VKNZIELART = 2
             TREETYPNR = 1
@@ -408,6 +441,11 @@ class TheodoulouQuery():
 
         items_per_page = 20
         offset = (page - 1) * items_per_page
+
+        if manufacturer_id:
+            filter_manufacturer = f"AND T001.DLNR = { manufacturer_id }"
+        else:
+            filter_manufacturer = ""
             
         data = frappe.db.sql(f"""
             SELECT DISTINCT
@@ -461,6 +499,7 @@ class TheodoulouQuery():
                 AND T301.NODE_ID = { node_id }
                 AND T400.VKNZIELART = { VKNZIELART }
                 AND T400.VKNZIELNR = { vehicle_id }
+                { filter_manufacturer }
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
         """, as_dict=True)
