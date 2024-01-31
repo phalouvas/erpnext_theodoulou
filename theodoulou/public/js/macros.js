@@ -53,23 +53,6 @@ function active_vehicle() {
     });
 }
 
-function active_node() {
-    // get input element value with id node_name and save in cookies
-    var node_name = document.getElementById("node_name");
-    var node_id = document.getElementById("node_id");
-    // if node_name not empty
-    if (node_name) {
-        // set cookie with node_name
-        document.cookie = "node_name=" + node_name.value + "; sameSite=Lax; path=/";
-        document.cookie = "node_id=" + node_id.value + "; sameSite=Lax; path=/";
-    }
-
-    // Get the cookie value
-    var node_name = getCookie('node_name');
-    var node_id = getCookie('node_id');
-}
-
 $(document).ready(function () {
-    active_node();
     active_vehicle();
 });
