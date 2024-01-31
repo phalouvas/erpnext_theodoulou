@@ -1,3 +1,4 @@
+{% from "theodoulou/templates/includes/macros.html" import render_pagination %}
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
@@ -22,5 +23,6 @@
     </div>
     {% endfor %}
 </div>
+{{ render_pagination('/pc/models/types/vehicle/products?node_id=' + node_id, page, last_page) }}
 {% endif %}
 {% endblock %}
