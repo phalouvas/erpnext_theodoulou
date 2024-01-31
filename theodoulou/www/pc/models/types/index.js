@@ -1,17 +1,20 @@
 $(document).ready(function () {
-    $(document).ready(function () {
-        $('#searchKey').on('keyup', function () {
-            var searchKey = $(this).val().toLowerCase();
+    $('.tree .caret').on('click', function () {
+        $(this).toggleClass('caret-down');
+        $(this).siblings('ul').toggle();
+    });
 
-            $('.searchContainer').each(function () {
-                var name = $(this).data('name');
+    $('#searchKey').on('keyup', function () {
+        var searchKey = $(this).val().toLowerCase();
 
-                if (name.indexOf(searchKey) !== -1) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
+        $('.searchContainer').each(function () {
+            var name = $(this).data('name');
+
+            if (name.indexOf(searchKey) !== -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
         });
 
         $('.clearSearch').on('click', function () {

@@ -289,7 +289,7 @@ class TheodoulouQuery():
     def get_vehicle_categories_tree(self, type, vehicle_id):
 
         # Try to get data from the cache
-        categories_tree = frappe.cache().get_value('categories_tree_' + type)
+        categories_tree = frappe.cache().get_value('categories_tree_' + type + '_' + vehicle_id)
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
@@ -347,7 +347,7 @@ class TheodoulouQuery():
                     node = node[text]['children']
 
             # Set categories_tree in the cache
-            frappe.cache().set_value('categories_tree_' + type, categories_tree)
+            frappe.cache().set_value('categories_tree_' + type + '_' + vehicle_id, categories_tree)
 
         return categories_tree
     

@@ -53,8 +53,6 @@ function active_vehicle() {
         document.cookie = 'vehicleActiveSelectionName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         window.location.href = '/pc';
     });
-}
 
-$(document).ready(function () {
     active_vehicle();
 });

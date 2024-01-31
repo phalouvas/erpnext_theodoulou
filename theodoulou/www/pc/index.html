@@ -26,14 +26,19 @@
 
 {% block page_content %}
 
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
-    {{ active_vehicle() }}
-    {% for item in brands %}
-    <div class="card searchContainer" data-name="{{ item.NAME | lower }}">
-        <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="card-body border hover-white">
-            {{ item.NAME }}
-        </a>
+<div class="row">
+    <div class="col-sm-1 col-md-6 col-lg-9">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
+            {% for item in brands %}
+            <div class="card searchContainer" data-name="{{ item.NAME | lower }}">
+                <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}" class="card-body border hover-white">
+                    {{ item.NAME }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    {% endfor %}
+    {{ active_vehicle(categories_tree) }}
 </div>
+
 {% endblock %}
