@@ -1,5 +1,5 @@
 {% macro render_node(node) %}
-<ul class="tree">
+<div class="tree">
     {% for name, data in node.items() %}
     <li>
         {% if data.children %}
@@ -18,7 +18,7 @@
 {% macro active_vehicle(categories_tree) %}
 <div class="col"id="vehicleActiveSelectionContainer" style="display: none;">
     <div class="card text-white bg-success mb-1">
-        <div class="card-header">Active selection</div>
+        <div class="card-header">{{ _("Current Selection") }}</div>
         <div class="card-body">
             <p class="card-text" id="vehicleActiveSelectionName"">
                 <button type=" button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
