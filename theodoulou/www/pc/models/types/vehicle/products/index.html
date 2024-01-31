@@ -1,3 +1,4 @@
+{% from "theodoulou/templates/includes/macros.html" import render_pagination %}
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
@@ -22,57 +23,6 @@
     </div>
     {% endfor %}
 </div>
-<nav aria-label="Page navigation">
-    <ul class="pagination">
-        <!-- Link to the first page -->
-        <li class="page-item {% if page == 1 %}disabled{% endif %}">
-            <a class="page-link" href="/pc/models/types/vehicle/products?node_id={{ node_id }}&page=1" aria-label="First">
-                <span aria-hidden="true">&laquo;&laquo;</span>
-            </a>
-        </li>
-
-        <!-- Link to the previous page -->
-        <li class="page-item {% if page == 1 %}disabled{% endif %}">
-            <a class="page-link" href="/pc/models/types/vehicle/products?node_id={{ node_id }}&page={{ page - 1 }}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-
-        <!-- If there are pages before the ones currently shown -->
-        {% if page - 2 > 1 %}
-        <li class="page-item disabled">
-            <a class="page-link">...</a>
-        </li>
-        {% endif %}
-
-        <!-- Links to the 5 pages around the current page -->
-        {% for i in range(max(1, page - 2), min(last_page, page + 2) + 1) %}
-            <li class="page-item {% if i == page %}active{% endif %}">
-                <a class="page-link" href="/pc/models/types/vehicle/products?node_id={{ node_id }}&page={{ i }}">{{ i }}</a>
-            </li>
-        {% endfor %}
-
-        <!-- If there are pages after the ones currently shown -->
-        {% if page + 2 < last_page %}
-        <li class="page-item disabled">
-            <a class="page-link">...</a>
-        </li>
-        {% endif %}
-
-        <!-- Link to the next page -->
-        <li class="page-item {% if page == last_page %}disabled{% endif %}">
-            <a class="page-link" href="/pc/models/types/vehicle/products?node_id={{ node_id }}&page={{ page + 1 }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-
-        <!-- Link to the last page -->
-        <li class="page-item {% if page == last_page %}disabled{% endif %}">
-            <a class="page-link" href="/pc/models/types/vehicle/products?node_id={{ node_id }}&page={{ last_page }}" aria-label="Last">
-                <span aria-hidden="true">&raquo;&raquo;</span>
-            </a>
-        </li>
-    </ul>
-</nav>
+{{ render_pagination('/pc/models/types/vehicle/products?node_id=' + node_id, page, last_page) }}
 {% endif %}
 {% endblock %}

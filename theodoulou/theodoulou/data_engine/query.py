@@ -382,7 +382,7 @@ class TheodoulouQuery():
             VKNZIELART = 16
             TREETYPNR = 2
 
-        data = frappe.cache().get_value('vehicle_products_count_' + type + '_' + vehicle_id)
+        data = frappe.cache().get_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id)
         if data is None:
             data = frappe.db.sql(f"""
                 SELECT COUNT(*) AS TOTAL
@@ -394,7 +394,7 @@ class TheodoulouQuery():
                     AND T400.VKNZIELART = { VKNZIELART }
                     AND T400.VKNZIELNR = { vehicle_id };
             """, as_dict=True)
-            frappe.cache().set_value('vehicle_products_count_' + type + '_' + vehicle_id, data)
+            frappe.cache().set_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id, data)
 
         return data[0]['TOTAL']            
     
