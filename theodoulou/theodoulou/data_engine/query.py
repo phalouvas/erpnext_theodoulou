@@ -406,7 +406,7 @@ class TheodoulouQuery():
             VKNZIELART = 16
             TREETYPNR = 2
 
-        items_per_page = 16
+        items_per_page = 20
         offset = (page - 1) * items_per_page
             
         data = frappe.db.sql(f"""
