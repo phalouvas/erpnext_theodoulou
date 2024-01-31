@@ -1,6 +1,19 @@
 {% from "theodoulou/templates/includes/macros.html" import render_pagination %}
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
+{% block header_actions %}
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="input-group mr-2">
+        <select class="form-control" id="searchType">
+            <option value="">-- Select manufacturer --</option>
+            {% for item in manufacturers %}
+            <option value="{{ item.DLNR }}">{{ item.MARKE }}</option>
+            {% endfor %}
+        </select>
+    </div>   
+</div>
+{% endblock %}
+
 {% block left_content %}
 <input type="hidden" id="node_name" value="{{ active_node.NAME }}">
 <input type="hidden" id="node_id" value="{{ active_node.ID }}">
@@ -9,6 +22,7 @@
     {{ _("No products found") }}
 </div>
 {% else %}
+<p class="text-muted">{{ _("Total") }} {{ total_products }} {{ _("products") }}</p>
 <div class="row">
     {% for item in products %}
     <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
