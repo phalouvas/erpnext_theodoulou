@@ -38,12 +38,26 @@
             </a>
         </li>
 
+        <!-- If there are pages before the ones currently shown -->
+        {% if page - 2 > 1 %}
+        <li class="page-item disabled">
+            <a class="page-link">...</a>
+        </li>
+        {% endif %}
+
         <!-- Links to the 5 pages around the current page -->
         {% for i in range(max(1, page - 2), min(last_page, page + 2) + 1) %}
             <li class="page-item {% if i == page %}active{% endif %}">
                 <a class="page-link" href="/pc/models/types/vehicle/products?node_id={{ node_id }}&page={{ i }}">{{ i }}</a>
             </li>
         {% endfor %}
+
+        <!-- If there are pages after the ones currently shown -->
+        {% if page + 2 < last_page %}
+        <li class="page-item disabled">
+            <a class="page-link">...</a>
+        </li>
+        {% endif %}
 
         <!-- Link to the next page -->
         <li class="page-item {% if page == last_page %}disabled{% endif %}">
