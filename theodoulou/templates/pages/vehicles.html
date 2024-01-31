@@ -1,0 +1,29 @@
+{% from "theodoulou/templates/includes/macros.html" import render_node %}
+{% extends "templates/web.html" %}
+
+{% block header %}
+<div class="mb-6">{{ title }}</div>
+{% endblock header %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col">
+            {%- block left_content -%}{%- endblock -%}            
+    </div>
+    <div class="col-sm-1 col-md-3" id="vehicleActiveSelectionContainer" style="display: none;">
+        <div class="border rounded mb-1 p-1">
+            <p class="h6">{{ _("Current Selection") }}</p>
+            <small id="vehicleActiveSelectionName">
+                <button type=" button" class="btn btn-danger btn-sm float-right" id="vehicleActiveSelectionClear"
+                    title="Delete">
+                    x
+                </button>
+                <a href="#" class="text-success" id="vehicleActiveSelectionNameTitle"></a>
+            </small>
+        </div>
+        <div class="border rounded p-1">
+            {{ render_node(categories_tree) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
