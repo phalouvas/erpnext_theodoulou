@@ -70,77 +70,83 @@
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">OE Numbers</div>
-    <div  style="max-height: 300px; overflow-y: auto; width: 100%;">
-    <table class="table table-sm">
-        <tbody>
-            {% for key, value in product_oe_numbers.items() %}
-            <tr>
-                <th>{{ key }}</th>
-                <td>
-                    {% for ARTNR in value %}
-                    <a href="/pc/models/types/vehicle/products/product?product_id={{ ARTNR }}" class="badge badge-info">{{ ARTNR }}</a>
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>   
-</div>   
+    <div style="max-height: 300px; overflow-y: auto; width: 100%;">
+        <table class="table table-sm">
+            <tbody>
+                {% for key, value in product_oe_numbers.items() %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>
+                        {% for ARTNR in value %}
+                        <a href="/pc/models/types/vehicle/products/product?product_id={{ ARTNR }}"
+                            class="badge badge-info">{{ ARTNR }}</a>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">Suitable Vehicles</div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Manufacturer</th>
-                <th>Model</th>
-                <th>Type</th>
-                <th>Years</th>
-                <th>Engine</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for vehicle in product_vehicles_applicability %}
-            <tr>
-                <td>{{ vehicle.MANUFACTURER }}</td>
-                <td>{{ vehicle.MODEL }}</td>
-                <td>
-                    <a
-                        href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{
-                        vehicle.TYPE }}</a>
-                </td>
-                <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
-                <td>{{ vehicle.LISTENGINES }}</td>
-                <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{ vehicle.CCM
-                    }}cc</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="max-height: 300px; overflow-y: auto; width: 100%;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Manufacturer</th>
+                    <th>Model</th>
+                    <th>Type</th>
+                    <th>Years</th>
+                    <th>Engine</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehicle in product_vehicles_applicability %}
+                <tr>
+                    <td>{{ vehicle.MANUFACTURER }}</td>
+                    <td>{{ vehicle.MODEL }}</td>
+                    <td>
+                        <a
+                            href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{
+                            vehicle.TYPE }}</a>
+                    </td>
+                    <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
+                    <td>{{ vehicle.LISTENGINES }}</td>
+                    <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{
+                        vehicle.CCM
+                        }}cc</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">Analogs</div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Brand</th>
-                <th>Name</th>
-                <td>Product</td>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in product_analogs %}
-            <tr>
-                <td>{{ product.BRAND }}</td>
-                <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
-                <td>
-                    <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}"
-                        class="text-info">{{ product.ARTNR }}</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="max-height: 300px; overflow-y: auto; width: 100%;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Name</th>
+                    <td>Product</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in product_analogs %}
+                <tr>
+                    <td>{{ product.BRAND }}</td>
+                    <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
+                    <td>
+                        <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}"
+                            class="text-info">{{ product.ARTNR }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
