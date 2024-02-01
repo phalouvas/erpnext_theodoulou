@@ -69,12 +69,20 @@
     </div>
 </div>
 <div class="row mt-8 shadow rounded">
-    <div class="h5 p-4">OE Numbers</div>
+    <div class="row p-4">
+        <div class="col">
+            <div class="h5">OE Numbers</div>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="searchKey_OE" placeholder="Search..."" aria-label=" Search"
+                aria-describedby="btnGroupAddon">
+        </div>
+    </div>
     <div style="max-height: 300px; overflow-y: auto; width: 100%;">
         <table class="table table-sm">
             <tbody>
                 {% for key, value in product_oe_numbers.items() %}
-                <tr>
+                <tr class="searchContainer_OE"  data-name="{{ key | lower }}">
                     <th>{{ key }}</th>
                     <td>
                         {% for ARTNR in value %}
@@ -89,7 +97,15 @@
     </div>
 </div>
 <div class="row mt-8 shadow rounded">
-    <div class="h5 p-4">Suitable Vehicles</div>
+    <div class="row p-4">
+        <div class="col">
+            <div class="h5">Suitable Vehicles</div>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="searchKey_VEH" placeholder="Search..."" aria-label=" Search"
+                aria-describedby="btnGroupAddon">
+        </div>
+    </div>
     <div style="max-height: 300px; overflow-y: auto; width: 100%;">
         <table class="table">
             <thead>
@@ -102,7 +118,7 @@
             </thead>
             <tbody>
                 {% for vehicle in product_vehicles_applicability %}
-                <tr>
+                <tr class="searchContainer_VEH"  data-name="{{ vehicle.MANUFACTURER | lower }} {{ vehicle.MODEL | lower }} {{ vehicle.TYPE | lower }}">
                     <td>
                         <a class="text-info"
                             href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">
@@ -121,7 +137,15 @@
     </div>
 </div>
 <div class="row mt-8 shadow rounded">
-    <div class="h5 p-4">Analogs</div>
+    <div class="row p-4">
+        <div class="col">
+            <div class="h5">Analogs</div>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="searchKey_ANA" placeholder="Search..."" aria-label=" Search"
+                aria-describedby="btnGroupAddon">
+        </div>
+    </div>
     <div style="max-height: 300px; overflow-y: auto; width: 100%;">
         <table class="table">
             <thead>
@@ -133,7 +157,7 @@
             </thead>
             <tbody>
                 {% for product in product_analogs %}
-                <tr>
+                <tr class="searchContainer_ANA"  data-name="{{ product.BRAND | lower }} {{ product.ARTNR | lower}}">
                     <td>{{ product.BRAND }}</td>
                     <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
                     <td>
