@@ -7,9 +7,9 @@
 
 {% block header_actions %}
 <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-    <form class="form-inline mr-2" action="/pc/models/types/vehicle/products" method="get">
+    <form class="form-inline mr-2" action="/search/products" method="get">
         <div class="form-group mr-2">
-            <input type="text" class="form-control" id="searchKey_Product" name="searchKey_Product" placeholder="Number, Article, OE...." aria-label="Search" aria-describedby="btnGroupAddon">
+            <input type="text" class="form-control" id="product_id" name="product_id" placeholder="Number, Article, OE...." aria-label="Search" aria-describedby="btnGroupAddon">
         </div>
         <button type="submit" class="btn btn-primary">Go</button>
       </form>    
@@ -22,6 +22,7 @@
     <div class="col">
         {%- block left_content -%}{%- endblock -%}
     </div>
+    {% if categories_tree %}
     <div class="col-sm-1 col-md-3" id="vehicleActiveSelectionContainer" style="display: none;">
         <div class="border rounded mb-1 p-1">
             <button type=" button" class="btn btn-sm float-right" id="vehicleActiveSelectionClear"
@@ -37,5 +38,6 @@
             {{ render_node(categories_tree) }}
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

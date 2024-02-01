@@ -1,7 +1,6 @@
 import frappe
 from frappe import _
 from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
-import math
 
 def get_context(context):
 
@@ -28,7 +27,7 @@ def get_context(context):
     context.product_vehicles_applicability = query_engine.get_product_vehicles_applicability(manufacturer_id, product_id)
     context.product_media = query_engine.get_product_media(manufacturer_id, product_id)
     context.manufacturer_logo = query_engine.get_manufacturer_logo(manufacturer_id)
-    context.product_analogs = query_engine.get_product_analogs(manufacturer_id, product_id)
+    context.product_analogs = query_engine.get_product_analogs(product_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
 
