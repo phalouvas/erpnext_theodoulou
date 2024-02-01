@@ -68,6 +68,28 @@
         </table>
     </div>
 </div>
-<p>{{ product_cross_reference }}</p>
+<div class="row mt-8 shadow rounded">
+    <div class="h5 p-4">Analogs</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Product</th>
+                <td>Note</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in product_cross_reference %}
+            <tr>
+                <td>{{ product.CROSS_BRAND }}</td>
+                <td>
+                    {{ product.CROSS_ARTNR }}
+                </td>
+                <td>{{ product.NOTE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 <p>{{ product_vehicles_applicability }}</p>
 {% endblock %}
