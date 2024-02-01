@@ -588,3 +588,19 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
+    
+    def get_product_additional_info(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(72, T206.INFART, { self.language }), '') AS `INFART`,
+                T035.TEXT AS ADDITIONAL_TEXT
+            FROM `200` AS T200
+                JOIN `206` AS T206 ON T206.ARTNR = T200.ARTNR AND T206.DLNR = T200.DLNR
+                JOIN `035` AS T035 ON T035.DLNR = T200.DLNR AND T035.TBSNR = T206.TBSNR AND T035.SPRACHNR = { self.language }
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            HAVING ADDITIONAL_TEXT IS NOT NULL
+            ORDER BY T206.SORTNR;
+        """, as_dict=True)
+
+        return data

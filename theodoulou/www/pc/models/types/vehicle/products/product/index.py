@@ -23,6 +23,7 @@ def get_context(context):
     query_engine = TheodoulouQuery()
     context.product_main_info = query_engine.get_product_main_info(manufacturer_id, product_id)
     context.product_criteria = query_engine.get_product_criteria(manufacturer_id, product_id)
+    context.product_additional_info = query_engine.get_product_additional_info(manufacturer_id, product_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
 
