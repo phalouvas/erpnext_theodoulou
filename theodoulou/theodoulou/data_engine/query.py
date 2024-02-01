@@ -751,8 +751,8 @@ class TheodoulouQuery():
                 IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
                 CONCAT(
                     (CASE
-                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN @PATHTOPDF 
-                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN @PATHTOIMAGE 
+                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN '{ self.settings.pdf_url }' 
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN '{ self.settings.images_url }' 
                         ELSE ''
                     END), -- URL SERVER WHERE PLACED IMAGES OR PDF
                     (CASE					
@@ -774,4 +774,4 @@ class TheodoulouQuery():
             WHERE T042.DLNR = {dlnr};
         """, as_dict=True)
 
-        return data   
+        return data[0]['PATH']
