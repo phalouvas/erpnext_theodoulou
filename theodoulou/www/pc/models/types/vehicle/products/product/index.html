@@ -5,10 +5,8 @@
     <div class="col">
         <div class="row">
             <div class="col">
-                <a href="{{ manufacturer_logo }}" target="_blank">
                     <img src="{{ manufacturer_logo }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
                         style="max-height: 100px;">
-                </a>
             </div>
         </div>
         <div class="row">
@@ -23,7 +21,42 @@
         </div>
     </div>
     <div class="col">
-        asdf
+        <table class="table table-sm">
+            <tbody>
+                <tr>
+                    <th>Brand</th>
+                    <td>{{ product_main_info.MARKE }}</td>
+                </tr>
+                <tr>
+                    <th>Article Number</th>
+                    <td>{{ product_main_info.ARTNR }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ product_main_info.NAMEPRODUCT }}</td>
+                </tr>
+                <tr>
+                    <th>Standard Group</th>
+                    <td>{{ product_main_info.STANDARD_GROUP }}</td>
+                </tr>
+                <tr>
+                    <th>Assebly Group</th>
+                    <td>{{ product_main_info.Lubrication }}</td>
+                </tr>
+                <tr>
+                    <th>Purpose Group</th>
+                    <td>{{ product_main_info.PURPOSE_GROUP }}</td>
+                </tr>
+                <tr>
+                    <th>GTIN/EAN</th>
+                    <td>{{ product_main_info.EAN }}</td>
+                </tr>
+                <tr>
+                    <th>Trade numbers</th>
+                    <td class="text-danger font-weight-bold">{{ product_main_info.LIST_USERNUMBERS }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 <p>{{ manufacturer_logo }}</p>
