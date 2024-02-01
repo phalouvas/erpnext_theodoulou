@@ -69,7 +69,7 @@
     </div>
 </div>
 <div class="row mt-8 shadow rounded">
-    <div class="h5 p-4">Analogs</div>
+    <div class="h5 p-4">OE Numbers</div>
     <table class="table">
         <thead>
             <tr>
@@ -86,6 +86,33 @@
                     {{ product.CROSS_ARTNR }}
                 </td>
                 <td>{{ product.NOTE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="row mt-8 shadow rounded">
+    <div class="h5 p-4">Suitable Vehicles</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Manufacturer</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Years</th>
+                <th>Engine</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in product_vehicles_applicability %}
+            <tr>
+                <td>{{ vehicle.MANUFACTURER }}</td>
+                <td>{{ vehicle.MODEL }}</td>
+                <td>{{ vehicle.TYPE }}</td>
+                <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
+                <td>{{ vehicle.LISTENGINES }}</td>
+                <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{ vehicle.CCM }}cc</td>
             </tr>
             {% endfor %}
         </tbody>

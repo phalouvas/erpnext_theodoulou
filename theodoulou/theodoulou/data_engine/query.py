@@ -646,7 +646,7 @@ class TheodoulouQuery():
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                     GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                     T120.BJVON AS `BJVON`, 
-                    IFNULL(T120.BJBIS, 'to now') AS `BJBIS`, 
+                    IFNULL(T120.BJBIS, 'now') AS `BJBIS`, 
                     IFNULL(T120.KW, '') AS `KW`, 
                     IFNULL(T120.PS, '') AS `PS`, 
                     IFNULL(T120.CCMTECH, '') AS `CCM`, 
@@ -675,7 +675,7 @@ class TheodoulouQuery():
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                     GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                     T532.BJVON AS `BJVON`, 
-                    IFNULL(T532.BJBIS, 'to now') AS `BJBIS`, 		
+                    IFNULL(T532.BJBIS, 'now') AS `BJBIS`, 		
                     IFNULL(T532.KWVON, '') AS `KW`, 
                     IFNULL(T532.PSVON, '') AS `PS`, 
                     IFNULL(T532.CCMTECH, '') AS `CCM`, 
@@ -696,6 +696,10 @@ class TheodoulouQuery():
                 ) AS T
             ORDER BY MANUFACTURER, MODEL, TYPE; 		
         """, as_dict=True)
+
+        for row in data:
+            row['BJVON'] = self.convert_yyyymm(row['BJVON'])
+            row['BJBIS'] = self.convert_yyyymm(row['BJBIS'])
 
         return data
 
