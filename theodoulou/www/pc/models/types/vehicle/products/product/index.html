@@ -137,7 +137,15 @@
     </div>
 </div>
 <div class="row mt-8 shadow rounded">
-    <div class="h5 p-4">Analogs</div>
+    <div class="row p-4">
+        <div class="col">
+            <div class="h5">Analogs</div>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="searchKey_ANA" placeholder="Search..."" aria-label=" Search"
+                aria-describedby="btnGroupAddon">
+        </div>
+    </div>
     <div style="max-height: 300px; overflow-y: auto; width: 100%;">
         <table class="table">
             <thead>
@@ -149,7 +157,7 @@
             </thead>
             <tbody>
                 {% for product in product_analogs %}
-                <tr>
+                <tr class="searchContainer_ANA"  data-name="{{ product.BRAND | lower }} {{ product.ARTNR | lower}}">
                     <td>{{ product.BRAND }}</td>
                     <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
                     <td>
