@@ -30,7 +30,7 @@
             <img src="{{ item.PATH }}" class="rounded mx-auto d-block" style="max-height: 200px;">
             <h5 class="card-title">{{ item.NAMEPRODUCT }}</h5>
             <p class="card-text">{{ item.MARKE }}</p>
-            <a href="#" class="btn btn-primary">{{ item.ARTNR }}</a>
+            <a href="/pc/models/types/vehicle/products/product?manufacturer_id={{ item.DLNR }}&product_id={{ item.ARTNR }}" class="btn btn-primary">{{ item.ARTNR }}</a>
         </div>
     </div>
     {% endfor %}
