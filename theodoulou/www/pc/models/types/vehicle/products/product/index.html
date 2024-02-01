@@ -124,5 +124,28 @@
         </tbody>
     </table>
 </div>
+<div class="row mt-8 shadow rounded">
+    <div class="h5 p-4">Analogs</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Name</th>
+                <td>Product</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in product_analogs %}
+            <tr>
+                <td>{{ product.BRAND }}</td>
+                <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
+                <td>
+                    <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}" class="text-info">{{ product.ARTNR }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {{ product_analogs }}
 {% endblock %}

@@ -874,8 +874,8 @@ class TheodoulouQuery():
                 T.DLNR AS DLNR,
                 T001.MARKE AS BRAND,
                 T.ARTNR AS ARTNR,
-                IFNULL(GET_BEZNR(T320.BEZNR, {self.language}, '') AS `NAMEPRODUCT`,
-                IFNULL(GET_BEZNR(T324.BEZNR, {self.language}, '') AS ASSEMBLY_GROUP,
+                IFNULL(GET_BEZNR(T320.BEZNR, {self.language}), '') AS `NAMEPRODUCT`,
+                IFNULL(GET_BEZNR(T324.BEZNR, {self.language}), '') AS ASSEMBLY_GROUP,
                 GROUP_CONCAT(DISTINCT CONCAT('[',T.TRUST,'%] - ',T.NOTE,CHAR(10)) SEPARATOR '') AS NOTE,
                 IF(MIN(T.TRUST) = MAX(T.TRUST), MIN(T.TRUST), CONCAT(MIN(CAST(T.TRUST AS UNSIGNED)), ' - ', MAX(CAST(T.TRUST AS UNSIGNED)))) AS TRUST_IN
             FROM (
@@ -971,25 +971,6 @@ class TheodoulouQuery():
                     WHERE TRIM('{search_brand}') <> ''
                         AND T200.ARTNR = '{artnr}'
                         AND T001.MARKE = '{search_brand}'
-                        
-                    /*	UNION
-                        
-                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW ALL ANALOGS REGARDING OWN OE-NUMBERS FOR PRODUCTS THAT INCLUDE CROSREFERNCE SEARCH NUMBER - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
-                    -- QUERY WILL WORK ONLY WHEN USE SEARCHBRAND
-                    -- THIS QUERY IS HARD FOR RESOURCES IN COMPLETE QUERY, BETTER RUN AS SEPARATE QUERY
-                    SELECT
-                        T203_3.DLNR AS DLNR,					
-                        T203_3.ARTNR AS ARTNR,
-                        CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCTS THAT INCLUDED CROSSREFERENCE SEARCH NUMBER "','{artnr}','" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'"]') AS NOTE,
-                        '50' AS TRUST
-                    FROM `203` AS T203
-                        JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
-                        JOIN `203` AS T203_2 ON T203_2.ARTNR = T203.ARTNR AND T203_2.DLNR = T203.DLNR
-                        JOIN `100` AS T100_2 ON T100_2.HERNR = T203_2.KHERNR AND (T100_2.PKW = 1 OR T100_2.NKW = 1)
-                        JOIN `203` AS T203_3 ON T203_3.REFNR = T203_2.REFNR AND T203_3.KHERNR = T203_2.KHERNR									
-                    WHERE TRIM('{search_brand}') <> ''
-                        AND T203.REFNR = '{artnr}'
-                        AND GET_LBEZNR(T100.LBEZNR, 1) = '{search_brand}' */
                     
                 ) as T
                 JOIN `211` AS T211 ON T211.ARTNR = T.ARTNR AND T211.DLNR = T.DLNR
