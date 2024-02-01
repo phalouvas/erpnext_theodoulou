@@ -629,7 +629,17 @@ class TheodoulouQuery():
             ORDER BY CROSS_BRAND;
         """, as_dict=True)
 
-        return data
+        # Process the results
+        grouped_oe_numbers = {}
+        for number in data:
+            # If the brand is not in the dictionary, add it
+            if number['CROSS_BRAND'] not in grouped_oe_numbers:
+                grouped_oe_numbers[number['CROSS_BRAND']] = []
+
+            # Add the artnr to the brand's list
+            grouped_oe_numbers[number['CROSS_BRAND']].append(number['CROSS_ARTNR'])
+
+        return grouped_oe_numbers
     
     def get_product_oe_numbers_advanced(self, dlnr, artnr):
         data = frappe.db.sql(f"""

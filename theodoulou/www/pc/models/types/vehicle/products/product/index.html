@@ -5,8 +5,8 @@
     <div class="col">
         <div class="row">
             <div class="col">
-                    <img src="{{ manufacturer_logo }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
-                        style="max-height: 100px;">
+                <img src="{{ manufacturer_logo }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
+                    style="max-height: 100px;">
             </div>
         </div>
         <div class="row">
@@ -56,7 +56,7 @@
             </tbody>
         </table>
     </div>
-    <div class="col">        
+    <div class="col">
         <h6>Specifications</h6>
         <table class="table table-sm">
             {% for criteria in product_criteria %}
@@ -70,30 +70,20 @@
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">OE Numbers</div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Brand</th>
-                <th>Product</th>
-                <th>Note</th>
-            </tr>
-        </thead>
+    <table class="table table-sm">
         <tbody>
-            {% for product in product_oe_numbers %}
+            {% for key, value in product_oe_numbers.items() %}
             <tr>
-                <td>{{ product.CROSS_BRAND }}</td>
+                <th>{{ key }}</th>
                 <td>
-                    {% if product.NOTE == 'OE PRODUCT' %}
-                    {{ product.CROSS_ARTNR }}
-                    {% else %}
-                    <a href="/pc/models/types/vehicle/products/product?product_id={{ product.CROSS_ARTNR }}" class="text-info">{{ product.CROSS_ARTNR }}</a>
-                    {% endif %}
+                    {% for ARTNR in value %}
+                    <a href="/pc/models/types/vehicle/products/product?product_id={{ ARTNR }}" class="badge badge-info">{{ ARTNR }}</a>
+                    {% endfor %}
                 </td>
-                <td>{{ product.NOTE }}</td>
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table>      
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">Suitable Vehicles</div>
@@ -114,11 +104,14 @@
                 <td>{{ vehicle.MANUFACTURER }}</td>
                 <td>{{ vehicle.MODEL }}</td>
                 <td>
-                    <a href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{ vehicle.TYPE }}</a>
+                    <a
+                        href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{
+                        vehicle.TYPE }}</a>
                 </td>
                 <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
                 <td>{{ vehicle.LISTENGINES }}</td>
-                <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{ vehicle.CCM }}cc</td>
+                <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{ vehicle.CCM
+                    }}cc</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -140,7 +133,8 @@
                 <td>{{ product.BRAND }}</td>
                 <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
                 <td>
-                    <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}" class="text-info">{{ product.ARTNR }}</a>
+                    <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}"
+                        class="text-info">{{ product.ARTNR }}</a>
                 </td>
             </tr>
             {% endfor %}
