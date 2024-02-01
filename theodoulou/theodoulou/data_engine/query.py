@@ -604,3 +604,19 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
+    
+    def get_product_cross_reference(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                GET_LBEZNR(T100.LBEZNR, { self.language }) AS CROSS_BRAND,
+                T203.REFNR AS CROSS_ARTNR,
+                IF(T100.VGL = 1, 'AFTERMARKET RPODUCT', 'OE PRODUCT') AS NOTE
+            FROM `200` AS T200
+                JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            ORDER BY CROSS_BRAND;
+        """, as_dict=True)
+
+        return data
