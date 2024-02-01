@@ -1,7 +1,7 @@
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
-<div class="row row-cols-2">
+<div class="row row-cols-1 row-cols-sm-2 shadow rounded">
     <div class="col">
         <div class="row">
             <div class="col">
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="col">
-        <table class="table table-sm">
+        <table class="table table-sm table-borderless"">
             <tbody>
                 <tr>
                     <th>Brand</th>
@@ -57,13 +57,18 @@
                 </tr>
             </tbody>
         </table>
+        <h6>Specifications</h6>
+        <table class="table table-sm">
+            {% for criteria in product_criteria %}
+            <tr>
+                <td>{{ criteria.NAME }}</td>
+                <td>{{ criteria.VALUE }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
-<p>{{ manufacturer_logo }}</p>
-<p>{{ product_main_info }}</p>
-<p>{{ product_criteria }}</p>
 <p>{{ product_additional_info }}</p>
 <p>{{ product_cross_reference }}</p>
 <p>{{ product_vehicles_applicability }}</p>
-<p>{{ product_media }}</p>
 {% endblock %}
