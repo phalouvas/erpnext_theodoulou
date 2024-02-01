@@ -605,7 +605,7 @@ class TheodoulouQuery():
 
         return data
     
-    def get_product_cross_reference(self, dlnr, artnr):
+    def get_product_oe_numbers(self, dlnr, artnr):
         data = frappe.db.sql(f"""
             SELECT DISTINCT
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS CROSS_BRAND,

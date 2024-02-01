@@ -24,7 +24,7 @@ def get_context(context):
     context.product_main_info = query_engine.get_product_main_info(manufacturer_id, product_id)
     context.product_criteria = query_engine.get_product_criteria(manufacturer_id, product_id)
     context.product_additional_info = query_engine.get_product_additional_info(manufacturer_id, product_id)
-    context.product_cross_reference = query_engine.get_product_cross_reference(manufacturer_id, product_id)
+    context.product_oe_numbers = query_engine.get_product_oe_numbers(manufacturer_id, product_id)
     context.product_vehicles_applicability = query_engine.get_product_vehicles_applicability(manufacturer_id, product_id)
     context.product_media = query_engine.get_product_media(manufacturer_id, product_id)
     context.manufacturer_logo = query_engine.get_manufacturer_logo(manufacturer_id)
