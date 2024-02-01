@@ -866,3 +866,141 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data[0]['PATH']
+    
+    def get_product_analogs(self, dlnr, artnr, search_brand = None):
+        if search_brand:
+            filter_brand = f"AND T100.LBEZNR = { search_brand }"
+        else:
+            filter_brand = ""
+
+        data = frappe.db.sql(f"""
+            SELECT 
+                T.DLNR AS DLNR,
+                T001.MARKE AS BRAND,
+                T.ARTNR AS ARTNR,
+                IFNULL(GET_BEZNR(T320.BEZNR, @SPRACHNR), '') AS `NAMEPRODUCT`,
+                IFNULL(GET_BEZNR(T324.BEZNR, @SPRACHNR), '') AS ASSEMBLY_GROUP,
+                GROUP_CONCAT(DISTINCT CONCAT('[',T.TRUST,'%] - ',T.NOTE,CHAR(10)) SEPARATOR '') AS NOTE,
+                IF(MIN(T.TRUST) = MAX(T.TRUST), MIN(T.TRUST), CONCAT(MIN(CAST(T.TRUST AS UNSIGNED)), ' - ', MAX(CAST(T.TRUST AS UNSIGNED)))) AS TRUST_IN
+            FROM (
+                    -- SEARCH IN STANDARD TABLE PRODUCTS TECDOC SUPPLIERS - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T200.DLNR AS DLNR,					
+                        T200.ARTNR AS ARTNR,
+                        'FOUND IN MAIN TABLE PRODUCTS' AS NOTE,
+                        '100' AS TRUST
+                    FROM `200_fixed` AS T200
+                        LEFT JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                    WHERE T200.ARTNR_SHORT = @SHORT_SEARCH_ARTNR
+                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND T001.MARKE = @SEARCH_BRAND), 1, 0) = 1
+                    
+                        UNION
+                        
+                    -- SEARCH IN EAN TABLE - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T209.DLNR AS DLNR,					
+                        T209.ARTNR AS ARTNR,
+                        'FOUND IN EAN TABLE' AS NOTE,
+                        '100' AS TRUST
+                    FROM `209` AS T209					
+                    WHERE T209.EANNR = @SHORT_SEARCH_ARTNR	
+                    
+                        UNION
+                        
+                    -- SEARCH IN SUPERSEDED TABLE - MUST USE RIGHT ARTNUMBER
+                    SELECT
+                        T204.DLNR AS DLNR,					
+                        T204.ARTNR AS ARTNR,
+                        'FOUND IN SUPERSEDED TABLE PRODUCTS' AS NOTE,
+                        '100' AS TRUST
+                    FROM `204` AS T204
+                        LEFT JOIN `001` AS T001 ON T001.DLNR = T204.DLNR
+                    WHERE T204.ERSATZNR = @SEARCH_ARTNR
+                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND T001.MARKE = @SEARCH_BRAND), 1, 0) = 1					
+                        
+                        UNION
+                        
+                    -- SEARCH IN USER NUMBER TABLE - MUST USE RIGHT NUMBER
+                    SELECT
+                        T207.DLNR AS DLNR,					
+                        T207.ARTNR AS ARTNR,
+                        'FOUND IN USERNUMBER TABLE' AS NOTE,
+                        '100' AS TRUST
+                    FROM `207` AS T207					
+                    WHERE T207.GEBRNR = @SEARCH_ARTNR
+                        
+                        UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW TECDOC PRODUCTS WHERE IS INCLUDED SEARCH NUMBER - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T203.DLNR AS DLNR,
+                        T203.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE PRODUCT WITH SEARCH NUMBER "',@SHORT_SEARCH_ARTNR,'" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'" INCLUDED IN OTHER PRODUCTS]') AS NOTE,
+                        '90' AS TRUST
+                    FROM `203_fixed` AS T203					
+                        LEFT JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+                    WHERE T203.REFNRSHORT = @SHORT_SEARCH_ARTNR
+                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND GET_LBEZNR(T100.LBEZNR, 1) = @SEARCH_BRAND), 1, 0) = 1	
+                    
+                        UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW INCLUDED CROSSREFERENCE PRODUCTS THAT FOUND FOR MAIN SEARCH NUMBER PRODUCT - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T200_2.DLNR AS DLNR,					
+                        T200_2.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE OTHER PRODUCTS ARE INCLUDED IN PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
+                        '90' AS TRUST
+                    FROM `200_fixed` AS T200
+                        JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                        JOIN `203_fixed` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                        JOIN `001` AS T001_2 ON T001_2.KHERNR = T203.KHERNR
+                        JOIN `200_fixed` AS T200_2 ON T200_2.ARTNR_SHORT = T203.REFNRSHORT AND T200_2.DLNR = T001_2.DLNR					
+                    WHERE T200.ARTNR_SHORT = @SHORT_SEARCH_ARTNR
+                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND T001.MARKE = @SEARCH_BRAND), 1, 0) = 1				
+
+                        UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW ALL ANALOGS REGARDING OWN OE-NUMBERS FOR MAIN SEARCH NUMBER PRODUCT - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    -- QUERY WILL WORK ONLY WHEN USE SEARCHBRAND
+                    SELECT
+                        T203_2.DLNR AS DLNR,
+                        T203_2.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
+                        '80' AS TRUST
+                    FROM `200_fixed` AS T200
+                        JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                        JOIN `203_fixed` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                        JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND (T100.PKW = 1 OR T100.NKW = 1)
+                        JOIN `203_fixed` AS T203_2 ON T203_2.REFNRSHORT = T203.REFNRSHORT AND T203_2.KHERNR = T203.KHERNR															
+                    WHERE TRIM(@SEARCH_BRAND) <> ''
+                        AND T200.ARTNR_SHORT = @SHORT_SEARCH_ARTNR
+                        AND T001.MARKE = @SEARCH_BRAND
+                        
+                    /*	UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW ALL ANALOGS REGARDING OWN OE-NUMBERS FOR PRODUCTS THAT INCLUDE CROSREFERNCE SEARCH NUMBER - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    -- QUERY WILL WORK ONLY WHEN USE SEARCHBRAND
+                    -- THIS QUERY IS HARD FOR RESOURCES IN COMPLETE QUERY, BETTER RUN AS SEPARATE QUERY
+                    SELECT
+                        T203_3.DLNR AS DLNR,					
+                        T203_3.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCTS THAT INCLUDED CROSSREFERENCE SEARCH NUMBER "',@SHORT_SEARCH_ARTNR,'" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'"]') AS NOTE,
+                        '50' AS TRUST
+                    FROM `203_fixed` AS T203
+                        JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+                        JOIN `203_fixed` AS T203_2 ON T203_2.ARTNR = T203.ARTNR AND T203_2.DLNR = T203.DLNR
+                        JOIN `100` AS T100_2 ON T100_2.HERNR = T203_2.KHERNR AND (T100_2.PKW = 1 OR T100_2.NKW = 1)
+                        JOIN `203_fixed` AS T203_3 ON T203_3.REFNRSHORT = T203_2.REFNRSHORT AND T203_3.KHERNR = T203_2.KHERNR									
+                    WHERE TRIM(@SEARCH_BRAND) <> ''
+                        AND T203.REFNRSHORT = @SHORT_SEARCH_ARTNR
+                        AND GET_LBEZNR(T100.LBEZNR, 1) = @SEARCH_BRAND */
+                    
+                ) as T
+                JOIN `211` AS T211 ON T211.ARTNR = T.ARTNR AND T211.DLNR = T.DLNR
+                JOIN `320` AS T320 ON T320.GENARTNR = T211.GENARTNR
+                LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
+                LEFT JOIN `001` AS T001 ON T001.DLNR = T.DLNR	
+            GROUP BY T.DLNR, T.ARTNR;
+        """, as_dict=True)
+
+        return data
