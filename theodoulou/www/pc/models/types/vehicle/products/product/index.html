@@ -1,3 +1,4 @@
+{% from "theodoulou/templates/includes/macros.html" import render_product_analogs %}
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
@@ -136,38 +137,5 @@
         </table>
     </div>
 </div>
-<div class="row mt-8 shadow rounded">
-    <div class="row p-4">
-        <div class="col">
-            <div class="h5">Analogs</div>
-        </div>
-        <div class="col">
-            <input type="text" class="form-control" id="searchKey_ANA" placeholder="Search..." aria-label=" Search"
-                aria-describedby="btnGroupAddon">
-        </div>
-    </div>
-    <div style="max-height: 300px; overflow-y: auto; width: 100%;">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Brand</th>
-                    <th>Name</th>
-                    <th>Product</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in product_analogs %}
-                <tr class="searchContainer_ANA"  data-name="{{ product.BRAND | lower }} {{ product.ARTNR | lower}}">
-                    <td>{{ product.BRAND }}</td>
-                    <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
-                    <td>
-                        <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}"
-                            class="badge badge-info">{{ product.ARTNR }}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+{{ render_product_analogs(product_analogs) }}
 {% endblock %}
