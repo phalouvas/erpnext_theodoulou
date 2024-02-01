@@ -70,6 +70,7 @@
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">OE Numbers</div>
+    <div  style="max-height: 300px; overflow-y: auto; width: 100%;">
     <table class="table table-sm">
         <tbody>
             {% for key, value in product_oe_numbers.items() %}
@@ -83,7 +84,8 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>      
+    </table>   
+</div>   
 </div>
 <div class="row mt-8 shadow rounded">
     <div class="h5 p-4">Suitable Vehicles</div>
