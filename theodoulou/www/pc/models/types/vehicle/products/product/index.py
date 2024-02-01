@@ -21,7 +21,8 @@ def get_context(context):
     product_id = frappe.request.args.get('product_id')
 
     query_engine = TheodoulouQuery()
-    context.product_info = query_engine.get_product(manufacturer_id, product_id)
+    context.product_info = query_engine.get_product_info(manufacturer_id, product_id)
+    context.product_criteria = query_engine.get_product_criteria(manufacturer_id, product_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
 

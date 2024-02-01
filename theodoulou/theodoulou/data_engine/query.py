@@ -507,7 +507,7 @@ class TheodoulouQuery():
 
         return data
     
-    def get_product(self, dlnr, artnr):
+    def get_product_info(self, dlnr, artnr):
         data = frappe.db.sql(f"""
             SELECT
                 -- PRODUCT TABLE
@@ -570,3 +570,21 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data[0]
+    
+    def get_product_criteria(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                IFNULL(GET_BEZNR(T050.BEZNR, { self.language }), '') AS NAME,						
+                IF(T050.TYP <> 'K', 
+                    T210.KRITWERT, 
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(T050.TABNR, T210.KRITWERT, { self.language }), '')
+                    ) AS VALUE
+            FROM `200` AS T200		
+                JOIN `210` AS T210 ON T210.ARTNR = T200.ARTNR AND T210.DLNR = T200.DLNR
+                JOIN `050` AS T050 ON T050.DLNR IN (T200.DLNR, 9999) AND T050.KRITNR = T210.KRITNR
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            ORDER BY T210.SORTNR;
+        """, as_dict=True)
+
+        return data
