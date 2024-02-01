@@ -1,6 +1,31 @@
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
+<div class="row row-cols-2">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <a href="{{ manufacturer_logo }}" target="_blank">
+                    <img src="{{ manufacturer_logo }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
+                        style="max-height: 100px;">
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            {% for image in product_media %}
+            <div class="col-sm-1 col-md-3 col-lg-4">
+                <a href="{{ image.PATH }}" target="_blank">
+                    <img src="{{ image.PATH }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
+                        style="max-height: 100px;">
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col">
+        asdf
+    </div>
+</div>
 <p>{{ manufacturer_logo }}</p>
 <p>{{ product_main_info }}</p>
 <p>{{ product_criteria }}</p>
