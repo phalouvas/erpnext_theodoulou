@@ -690,7 +690,7 @@ class TheodoulouQuery():
                 FROM `200` AS P
                     JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
                     JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND T100.VGL = 0				
-                    JOIN `203_fixed` AS CR ON CR.REFNR = T203.REFNR AND CR.KHERNR = T203.KHERNR				
+                    JOIN `203` AS CR ON CR.REFNR = T203.REFNR AND CR.KHERNR = T203.KHERNR				
                     JOIN `203` AS T203_2 ON T203_2.ARTNR = CR.ARTNR AND T203_2.DLNR = CR.DLNR
                     JOIN `100` AS T100_1 ON T100_1.HERNR = T203_2.KHERNR
                 WHERE P.ARTNR LIKE '{artnr}'
@@ -867,19 +867,15 @@ class TheodoulouQuery():
 
         return data[0]['PATH']
     
-    def get_product_analogs(self, dlnr, artnr, search_brand = None):
-        if search_brand:
-            filter_brand = f"AND T100.LBEZNR = { search_brand }"
-        else:
-            filter_brand = ""
+    def get_product_analogs(self, dlnr, artnr, search_brand = ''):
 
         data = frappe.db.sql(f"""
             SELECT 
                 T.DLNR AS DLNR,
                 T001.MARKE AS BRAND,
                 T.ARTNR AS ARTNR,
-                IFNULL(GET_BEZNR(T320.BEZNR, @SPRACHNR), '') AS `NAMEPRODUCT`,
-                IFNULL(GET_BEZNR(T324.BEZNR, @SPRACHNR), '') AS ASSEMBLY_GROUP,
+                IFNULL(GET_BEZNR(T320.BEZNR, {self.language}, '') AS `NAMEPRODUCT`,
+                IFNULL(GET_BEZNR(T324.BEZNR, {self.language}, '') AS ASSEMBLY_GROUP,
                 GROUP_CONCAT(DISTINCT CONCAT('[',T.TRUST,'%] - ',T.NOTE,CHAR(10)) SEPARATOR '') AS NOTE,
                 IF(MIN(T.TRUST) = MAX(T.TRUST), MIN(T.TRUST), CONCAT(MIN(CAST(T.TRUST AS UNSIGNED)), ' - ', MAX(CAST(T.TRUST AS UNSIGNED)))) AS TRUST_IN
             FROM (
@@ -889,10 +885,10 @@ class TheodoulouQuery():
                         T200.ARTNR AS ARTNR,
                         'FOUND IN MAIN TABLE PRODUCTS' AS NOTE,
                         '100' AS TRUST
-                    FROM `200_fixed` AS T200
+                    FROM `200` AS T200
                         LEFT JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
-                    WHERE T200.ARTNR_SHORT = @SHORT_SEARCH_ARTNR
-                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND T001.MARKE = @SEARCH_BRAND), 1, 0) = 1
+                    WHERE T200.ARTNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1
                     
                         UNION
                         
@@ -903,7 +899,7 @@ class TheodoulouQuery():
                         'FOUND IN EAN TABLE' AS NOTE,
                         '100' AS TRUST
                     FROM `209` AS T209					
-                    WHERE T209.EANNR = @SHORT_SEARCH_ARTNR	
+                    WHERE T209.EANNR = '{artnr}'	
                     
                         UNION
                         
@@ -915,8 +911,8 @@ class TheodoulouQuery():
                         '100' AS TRUST
                     FROM `204` AS T204
                         LEFT JOIN `001` AS T001 ON T001.DLNR = T204.DLNR
-                    WHERE T204.ERSATZNR = @SEARCH_ARTNR
-                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND T001.MARKE = @SEARCH_BRAND), 1, 0) = 1					
+                    WHERE T204.ERSATZNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1					
                         
                         UNION
                         
@@ -927,7 +923,7 @@ class TheodoulouQuery():
                         'FOUND IN USERNUMBER TABLE' AS NOTE,
                         '100' AS TRUST
                     FROM `207` AS T207					
-                    WHERE T207.GEBRNR = @SEARCH_ARTNR
+                    WHERE T207.GEBRNR = '{artnr}'
                         
                         UNION
                         
@@ -935,12 +931,12 @@ class TheodoulouQuery():
                     SELECT
                         T203.DLNR AS DLNR,
                         T203.ARTNR AS ARTNR,
-                        CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE PRODUCT WITH SEARCH NUMBER "',@SHORT_SEARCH_ARTNR,'" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'" INCLUDED IN OTHER PRODUCTS]') AS NOTE,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE PRODUCT WITH SEARCH NUMBER "','{artnr}','" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'" INCLUDED IN OTHER PRODUCTS]') AS NOTE,
                         '90' AS TRUST
-                    FROM `203_fixed` AS T203					
+                    FROM `203` AS T203					
                         LEFT JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
-                    WHERE T203.REFNRSHORT = @SHORT_SEARCH_ARTNR
-                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND GET_LBEZNR(T100.LBEZNR, 1) = @SEARCH_BRAND), 1, 0) = 1	
+                    WHERE T203.REFNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND GET_LBEZNR(T100.LBEZNR, 1) = '{search_brand}'), 1, 0) = 1	
                     
                         UNION
                         
@@ -950,13 +946,13 @@ class TheodoulouQuery():
                         T200_2.ARTNR AS ARTNR,
                         CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE OTHER PRODUCTS ARE INCLUDED IN PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
                         '90' AS TRUST
-                    FROM `200_fixed` AS T200
+                    FROM `200` AS T200
                         JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
-                        JOIN `203_fixed` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                        JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
                         JOIN `001` AS T001_2 ON T001_2.KHERNR = T203.KHERNR
-                        JOIN `200_fixed` AS T200_2 ON T200_2.ARTNR_SHORT = T203.REFNRSHORT AND T200_2.DLNR = T001_2.DLNR					
-                    WHERE T200.ARTNR_SHORT = @SHORT_SEARCH_ARTNR
-                        AND IF(TRIM(@SEARCH_BRAND) = '' OR (TRIM(@SEARCH_BRAND) <> '' AND T001.MARKE = @SEARCH_BRAND), 1, 0) = 1				
+                        JOIN `200` AS T200_2 ON T200_2.ARTNR = T203.REFNR AND T200_2.DLNR = T001_2.DLNR					
+                    WHERE T200.ARTNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1				
 
                         UNION
                         
@@ -967,14 +963,14 @@ class TheodoulouQuery():
                         T203_2.ARTNR AS ARTNR,
                         CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
                         '80' AS TRUST
-                    FROM `200_fixed` AS T200
+                    FROM `200` AS T200
                         JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
-                        JOIN `203_fixed` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                        JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
                         JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND (T100.PKW = 1 OR T100.NKW = 1)
-                        JOIN `203_fixed` AS T203_2 ON T203_2.REFNRSHORT = T203.REFNRSHORT AND T203_2.KHERNR = T203.KHERNR															
-                    WHERE TRIM(@SEARCH_BRAND) <> ''
-                        AND T200.ARTNR_SHORT = @SHORT_SEARCH_ARTNR
-                        AND T001.MARKE = @SEARCH_BRAND
+                        JOIN `203` AS T203_2 ON T203_2.REFNR = T203.REFNR AND T203_2.KHERNR = T203.KHERNR															
+                    WHERE TRIM('{search_brand}') <> ''
+                        AND T200.ARTNR = '{artnr}'
+                        AND T001.MARKE = '{search_brand}'
                         
                     /*	UNION
                         
@@ -984,16 +980,16 @@ class TheodoulouQuery():
                     SELECT
                         T203_3.DLNR AS DLNR,					
                         T203_3.ARTNR AS ARTNR,
-                        CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCTS THAT INCLUDED CROSSREFERENCE SEARCH NUMBER "',@SHORT_SEARCH_ARTNR,'" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'"]') AS NOTE,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCTS THAT INCLUDED CROSSREFERENCE SEARCH NUMBER "','{artnr}','" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'"]') AS NOTE,
                         '50' AS TRUST
-                    FROM `203_fixed` AS T203
+                    FROM `203` AS T203
                         JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
-                        JOIN `203_fixed` AS T203_2 ON T203_2.ARTNR = T203.ARTNR AND T203_2.DLNR = T203.DLNR
+                        JOIN `203` AS T203_2 ON T203_2.ARTNR = T203.ARTNR AND T203_2.DLNR = T203.DLNR
                         JOIN `100` AS T100_2 ON T100_2.HERNR = T203_2.KHERNR AND (T100_2.PKW = 1 OR T100_2.NKW = 1)
-                        JOIN `203_fixed` AS T203_3 ON T203_3.REFNRSHORT = T203_2.REFNRSHORT AND T203_3.KHERNR = T203_2.KHERNR									
-                    WHERE TRIM(@SEARCH_BRAND) <> ''
-                        AND T203.REFNRSHORT = @SHORT_SEARCH_ARTNR
-                        AND GET_LBEZNR(T100.LBEZNR, 1) = @SEARCH_BRAND */
+                        JOIN `203` AS T203_3 ON T203_3.REFNR = T203_2.REFNR AND T203_3.KHERNR = T203_2.KHERNR									
+                    WHERE TRIM('{search_brand}') <> ''
+                        AND T203.REFNR = '{artnr}'
+                        AND GET_LBEZNR(T100.LBEZNR, 1) = '{search_brand}' */
                     
                 ) as T
                 JOIN `211` AS T211 ON T211.ARTNR = T.ARTNR AND T211.DLNR = T.DLNR
