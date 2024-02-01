@@ -513,6 +513,7 @@ class TheodoulouQuery():
                 -- PRODUCT TABLE
                 T200.ARTNR AS `ARTNR`, 
                 T200.DLNR AS `DLNR`, 
+                T001.MARKE AS MARKE,
                 IFNULL(GET_BEZNR(T200.BEZNR, { self.language }), '') AS `PREFIXFOR_NAMEPRODUCT`, 
                 (CASE
                     WHEN T200.KZSB = 1 THEN 'SELF-SERVICE PACKING'				
@@ -563,8 +564,9 @@ class TheodoulouQuery():
                 LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
             WHERE T200.ARTNR = '{ artnr }'
                 AND T200.DLNR = { dlnr };
         """, as_dict=True)
 
-        return data
+        return data[0]
