@@ -620,3 +620,82 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
+    
+    def get_product_vehicles_applicability(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                T.KTYPE,
+                T.VKNZIELART,
+                T.MANUFACTURER,
+                T.MODEL,
+                T.TYPE,
+                T.BJVON,
+                T.BJBIS,
+                T.KW,
+                T.PS,
+                T.CCM,
+                T.BODYTYPE,
+                T.ENGINETYPE,
+                T.LISTENGINES
+            FROM (
+                -- PASSANGER
+                SELECT
+                    T120.KTYPNR AS `KTYPE`, 
+                    T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
+                    GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
+                    GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
+                    GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
+                    T120.BJVON AS `BJVON`, 
+                    IFNULL(T120.BJBIS, 'to now') AS `BJBIS`, 
+                    IFNULL(T120.KW, '') AS `KW`, 
+                    IFNULL(T120.PS, '') AS `PS`, 
+                    IFNULL(T120.CCMTECH, '') AS `CCM`, 
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(86, T120.AUFBAUART, { self.language }), '') AS `BODYTYPE`,
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T120.MOTART, { self.language }), '') AS `ENGINETYPE`, 
+                    IFNULL((SELECT 
+                            GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
+                        FROM `125` AS T125
+                            JOIN `155` AS T155 ON T155.MOTNR = T125.MOTNR
+                        WHERE T125.KTYPNR = T120.KTYPNR), '') AS LISTENGINES
+                FROM `200` AS T200
+                    JOIN `400` AS T400 ON T400.ARTNR = T200.ARTNR AND T400.DLNR = T200.DLNR AND T400.VKNZIELART = 2
+                    JOIN `120` AS T120 ON T120.KTYPNR = T400.VKNZIELNR
+                    JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR			
+                    JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+                WHERE T200.ARTNR LIKE '{artnr}'
+                    AND T200.DLNR = {dlnr}	
+                
+                    UNION
+                    
+                -- TRUCK
+                SELECT
+                    T532.NTYPNR AS `KTYPE`, 
+                    T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
+                    GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
+                    GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
+                    GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
+                    T532.BJVON AS `BJVON`, 
+                    IFNULL(T532.BJBIS, 'to now') AS `BJBIS`, 		
+                    IFNULL(T532.KWVON, '') AS `KW`, 
+                    IFNULL(T532.PSVON, '') AS `PS`, 
+                    IFNULL(T532.CCMTECH, '') AS `CCM`, 
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `BODYTYPE`,
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `ENGINETYPE`, 
+                    IFNULL((SELECT 
+                            GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
+                        FROM `537` AS T537
+                            JOIN `155` AS T155 ON T155.MOTNR = T537.MOTNR
+                        WHERE T537.NTYPNR = T532.NTYPNR), '') AS LISTENGINES
+                FROM `200` AS T200
+                    JOIN `400` AS T400 ON T400.ARTNR = T200.ARTNR AND T400.DLNR = T200.DLNR AND T400.VKNZIELART = 16
+                    JOIN `532` AS T532 ON T532.NTYPNR = T400.VKNZIELNR
+                    JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
+                    JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+                WHERE T200.ARTNR LIKE '{artnr}'
+                    AND T200.DLNR = {dlnr}	
+                ) AS T
+            ORDER BY MANUFACTURER, MODEL, TYPE; 		
+        """, as_dict=True)
+
+        return data
+    
