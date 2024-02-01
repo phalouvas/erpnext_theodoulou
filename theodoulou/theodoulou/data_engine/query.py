@@ -507,7 +507,7 @@ class TheodoulouQuery():
 
         return data
     
-    def get_product_info(self, dlnr, artnr):
+    def get_product_main_info(self, dlnr, artnr):
         data = frappe.db.sql(f"""
             SELECT
                 -- PRODUCT TABLE

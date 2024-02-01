@@ -21,13 +21,13 @@ def get_context(context):
     product_id = frappe.request.args.get('product_id')
 
     query_engine = TheodoulouQuery()
-    context.product_info = query_engine.get_product_info(manufacturer_id, product_id)
+    context.product_main_info = query_engine.get_product_main_info(manufacturer_id, product_id)
     context.product_criteria = query_engine.get_product_criteria(manufacturer_id, product_id)
 
     context.categories_tree = query_engine.get_categories_tree("PKW")
 
     context.no_cache = 0
-    context.title = f"{context.product_info.MARKE} - {context.product_info.ARTNR}"
+    context.title = f"{context.product_main_info.MARKE} - {context.product_main_info.ARTNR}"
     context.parents = [
         {"name": frappe._("Home"), "route": "/"}, 
         {"name": frappe._("Passenger Cars"), "route": "/pc"}, 
