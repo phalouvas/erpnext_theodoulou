@@ -109,7 +109,9 @@
             <tr>
                 <td>{{ vehicle.MANUFACTURER }}</td>
                 <td>{{ vehicle.MODEL }}</td>
-                <td>{{ vehicle.TYPE }}</td>
+                <td>
+                    <a href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{ vehicle.TYPE }}</a>
+                </td>
                 <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
                 <td>{{ vehicle.LISTENGINES }}</td>
                 <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{ vehicle.CCM }}cc</td>
@@ -118,5 +120,4 @@
         </tbody>
     </table>
 </div>
-<p>{{ product_vehicles_applicability }}</p>
 {% endblock %}
