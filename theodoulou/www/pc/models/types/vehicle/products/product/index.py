@@ -17,10 +17,10 @@ def get_context(context):
     needyear = frappe.request.args.get('needyear') or frappe.request.cookies.get('needyear')
     model_id = frappe.request.args.get('model_id') or frappe.request.cookies.get('model_id')
     context.node_id = frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id')
-    manufacturer_id = frappe.request.args.get('manufacturer_id')
     product_id = frappe.request.args.get('product_id')
 
     query_engine = TheodoulouQuery()
+    manufacturer_id = frappe.request.args.get('manufacturer_id') or query_engine.dlnr_from_artnr(product_id)
     context.product_main_info = query_engine.get_product_main_info(manufacturer_id, product_id)
     context.product_criteria = query_engine.get_product_criteria(manufacturer_id, product_id)
     context.product_additional_info = query_engine.get_product_additional_info(manufacturer_id, product_id)

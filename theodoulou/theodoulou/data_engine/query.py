@@ -507,6 +507,16 @@ class TheodoulouQuery():
 
         return data
     
+    def dlnr_from_artnr(self, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                T200.DLNR
+            FROM `200` AS T200
+            WHERE T200.ARTNR = '{ artnr }';
+        """, as_dict=True)
+
+        return data[0]['DLNR']
+    
     def get_product_main_info(self, dlnr, artnr):
         data = frappe.db.sql(f"""
             SELECT
@@ -620,6 +630,74 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
+    
+    def get_product_oe_numbers_advanced(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT 
+                T.CROSS_BRAND,
+                T.CROSS_ARTNR,
+                T.NOTE
+            FROM (
+                -- SHOW STANDARD DATA SUPPLIER
+                SELECT 
+                    GET_LBEZNR(T100.LBEZNR, { self.language }) AS CROSS_BRAND,
+                    IFNULL(P2.ARTNR, T203.REFNR) AS CROSS_ARTNR,
+                    IF(T100.VGL = 1, 'AFTERMARKET RPODUCT', 'OE PRODUCT') AS NOTE
+                FROM `200` AS P
+                    JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
+                    JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+                    LEFT JOIN `001` AS T001 ON T001.KHERNR = T203.KHERNR
+                    LEFT JOIN `200` AS P2 ON P2.ARTNR = CLEAN_NUMBER(T203.REFNR) AND P2.DLNR = T001.DLNR
+                WHERE P.ARTNR LIKE '{artnr}'
+                    AND P.DLNR = {dlnr}
+                
+                    UNION
+                    
+                -- SEARCHING PRODUCTS THAT USE SERACH PRODUCT IN OWN CROSSREF DATA
+                SELECT
+                    T001_1.MARKE AS CROSS_BRAND,
+                    CR.ARTNR AS CROSS_ARTNR,
+                    'AFTERMARKET RPODUCT' AS NOTE
+                FROM `203` AS CR
+                    JOIN `100` AS T100 ON T100.HERNR = CR.KHERNR
+                    JOIN `001` AS T001 ON T001.KHERNR = T100.HERNR
+                    JOIN `001` AS T001_1 ON T001_1.DLNR = CR.DLNR
+                WHERE CR.REFNR LIKE '{ artnr }'
+                    AND T001.DLNR = { dlnr }			
+                    
+                    UNION
+                    
+                -- SEARCHING MAIN PRODUCTS THAT ARE ANALOGS REGARDING OWN OE-PRODUCTS
+                SELECT 
+                    T001_1.MARKE AS CROSS_BRAND,
+                    CR.ARTNR AS CROSS_ARTNR,				
+                    'AFTERMARKET RPODUCT' AS NOTE
+                FROM `200` AS P
+                    JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
+                    JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND T100.VGL = 0				
+                    JOIN `203` AS CR ON CR.REFNR = T203.REFNR AND CR.KHERNR = T203.KHERNR								
+                    JOIN `001` AS T001_1 ON T001_1.DLNR = CR.DLNR
+                WHERE P.ARTNR LIKE '{artnr}'
+                    AND P.DLNR = {dlnr}					
+                    
+                /*	UNION
+                    
+                -- SEARCHING ALL CORSSREF PRODUCTS FOR PRODUCTS THAT ARE ANALOGS REGARDING OWN OE-PRODUCTS !!!! THIS POINT CAN HAVE AFFECT ON RIGHT LIST CROSSREFERENCE, YOU CAN DISABLE THIS POINT
+                SELECT 
+                    GET_LBEZNR(T100_1.LBEZNR, { self.language }) AS CROSS_BRAND,
+                    T203_2.REFNR AS CROSS_ARTNR,				
+                    IF(T100_1.VGL = 1, 'AFTERMARKET RPODUCT', 'OE PRODUCT') AS NOTE
+                FROM `200` AS P
+                    JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
+                    JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND T100.VGL = 0				
+                    JOIN `203_fixed` AS CR ON CR.REFNR = T203.REFNR AND CR.KHERNR = T203.KHERNR				
+                    JOIN `203` AS T203_2 ON T203_2.ARTNR = CR.ARTNR AND T203_2.DLNR = CR.DLNR
+                    JOIN `100` AS T100_1 ON T100_1.HERNR = T203_2.KHERNR
+                WHERE P.ARTNR LIKE '{artnr}'
+                    AND P.DLNR = {dlnr}	*/							
+                ) AS T
+            ORDER BY CROSS_BRAND, CROSS_ARTNR; 
+        """, as_dict=True)
     
     def get_product_vehicles_applicability(self, dlnr, artnr):
         data = frappe.db.sql(f"""

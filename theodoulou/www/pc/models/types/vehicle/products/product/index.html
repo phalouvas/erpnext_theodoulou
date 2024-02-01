@@ -83,7 +83,11 @@
             <tr>
                 <td>{{ product.CROSS_BRAND }}</td>
                 <td>
+                    {% if product.NOTE == 'OE PRODUCT' %}
                     {{ product.CROSS_ARTNR }}
+                    {% else %}
+                    <a href="/pc/models/types/vehicle/products/product?product_id={{ product.CROSS_ARTNR }}" class="text-info">{{ product.CROSS_ARTNR }}</a>
+                    {% endif %}
                 </td>
                 <td>{{ product.NOTE }}</td>
             </tr>
