@@ -19,8 +19,6 @@
             </div>
             {% endfor %}
         </div>
-    </div>
-    <div class="col">
         <table class="table table-sm table-borderless"">
             <tbody>
                 <tr>
@@ -57,6 +55,8 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="col">        
         <h6>Specifications</h6>
         <table class="table table-sm">
             {% for criteria in product_criteria %}
@@ -68,7 +68,6 @@
         </table>
     </div>
 </div>
-<p>{{ product_additional_info }}</p>
 <p>{{ product_cross_reference }}</p>
 <p>{{ product_vehicles_applicability }}</p>
 {% endblock %}
