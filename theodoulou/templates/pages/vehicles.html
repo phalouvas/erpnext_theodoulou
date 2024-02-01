@@ -7,10 +7,12 @@
 
 {% block header_actions %}
 <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="input-group mr-2">
-        <input type="text" class="form-control" id="searchKey_Product" placeholder="Number, Article, OE...."
-            aria-label=" Search" aria-describedby="btnGroupAddon">
-    </div>
+    <form class="form-inline mr-2" action="/pc/models/types/vehicle/products" method="get">
+        <div class="form-group mr-2">
+            <input type="text" class="form-control" id="searchKey_Product" name="searchKey_Product" placeholder="Number, Article, OE...." aria-label="Search" aria-describedby="btnGroupAddon">
+        </div>
+        <button type="submit" class="btn btn-primary">Go</button>
+      </form>    
     {%- block header_actions_2 -%}{%- endblock -%}
 </div>
 {% endblock %}
