@@ -499,6 +499,7 @@ class TheodoulouQuery():
                 AND T301.NODE_ID = { node_id }
                 AND T400.VKNZIELART = { VKNZIELART }
                 AND T400.VKNZIELNR = { vehicle_id }
+                AND T232.SORTNR = 1
                 { filter_manufacturer }
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
