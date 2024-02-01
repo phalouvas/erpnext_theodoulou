@@ -877,7 +877,7 @@ class TheodoulouQuery():
 
         return data[0]['PATH']
     
-    def get_product_analogs(self, dlnr, artnr, search_brand = ''):
+    def get_product_analogs(self, artnr, search_brand = ''):
 
         data = frappe.db.sql(f"""
             SELECT 

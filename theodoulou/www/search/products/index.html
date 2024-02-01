@@ -1,0 +1,6 @@
+{% from "theodoulou/templates/includes/macros.html" import render_product_analogs %}
+{% extends "theodoulou/templates/pages/vehicles.html" %}
+
+{% block left_content %}
+{{ render_product_analogs(product_analogs) }}
+{% endblock %}
