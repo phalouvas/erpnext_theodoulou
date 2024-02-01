@@ -499,6 +499,7 @@ class TheodoulouQuery():
                 AND T301.NODE_ID = { node_id }
                 AND T400.VKNZIELART = { VKNZIELART }
                 AND T400.VKNZIELNR = { vehicle_id }
+                AND T232.SORTNR = 1
                 { filter_manufacturer }
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
@@ -506,12 +507,23 @@ class TheodoulouQuery():
 
         return data
     
-    def get_product(self, dlnr, artnr):
+    def dlnr_from_artnr(self, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                T200.DLNR
+            FROM `200` AS T200
+            WHERE T200.ARTNR = '{ artnr }';
+        """, as_dict=True)
+
+        return data[0]['DLNR']
+    
+    def get_product_main_info(self, dlnr, artnr):
         data = frappe.db.sql(f"""
             SELECT
                 -- PRODUCT TABLE
                 T200.ARTNR AS `ARTNR`, 
                 T200.DLNR AS `DLNR`, 
+                T001.MARKE AS MARKE,
                 IFNULL(GET_BEZNR(T200.BEZNR, { self.language }), '') AS `PREFIXFOR_NAMEPRODUCT`, 
                 (CASE
                     WHEN T200.KZSB = 1 THEN 'SELF-SERVICE PACKING'				
@@ -562,8 +574,410 @@ class TheodoulouQuery():
                 LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
             WHERE T200.ARTNR = '{ artnr }'
                 AND T200.DLNR = { dlnr };
+        """, as_dict=True)
+
+        return data[0]
+    
+    def get_product_criteria(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                IFNULL(GET_BEZNR(T050.BEZNR, { self.language }), '') AS NAME,						
+                IF(T050.TYP <> 'K', 
+                    T210.KRITWERT, 
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(T050.TABNR, T210.KRITWERT, { self.language }), '')
+                    ) AS VALUE
+            FROM `200` AS T200		
+                JOIN `210` AS T210 ON T210.ARTNR = T200.ARTNR AND T210.DLNR = T200.DLNR
+                JOIN `050` AS T050 ON T050.DLNR IN (T200.DLNR, 9999) AND T050.KRITNR = T210.KRITNR
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            ORDER BY T210.SORTNR;
+        """, as_dict=True)
+
+        return data
+    
+    def get_product_additional_info(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(72, T206.INFART, { self.language }), '') AS `INFART`,
+                T035.TEXT AS ADDITIONAL_TEXT
+            FROM `200` AS T200
+                JOIN `206` AS T206 ON T206.ARTNR = T200.ARTNR AND T206.DLNR = T200.DLNR
+                JOIN `035` AS T035 ON T035.DLNR = T200.DLNR AND T035.TBSNR = T206.TBSNR AND T035.SPRACHNR = { self.language }
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            HAVING ADDITIONAL_TEXT IS NOT NULL
+            ORDER BY T206.SORTNR;
+        """, as_dict=True)
+
+        return data
+    
+    def get_product_oe_numbers(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                GET_LBEZNR(T100.LBEZNR, { self.language }) AS CROSS_BRAND,
+                T203.REFNR AS CROSS_ARTNR,
+                IF(T100.VGL = 1, 'AFTERMARKET RPODUCT', 'OE PRODUCT') AS NOTE
+            FROM `200` AS T200
+                JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            ORDER BY CROSS_BRAND;
+        """, as_dict=True)
+
+        return data
+    
+    def get_product_oe_numbers_advanced(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT 
+                T.CROSS_BRAND,
+                T.CROSS_ARTNR,
+                T.NOTE
+            FROM (
+                -- SHOW STANDARD DATA SUPPLIER
+                SELECT 
+                    GET_LBEZNR(T100.LBEZNR, { self.language }) AS CROSS_BRAND,
+                    IFNULL(P2.ARTNR, T203.REFNR) AS CROSS_ARTNR,
+                    IF(T100.VGL = 1, 'AFTERMARKET RPODUCT', 'OE PRODUCT') AS NOTE
+                FROM `200` AS P
+                    JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
+                    JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+                    LEFT JOIN `001` AS T001 ON T001.KHERNR = T203.KHERNR
+                    LEFT JOIN `200` AS P2 ON P2.ARTNR = CLEAN_NUMBER(T203.REFNR) AND P2.DLNR = T001.DLNR
+                WHERE P.ARTNR LIKE '{artnr}'
+                    AND P.DLNR = {dlnr}
+                
+                    UNION
+                    
+                -- SEARCHING PRODUCTS THAT USE SERACH PRODUCT IN OWN CROSSREF DATA
+                SELECT
+                    T001_1.MARKE AS CROSS_BRAND,
+                    CR.ARTNR AS CROSS_ARTNR,
+                    'AFTERMARKET RPODUCT' AS NOTE
+                FROM `203` AS CR
+                    JOIN `100` AS T100 ON T100.HERNR = CR.KHERNR
+                    JOIN `001` AS T001 ON T001.KHERNR = T100.HERNR
+                    JOIN `001` AS T001_1 ON T001_1.DLNR = CR.DLNR
+                WHERE CR.REFNR LIKE '{ artnr }'
+                    AND T001.DLNR = { dlnr }			
+                    
+                    UNION
+                    
+                -- SEARCHING MAIN PRODUCTS THAT ARE ANALOGS REGARDING OWN OE-PRODUCTS
+                SELECT 
+                    T001_1.MARKE AS CROSS_BRAND,
+                    CR.ARTNR AS CROSS_ARTNR,				
+                    'AFTERMARKET RPODUCT' AS NOTE
+                FROM `200` AS P
+                    JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
+                    JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND T100.VGL = 0				
+                    JOIN `203` AS CR ON CR.REFNR = T203.REFNR AND CR.KHERNR = T203.KHERNR								
+                    JOIN `001` AS T001_1 ON T001_1.DLNR = CR.DLNR
+                WHERE P.ARTNR LIKE '{artnr}'
+                    AND P.DLNR = {dlnr}					
+                    
+                /*	UNION
+                    
+                -- SEARCHING ALL CORSSREF PRODUCTS FOR PRODUCTS THAT ARE ANALOGS REGARDING OWN OE-PRODUCTS !!!! THIS POINT CAN HAVE AFFECT ON RIGHT LIST CROSSREFERENCE, YOU CAN DISABLE THIS POINT
+                SELECT 
+                    GET_LBEZNR(T100_1.LBEZNR, { self.language }) AS CROSS_BRAND,
+                    T203_2.REFNR AS CROSS_ARTNR,				
+                    IF(T100_1.VGL = 1, 'AFTERMARKET RPODUCT', 'OE PRODUCT') AS NOTE
+                FROM `200` AS P
+                    JOIN `203` AS T203 ON T203.ARTNR = P.ARTNR AND T203.DLNR = P.DLNR
+                    JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND T100.VGL = 0				
+                    JOIN `203` AS CR ON CR.REFNR = T203.REFNR AND CR.KHERNR = T203.KHERNR				
+                    JOIN `203` AS T203_2 ON T203_2.ARTNR = CR.ARTNR AND T203_2.DLNR = CR.DLNR
+                    JOIN `100` AS T100_1 ON T100_1.HERNR = T203_2.KHERNR
+                WHERE P.ARTNR LIKE '{artnr}'
+                    AND P.DLNR = {dlnr}	*/							
+                ) AS T
+            ORDER BY CROSS_BRAND, CROSS_ARTNR; 
+        """, as_dict=True)
+    
+    def get_product_vehicles_applicability(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                T.KTYPE,
+                T.VKNZIELART,
+                T.BRAND_ID,
+                T.MANUFACTURER,
+                T.MODEL_ID,
+                T.MODEL,
+                T.VEHICLE_ID,
+                T.TYPE,
+                T.BJVON,
+                T.BJBIS,
+                T.KW,
+                T.PS,
+                T.CCM,
+                T.BODYTYPE,
+                T.ENGINETYPE,
+                T.LISTENGINES
+            FROM (
+                -- PASSANGER
+                SELECT
+                    T120.KTYPNR AS `KTYPE`, 
+                    T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
+                    T100.HERNR AS BRAND_ID,  -- MANUFACTURER ID
+                    GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
+                    T110.KMODNR AS MODEL_ID,  -- MODEL ID
+                    GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
+                    T120.KTYPNR AS VEHICLE_ID,  -- VEHICLE ID
+                    GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
+                    T120.BJVON AS `BJVON`, 
+                    IFNULL(T120.BJBIS, 'now') AS `BJBIS`, 
+                    IFNULL(T120.KW, '') AS `KW`, 
+                    IFNULL(T120.PS, '') AS `PS`, 
+                    IFNULL(T120.CCMTECH, '') AS `CCM`, 
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(86, T120.AUFBAUART, { self.language }), '') AS `BODYTYPE`,
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T120.MOTART, { self.language }), '') AS `ENGINETYPE`, 
+                    IFNULL((SELECT 
+                            GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
+                        FROM `125` AS T125
+                            JOIN `155` AS T155 ON T155.MOTNR = T125.MOTNR
+                        WHERE T125.KTYPNR = T120.KTYPNR), '') AS LISTENGINES
+                FROM `200` AS T200
+                    JOIN `400` AS T400 ON T400.ARTNR = T200.ARTNR AND T400.DLNR = T200.DLNR AND T400.VKNZIELART = 2
+                    JOIN `120` AS T120 ON T120.KTYPNR = T400.VKNZIELNR
+                    JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR			
+                    JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+                WHERE T200.ARTNR LIKE '{artnr}'
+                    AND T200.DLNR = {dlnr}	
+                
+                    UNION
+                    
+                -- TRUCK
+                SELECT
+                    T532.NTYPNR AS `KTYPE`, 
+                    T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
+                    T100.HERNR AS BRAND_ID,  -- MANUFACTURER ID
+                    GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
+                    T110.KMODNR AS MODEL_ID,  -- MODEL ID
+                    GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
+                    T532.NTYPNR AS VEHICLE_ID,  -- VEHICLE ID
+                    GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
+                    T532.BJVON AS `BJVON`, 
+                    IFNULL(T532.BJBIS, 'now') AS `BJBIS`, 		
+                    IFNULL(T532.KWVON, '') AS `KW`, 
+                    IFNULL(T532.PSVON, '') AS `PS`, 
+                    IFNULL(T532.CCMTECH, '') AS `CCM`, 
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `BODYTYPE`,
+                    IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `ENGINETYPE`, 
+                    IFNULL((SELECT 
+                            GROUP_CONCAT(DISTINCT T155.MCODE SEPARATOR ', ')
+                        FROM `537` AS T537
+                            JOIN `155` AS T155 ON T155.MOTNR = T537.MOTNR
+                        WHERE T537.NTYPNR = T532.NTYPNR), '') AS LISTENGINES
+                FROM `200` AS T200
+                    JOIN `400` AS T400 ON T400.ARTNR = T200.ARTNR AND T400.DLNR = T200.DLNR AND T400.VKNZIELART = 16
+                    JOIN `532` AS T532 ON T532.NTYPNR = T400.VKNZIELNR
+                    JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
+                    JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+                WHERE T200.ARTNR LIKE '{artnr}'
+                    AND T200.DLNR = {dlnr}	
+                ) AS T
+            ORDER BY MANUFACTURER, MODEL, TYPE; 		
+        """, as_dict=True)
+
+        for row in data:
+            row['BJVON'] = self.convert_yyyymm(row['BJVON'])
+            row['BJBIS'] = self.convert_yyyymm(row['BJBIS'])
+
+        return data
+
+    def get_product_media(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
+                GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
+                GET_BEZNR_FOR_KEY_TABLE(141, T231.BEZNORM, { self.language }) AS `Standardised Graphic Header`, 
+                IFNULL(T231.BREIT, '') AS `Graphic width`, 
+                IFNULL(T231.HOCH, '') AS `Graphic height`, 
+                IFNULL(T231.FARBEN, '') AS `Colour Quantity`, 
+                IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
+                CONCAT(
+                    (CASE
+                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN '{ self.settings.pdf_url }' 
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN '{ self.settings.images_url }'
+                        ELSE ''
+                    END), -- URL SERVER WHERE PLACED IMAGES OR PDF
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT(T200.DLNR, '/')
+                        ELSE ''
+                    END), -- FOLDER
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN T231.BILDNAME
+                        ELSE ''
+                    END), -- NAME FILE
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT('.', T014.EXTENSION)
+                        ELSE T231.URL
+                    END) -- EXTENSION
+                    ) AS PATH
+            FROM `200` AS T200
+                JOIN `232` AS T232 ON T232.ARTNR = T200.ARTNR AND T232.DLNR = T200.DLNR
+                JOIN `231` AS T231 ON T231.BILDNR = T232.BILDNR AND T231.SPRACHNR IN ({ self.language }, 255) AND T231.DOKUMENTENART = T232.DOKUMENTENART
+                LEFT JOIN `014` AS T014 ON T014.DOKUMENTENART = T232.DOKUMENTENART
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            ORDER BY T232.SORTNR;
+        """, as_dict=True)
+
+        return data
+
+    def get_manufacturer_logo(self, dlnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
+                GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
+                GET_BEZNR_FOR_KEY_TABLE(141, T231.BEZNORM, { self.language }) AS `Standardised Graphic Header`, 
+                IFNULL(T231.BREIT, '') AS `Graphic width`, 
+                IFNULL(T231.HOCH, '') AS `Graphic height`, 
+                IFNULL(T231.FARBEN, '') AS `Colour Quantity`, 
+                IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
+                CONCAT(
+                    (CASE
+                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN '{ self.settings.pdf_url }' 
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN '{ self.settings.images_url }' 
+                        ELSE ''
+                    END), -- URL SERVER WHERE PLACED IMAGES OR PDF
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT(T042.DLNR, '/')
+                        ELSE ''
+                    END), -- FOLDER
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN T231.BILDNAME
+                        ELSE ''
+                    END), -- NAME FILE
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT('.', T014.EXTENSION)
+                        ELSE T231.URL
+                    END) -- EXTENSION
+                    ) AS PATH
+            FROM `042` AS T042
+                JOIN `231` AS T231 ON T231.BILDNR = T042.BILDNR AND T231.BILDNR = T042.BILDNR AND T231.SPRACHNR IN ({ self.language }, 255) AND T231.DOKUMENTENART = T042.DOKUMENTENART
+                LEFT JOIN `014` AS T014 ON T014.DOKUMENTENART = T042.DOKUMENTENART
+            WHERE T042.DLNR = {dlnr};
+        """, as_dict=True)
+
+        return data[0]['PATH']
+    
+    def get_product_analogs(self, dlnr, artnr, search_brand = ''):
+
+        data = frappe.db.sql(f"""
+            SELECT 
+                T.DLNR AS DLNR,
+                T001.MARKE AS BRAND,
+                T.ARTNR AS ARTNR,
+                IFNULL(GET_BEZNR(T320.BEZNR, {self.language}), '') AS `NAMEPRODUCT`,
+                IFNULL(GET_BEZNR(T324.BEZNR, {self.language}), '') AS ASSEMBLY_GROUP,
+                GROUP_CONCAT(DISTINCT CONCAT('[',T.TRUST,'%] - ',T.NOTE,CHAR(10)) SEPARATOR '') AS NOTE,
+                IF(MIN(T.TRUST) = MAX(T.TRUST), MIN(T.TRUST), CONCAT(MIN(CAST(T.TRUST AS UNSIGNED)), ' - ', MAX(CAST(T.TRUST AS UNSIGNED)))) AS TRUST_IN
+            FROM (
+                    -- SEARCH IN STANDARD TABLE PRODUCTS TECDOC SUPPLIERS - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T200.DLNR AS DLNR,					
+                        T200.ARTNR AS ARTNR,
+                        'FOUND IN MAIN TABLE PRODUCTS' AS NOTE,
+                        '100' AS TRUST
+                    FROM `200` AS T200
+                        LEFT JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                    WHERE T200.ARTNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1
+                    
+                        UNION
+                        
+                    -- SEARCH IN EAN TABLE - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T209.DLNR AS DLNR,					
+                        T209.ARTNR AS ARTNR,
+                        'FOUND IN EAN TABLE' AS NOTE,
+                        '100' AS TRUST
+                    FROM `209` AS T209					
+                    WHERE T209.EANNR = '{artnr}'	
+                    
+                        UNION
+                        
+                    -- SEARCH IN SUPERSEDED TABLE - MUST USE RIGHT ARTNUMBER
+                    SELECT
+                        T204.DLNR AS DLNR,					
+                        T204.ARTNR AS ARTNR,
+                        'FOUND IN SUPERSEDED TABLE PRODUCTS' AS NOTE,
+                        '100' AS TRUST
+                    FROM `204` AS T204
+                        LEFT JOIN `001` AS T001 ON T001.DLNR = T204.DLNR
+                    WHERE T204.ERSATZNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1					
+                        
+                        UNION
+                        
+                    -- SEARCH IN USER NUMBER TABLE - MUST USE RIGHT NUMBER
+                    SELECT
+                        T207.DLNR AS DLNR,					
+                        T207.ARTNR AS ARTNR,
+                        'FOUND IN USERNUMBER TABLE' AS NOTE,
+                        '100' AS TRUST
+                    FROM `207` AS T207					
+                    WHERE T207.GEBRNR = '{artnr}'
+                        
+                        UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW TECDOC PRODUCTS WHERE IS INCLUDED SEARCH NUMBER - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T203.DLNR AS DLNR,
+                        T203.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE PRODUCT WITH SEARCH NUMBER "','{artnr}','" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'" INCLUDED IN OTHER PRODUCTS]') AS NOTE,
+                        '90' AS TRUST
+                    FROM `203` AS T203					
+                        LEFT JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+                    WHERE T203.REFNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND GET_LBEZNR(T100.LBEZNR, 1) = '{search_brand}'), 1, 0) = 1	
+                    
+                        UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW INCLUDED CROSSREFERENCE PRODUCTS THAT FOUND FOR MAIN SEARCH NUMBER PRODUCT - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    SELECT
+                        T200_2.DLNR AS DLNR,					
+                        T200_2.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE OTHER PRODUCTS ARE INCLUDED IN PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
+                        '90' AS TRUST
+                    FROM `200` AS T200
+                        JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                        JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                        JOIN `001` AS T001_2 ON T001_2.KHERNR = T203.KHERNR
+                        JOIN `200` AS T200_2 ON T200_2.ARTNR = T203.REFNR AND T200_2.DLNR = T001_2.DLNR					
+                    WHERE T200.ARTNR = '{artnr}'
+                        AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1				
+
+                        UNION
+                        
+                    -- SEARCH IN CROSSREFERENCE TABLE - SHOW ALL ANALOGS REGARDING OWN OE-NUMBERS FOR MAIN SEARCH NUMBER PRODUCT - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
+                    -- QUERY WILL WORK ONLY WHEN USE SEARCHBRAND
+                    SELECT
+                        T203_2.DLNR AS DLNR,
+                        T203_2.ARTNR AS ARTNR,
+                        CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
+                        '80' AS TRUST
+                    FROM `200` AS T200
+                        JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                        JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
+                        JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND (T100.PKW = 1 OR T100.NKW = 1)
+                        JOIN `203` AS T203_2 ON T203_2.REFNR = T203.REFNR AND T203_2.KHERNR = T203.KHERNR															
+                    WHERE TRIM('{search_brand}') <> ''
+                        AND T200.ARTNR = '{artnr}'
+                        AND T001.MARKE = '{search_brand}'
+                    
+                ) as T
+                JOIN `211` AS T211 ON T211.ARTNR = T.ARTNR AND T211.DLNR = T.DLNR
+                JOIN `320` AS T320 ON T320.GENARTNR = T211.GENARTNR
+                LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
+                LEFT JOIN `001` AS T001 ON T001.DLNR = T.DLNR	
+            GROUP BY T.DLNR, T.ARTNR;
         """, as_dict=True)
 
         return data

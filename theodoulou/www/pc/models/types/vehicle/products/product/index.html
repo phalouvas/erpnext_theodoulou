@@ -1,0 +1,150 @@
+{% extends "theodoulou/templates/pages/vehicles.html" %}
+
+{% block left_content %}
+<div class="row row-cols-1 row-cols-sm-2 shadow rounded">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                    <img src="{{ manufacturer_logo }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
+                        style="max-height: 100px;">
+            </div>
+        </div>
+        <div class="row">
+            {% for image in product_media %}
+            <div class="col-sm-1 col-md-3 col-lg-4">
+                <a href="{{ image.PATH }}" target="_blank">
+                    <img src="{{ image.PATH }}" alt="{{ product_main_info.MARKE }}" class="img-fluid max-width"
+                        style="max-height: 100px;">
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <table class="table table-sm table-borderless"">
+            <tbody>
+                <tr>
+                    <th>Brand</th>
+                    <td>{{ product_main_info.MARKE }}</td>
+                </tr>
+                <tr>
+                    <th>Article Number</th>
+                    <td>{{ product_main_info.ARTNR }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ product_main_info.NAMEPRODUCT }}</td>
+                </tr>
+                <tr>
+                    <th>Standard Group</th>
+                    <td>{{ product_main_info.STANDARD_GROUP }}</td>
+                </tr>
+                <tr>
+                    <th>Assebly Group</th>
+                    <td>{{ product_main_info.Lubrication }}</td>
+                </tr>
+                <tr>
+                    <th>Purpose Group</th>
+                    <td>{{ product_main_info.PURPOSE_GROUP }}</td>
+                </tr>
+                <tr>
+                    <th>GTIN/EAN</th>
+                    <td>{{ product_main_info.EAN }}</td>
+                </tr>
+                <tr>
+                    <th>Trade numbers</th>
+                    <td class="text-danger font-weight-bold">{{ product_main_info.LIST_USERNUMBERS }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col">        
+        <h6>Specifications</h6>
+        <table class="table table-sm">
+            {% for criteria in product_criteria %}
+            <tr>
+                <td>{{ criteria.NAME }}</td>
+                <td>{{ criteria.VALUE }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+<div class="row mt-8 shadow rounded">
+    <div class="h5 p-4">OE Numbers</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Product</th>
+                <td>Note</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in product_oe_numbers %}
+            <tr>
+                <td>{{ product.CROSS_BRAND }}</td>
+                <td>
+                    {% if product.NOTE == 'OE PRODUCT' %}
+                    {{ product.CROSS_ARTNR }}
+                    {% else %}
+                    <a href="/pc/models/types/vehicle/products/product?product_id={{ product.CROSS_ARTNR }}" class="text-info">{{ product.CROSS_ARTNR }}</a>
+                    {% endif %}
+                </td>
+                <td>{{ product.NOTE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="row mt-8 shadow rounded">
+    <div class="h5 p-4">Suitable Vehicles</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Manufacturer</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Years</th>
+                <th>Engine</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in product_vehicles_applicability %}
+            <tr>
+                <td>{{ vehicle.MANUFACTURER }}</td>
+                <td>{{ vehicle.MODEL }}</td>
+                <td>
+                    <a href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{ vehicle.TYPE }}</a>
+                </td>
+                <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
+                <td>{{ vehicle.LISTENGINES }}</td>
+                <td>{{ vehicle.BODYTYPE }}/{{ vehicle. ENGINETYPE }}/{{ vehicle.KW }}Kw/{{ vehicle.PS }}/{{ vehicle.CCM }}cc</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="row mt-8 shadow rounded">
+    <div class="h5 p-4">Analogs</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Name</th>
+                <td>Product</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in product_analogs %}
+            <tr>
+                <td>{{ product.BRAND }}</td>
+                <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
+                <td>
+                    <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}" class="text-info">{{ product.ARTNR }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
