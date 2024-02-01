@@ -94,9 +94,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Manufacturer</th>
-                    <th>Model</th>
-                    <th>Type</th>
+                    <th>Vehicle</th>
                     <th>Years</th>
                     <th>Engine</th>
                     <th>Details</th>
@@ -105,12 +103,11 @@
             <tbody>
                 {% for vehicle in product_vehicles_applicability %}
                 <tr>
-                    <td>{{ vehicle.MANUFACTURER }}</td>
-                    <td>{{ vehicle.MODEL }}</td>
                     <td>
-                        <a
-                            href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">{{
-                            vehicle.TYPE }}</a>
+                        <a class="text-info"
+                            href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">
+                            {{ vehicle.MANUFACTURER }} {{ vehicle.MODEL }} {{ vehicle.TYPE }}
+                        </a>
                     </td>
                     <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>
                     <td>{{ vehicle.LISTENGINES }}</td>
@@ -131,7 +128,7 @@
                 <tr>
                     <th>Brand</th>
                     <th>Name</th>
-                    <td>Product</td>
+                    <th>Product</th>
                 </tr>
             </thead>
             <tbody>
@@ -141,7 +138,7 @@
                     <td>{{ product.NAMEPRODUCT }} - {{ product.ASSEMBLY_GROUP }}</td>
                     <td>
                         <a href="/pc/models/types/vehicle/products/product?brand_id={{ product.DLNR }}&product_id={{ product.ARTNR }}"
-                            class="text-info">{{ product.ARTNR }}</a>
+                            class="badge badge-info">{{ product.ARTNR }}</a>
                     </td>
                 </tr>
                 {% endfor %}
