@@ -69,12 +69,20 @@
     </div>
 </div>
 <div class="row mt-8 shadow rounded">
-    <div class="h5 p-4">OE Numbers</div>
+    <div class="row p-4">
+        <div class="col">
+            <div class="h5">OE Numbers</div>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="searchKey_OE" placeholder="Search..."" aria-label=" Search"
+                aria-describedby="btnGroupAddon">
+        </div>
+    </div>
     <div style="max-height: 300px; overflow-y: auto; width: 100%;">
         <table class="table table-sm">
             <tbody>
                 {% for key, value in product_oe_numbers.items() %}
-                <tr>
+                <tr class="searchContainer_OE"  data-name="{{ key | lower }}">
                     <th>{{ key }}</th>
                     <td>
                         {% for ARTNR in value %}
