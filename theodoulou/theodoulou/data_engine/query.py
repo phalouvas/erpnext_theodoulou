@@ -698,4 +698,80 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
-    
+
+    def get_product_media(self, dlnr, artnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
+                GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
+                GET_BEZNR_FOR_KEY_TABLE(141, T231.BEZNORM, { self.language }) AS `Standardised Graphic Header`, 
+                IFNULL(T231.BREIT, '') AS `Graphic width`, 
+                IFNULL(T231.HOCH, '') AS `Graphic height`, 
+                IFNULL(T231.FARBEN, '') AS `Colour Quantity`, 
+                IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
+                CONCAT(
+                    (CASE
+                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN @PATHTOPDF 
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN @PATHTOIMAGE 
+                        ELSE ''
+                    END), -- URL SERVER WHERE PLACED IMAGES OR PDF
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT(T200.DLNR, '/')
+                        ELSE ''
+                    END), -- FOLDER
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN T231.BILDNAME
+                        ELSE ''
+                    END), -- NAME FILE
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT('.', T014.EXTENSION)
+                        ELSE T231.URL
+                    END) -- EXTENSION
+                    ) AS PATH
+            FROM `200` AS T200
+                JOIN `232` AS T232 ON T232.ARTNR = T200.ARTNR AND T232.DLNR = T200.DLNR
+                JOIN `231` AS T231 ON T231.BILDNR = T232.BILDNR AND T231.SPRACHNR IN ({ self.language }, 255) AND T231.DOKUMENTENART = T232.DOKUMENTENART
+                LEFT JOIN `014` AS T014 ON T014.DOKUMENTENART = T232.DOKUMENTENART
+            WHERE T200.ARTNR LIKE '{artnr}'
+                AND T200.DLNR = {dlnr}
+            ORDER BY T232.SORTNR;
+        """, as_dict=True)
+
+        return data
+
+    def get_manufacturer_logo(self, dlnr):
+        data = frappe.db.sql(f"""
+            SELECT
+                IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
+                GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
+                GET_BEZNR_FOR_KEY_TABLE(141, T231.BEZNORM, { self.language }) AS `Standardised Graphic Header`, 
+                IFNULL(T231.BREIT, '') AS `Graphic width`, 
+                IFNULL(T231.HOCH, '') AS `Graphic height`, 
+                IFNULL(T231.FARBEN, '') AS `Colour Quantity`, 
+                IFNULL(GET_BEZNR(T231.BEZNR, { self.language }), '') AS `Description`,
+                CONCAT(
+                    (CASE
+                        WHEN IFNULL(T014.EXTENSION, '') = 'PDF' THEN @PATHTOPDF 
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('BMP','JPG','PNG','GIF') THEN @PATHTOIMAGE 
+                        ELSE ''
+                    END), -- URL SERVER WHERE PLACED IMAGES OR PDF
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT(T042.DLNR, '/')
+                        ELSE ''
+                    END), -- FOLDER
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN T231.BILDNAME
+                        ELSE ''
+                    END), -- NAME FILE
+                    (CASE					
+                        WHEN IFNULL(T014.EXTENSION, '') IN ('PDF','BMP','JPG','PNG','GIF') THEN CONCAT('.', T014.EXTENSION)
+                        ELSE T231.URL
+                    END) -- EXTENSION
+                    ) AS PATH
+            FROM `042` AS T042
+                JOIN `231` AS T231 ON T231.BILDNR = T042.BILDNR AND T231.BILDNR = T042.BILDNR AND T231.SPRACHNR IN ({ self.language }, 255) AND T231.DOKUMENTENART = T042.DOKUMENTENART
+                LEFT JOIN `014` AS T014 ON T014.DOKUMENTENART = T042.DOKUMENTENART
+            WHERE T042.DLNR = {dlnr};
+        """, as_dict=True)
+
+        return data   
