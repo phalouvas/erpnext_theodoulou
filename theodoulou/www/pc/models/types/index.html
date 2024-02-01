@@ -1,16 +1,13 @@
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
-{% block header_actions %}
-<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">    
-    <div class="input-group mr-2">
-        <input type="text" class="form-control" id="searchKey" placeholder="Search..."" aria-label=" Search"
-            aria-describedby="btnGroupAddon">
-    </div>
-    <div class="btn-group" role="group" aria-label="First group">
-        <button type="button" class="btn btn-primary clearSearch" title="Clear">Clear</button>
-    </div>
+{% block header_actions_2 %}
+<div class="input-group mr-2">
+    <input type="text" class="form-control" id="searchKey" placeholder="Search..." aria-label=" Search"
+        aria-describedby="btnGroupAddon">
 </div>
-
+<div class="btn-group" role="group" aria-label="First group">
+    <button type="button" class="btn btn-primary clearSearch" title="Clear">Clear</button>
+</div>
 {% endblock %}
 
 {% block left_content %}
@@ -24,7 +21,9 @@
     <tbody>
         {% for item in types %}
         <tr class="searchContainer" data-name="{{ item.TYPE | lower }}">
-            <td><a href="/pc/models/types/vehicle?vehicle_id={{ item.ID }}&brand_id={{ brand_id }}&model_id={{ model_id }}&needyear={{ needyear }}">{{ item.TYPE }}</a></td>
+            <td><a
+                    href="/pc/models/types/vehicle?vehicle_id={{ item.ID }}&brand_id={{ brand_id }}&model_id={{ model_id }}&needyear={{ needyear }}">{{
+                    item.TYPE }}</a></td>
             <td>{{ item.YEARS }}</td>
         </tr>
         {% endfor %}

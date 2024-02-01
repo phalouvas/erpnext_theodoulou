@@ -1,16 +1,14 @@
 {% from "theodoulou/templates/includes/macros.html" import render_pagination %}
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
-{% block header_actions %}
-<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="input-group mr-2">
-        <select class="form-control" id="searchType">
-            <option value="">-- Select manufacturer --</option>
-            {% for item in manufacturers %}
-            <option value="{{ item.DLNR }}">{{ item.MARKE }}</option>
-            {% endfor %}
-        </select>
-    </div>   
+{% block header_actions_2 %}
+<div class="input-group mr-2">
+    <select class="form-control" id="searchType">
+        <option value="">-- Select manufacturer --</option>
+        {% for item in manufacturers %}
+        <option value="{{ item.DLNR }}">{{ item.MARKE }}</option>
+        {% endfor %}
+    </select>
 </div>
 {% endblock %}
 
@@ -30,7 +28,8 @@
             <img src="{{ item.PATH }}" class="rounded mx-auto d-block" style="max-height: 200px;">
             <h5 class="card-title">{{ item.NAMEPRODUCT }}</h5>
             <p class="card-text">{{ item.MARKE }}</p>
-            <a href="/pc/models/types/vehicle/products/product?manufacturer_id={{ item.DLNR }}&product_id={{ item.ARTNR }}" class="btn btn-primary">{{ item.ARTNR }}</a>
+            <a href="/pc/models/types/vehicle/products/product?manufacturer_id={{ item.DLNR }}&product_id={{ item.ARTNR }}"
+                class="btn btn-primary">{{ item.ARTNR }}</a>
         </div>
     </div>
     {% endfor %}

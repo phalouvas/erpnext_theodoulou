@@ -1,20 +1,18 @@
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
-{% block header_actions %}
-<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="mr-2">
-        <button type="button" class="col btn btn-warning showAll">Showing only popular brands. Click to show
-            all</button>
-        <button type="button" class="col btn btn-warning showPopular">Showing all brands. Click to show only
-            popular</button>
-    </div>
-    <div class="input-group mr-2">
-        <input type="text" class="form-control" id="searchKey" placeholder="Search..."" aria-label=" Search"
-            aria-describedby="btnGroupAddon">
-    </div>
-    <div class="btn-group" role="group" aria-label="First group">
-        <button type="button" class="btn btn-primary clearSearch">Clear</button>
-    </div>
+{% block header_actions_2 %}
+<div class="mr-2">
+    <button type="button" class="col btn btn-warning showAll">Showing only popular brands. Click to show
+        all</button>
+    <button type="button" class="col btn btn-warning showPopular">Showing all brands. Click to show only
+        popular</button>
+</div>
+<div class="input-group mr-2">
+    <input type="text" class="form-control" id="searchKey" placeholder="Search..." aria-label=" Search"
+        aria-describedby="btnGroupAddon">
+</div>
+<div class="btn-group" role="group" aria-label="First group">
+    <button type="button" class="btn btn-primary clearSearch">Clear</button>
 </div>
 {% endblock %}
 
