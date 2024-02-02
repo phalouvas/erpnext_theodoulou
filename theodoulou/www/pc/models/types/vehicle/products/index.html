@@ -24,15 +24,17 @@
 <div class="row">
     {% for item in products %}
     <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
-        <div class="card-body text-center shadow rounded">
-            <!--
+        <a href="/pc/models/types/vehicle/products/product?manufacturer_id={{ item.DLNR }}&product_id={{ item.ARTNR }}"
+            class="card shadow rounded bg-info text-white">
+            <div class="card-body text-center shadow rounded">
+                <!--
             <img src="{{ item.PATH }}" class="rounded mx-auto d-block" style="max-height: 200px;">
             -->
-            <h5 class="card-title">{{ item.NAMEPRODUCT }}</h5>
-            <p class="card-text">{{ item.MARKE }}</p>
-            <a href="/pc/models/types/vehicle/products/product?manufacturer_id={{ item.DLNR }}&product_id={{ item.ARTNR }}"
-                class="btn btn-primary">{{ item.ARTNR }}</a>
-        </div>
+                <h5 class="card-title">{{ item.NAMEPRODUCT }}</h5>
+                <p class="badge badge-warning">{{ item.MARKE }}</p>
+                <p class="card-text">{{ item.ARTNR }}</p>
+            </div>
+        </a>
     </div>
     {% endfor %}
 </div>
