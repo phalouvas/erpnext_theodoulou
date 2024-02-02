@@ -1,6 +1,7 @@
 import frappe
 from theodoulou.theodoulou.data_engine.motorcycle import MotorcycleQuery
 from theodoulou.theodoulou.data_engine.lcv import LcvQuery
+from theodoulou.theodoulou.data_engine.emotorcycle import eMotorcycleQuery
 
 class TheodoulouController:
     def __init__(self):
@@ -14,3 +15,6 @@ class TheodoulouController:
         
         if vehicle_class == 'lcv':
             return LcvQuery()
+        
+        if vehicle_class == 'emotorcycle':
+            return eMotorcycleQuery()
