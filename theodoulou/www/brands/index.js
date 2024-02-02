@@ -1,8 +1,13 @@
-$(document).ready(function() {
-    $('#passenger_cars_searchKey').on('keyup', function() {
+$(document).ready(function () {
+    $('.tree .caret').on('click', function () {
+        $(this).toggleClass('caret-down');
+        $(this).siblings('ul').toggle();
+    });
+
+    $('#searchKey').on('keyup', function () {
         var searchKey = $(this).val().toLowerCase();
 
-        $('.passenger_cars_card_container').each(function() {
+        $('.searchContainer').each(function () {
             var name = $(this).data('name');
 
             if (name.indexOf(searchKey) !== -1) {
@@ -13,43 +18,30 @@ $(document).ready(function() {
         });
     });
 
-    $('#commercial_cars_searchKey').on('keyup', function() {
-        var searchKey = $(this).val().toLowerCase();
-
-        $('.commercial_cars_card_container').each(function() {
-            var name = $(this).data('name');
-
-            if (name.indexOf(searchKey) !== -1) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
+    $('.clearSearch').on('click', function () {
+        $('#searchKey').val('');
+        $('.searchContainer').show();
     });
 
-    // Check if the vehicle_type cookie is set
-    var vehicle_type = document.cookie.split('; ').find(row => row.startsWith('vehicle_type='));
+    $('.showAll').on('click', function () {
+        var url = window.location.href;
+        var separator = (url.indexOf('?') !== -1) ? "&" : "?";
+        window.location.href = url + separator + 'show_all=1';
+    });
 
-    // If the vehicle_type cookie is not set, set it to "PKW"
-    if (!vehicle_type) {
-        document.cookie = "vehicle_type=PKW";
-        vehicle_type = "vehicle_type=PKW";
-    }
+    $('.showPopular').on('click', function () {
+        // remove the show_all parameter
+        var url = window.location.href;
+        url = url.replace(/&?show_all=1/, '');
+        window.location.href = url;
+    });
 
-    if (vehicle_type == "vehicle_type=PKW") {
-        $('#brandsTab li:first-child a').tab('show')
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('show_all')) {
+        $('.showAll').hide();
+        $('.showPopular').show();
     } else {
-        $('#brandsTab li:last-child a').tab('show')
+        $('.showAll').show();
+        $('.showPopular').hide();
     }
-
-    // If the element with ID passenger_cars-tab is clicked, set the cookie to "PKW"
-    $('#passenger_cars-tab').click(function() {
-        document.cookie = "vehicle_type=PKW";
-    });
-
-    // If the element with ID commercial_cars-tab is clicked, set the cookie to "NKW"
-    $('#commercial_cars-tab').click(function() {
-        document.cookie = "vehicle_type=NKW";
-    });
-
 });
