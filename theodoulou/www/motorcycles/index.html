@@ -1,0 +1,30 @@
+{% extends "theodoulou/templates/pages/vehicles.html" %}
+
+{% block header_actions_2 %}
+<div class="mr-2">
+    <button type="button" class="col btn btn-warning showAll">Showing only popular brands. Click to show
+        all</button>
+    <button type="button" class="col btn btn-warning showPopular">Showing all brands. Click to show only
+        popular</button>
+</div>
+<div class="input-group mr-2">
+    <input type="text" class="form-control" id="searchKey" placeholder="Search..." aria-label=" Search"
+        aria-describedby="btnGroupAddon">
+</div>
+<div class="btn-group" role="group" aria-label="First group">
+    <button type="button" class="btn btn-primary clearSearch">Clear</button>
+</div>
+{% endblock %}
+
+{% block left_content %}
+<div class="row">
+    {% for item in brands %}
+    <div class="col-sm-12 col-md-4 col-lg-3 card searchContainer" data-name="{{ item.NAME | lower }}">
+        <a href="/pc/models?needyear=0&brand_id={{ item.HERNR }}"
+            class="card-body shadow rounded mb-4 bg-info text-white text-decoration-none text-center">
+            {{ item.NAME }}
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
