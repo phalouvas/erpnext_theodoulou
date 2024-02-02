@@ -2,7 +2,7 @@ import frappe
 
 from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 
-class MotorcyclesQuery(TheodoulouQuery):
+class MotorcycleQuery(TheodoulouQuery):
 
     def __init__(self):
         super().__init__()
