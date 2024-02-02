@@ -6,8 +6,7 @@ class TheodoulouController:
         pass
 
     def get_engine(self):
-        vehicle_type = frappe.request.args.get('vehicle_type') or 'PKW'
-        vehicle_class = int(frappe.request.args.get('vehicle_class') or 2)
-        
-        if vehicle_type == 'PKW' and vehicle_class == 3:
+        vehicle_class = frappe.request.args.get('vehicle_class') or "PC"
+
+        if vehicle_class == 'Motorcycle':
             return MotorcyclesQuery()
