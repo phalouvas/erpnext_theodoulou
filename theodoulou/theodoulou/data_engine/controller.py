@@ -9,5 +9,5 @@ class TheodoulouController:
         vehicle_type = frappe.request.args.get('vehicle_type') or 'PKW'
         vehicle_class = int(frappe.request.args.get('vehicle_class') or 2)
         
-        if vehicle_type == 'PKW' and vehicle_class == 6:
+        if vehicle_type == 'PKW' and vehicle_class == 3:
             return MotorcyclesQuery()
