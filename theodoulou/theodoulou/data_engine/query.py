@@ -427,7 +427,7 @@ class TheodoulouQuery():
                     AND T400.VKNZIELNR = { vehicle_id }
                     { filter_manufacturer };
             """, as_dict=True)
-            frappe.cache().set_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id, data)
+            frappe.cache().set_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id + '_' + manufacturer_id, data)
 
         return data[0]['TOTAL']            
     
