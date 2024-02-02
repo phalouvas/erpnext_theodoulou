@@ -11,5 +11,9 @@ def get_context(context):
     query_engine = query_controller.get_engine()
     context.categories_tree = query_engine.get_categories_tree('PKW')
 
-    context.brands = query_engine.get_brands()
+    brands = query_engine.get_brands()
+    if 'show_all' in frappe.request.args:
+        context.brands = brands[0]
+    else:
+        context.brands = brands[1]
     

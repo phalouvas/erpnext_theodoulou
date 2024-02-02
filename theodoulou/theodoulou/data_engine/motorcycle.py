@@ -23,9 +23,9 @@ class MotorcycleQuery(TheodoulouQuery):
             frappe.cache().set_value('motorcycles_brands', data)
 
         if 'show_all' in frappe.request.args:
-            return data
+            popular_data = []
         else:
             popular_brands = [4330, 2524, 16, 2559, 4055, 45, 4056, 1131, 2760, 88, 181, 109, 1021]
-            data = [brand for brand in data if brand['HERNR'] in popular_brands]
+            popular_data = [brand for brand in data if brand['HERNR'] in popular_brands]
         
-        return data
+        return data, popular_data
