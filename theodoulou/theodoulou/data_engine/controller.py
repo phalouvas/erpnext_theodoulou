@@ -1,5 +1,5 @@
 import frappe
-from theodoulou.theodoulou.data_engine.motorcycles_query import MotorcyclesQuery
+from theodoulou.theodoulou.data_engine.motorcycles import MotorcyclesQuery
 
 class TheodoulouController:
     def __init__(self):
