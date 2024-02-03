@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 class TractorQuery(TheodoulouQuery):
 
     def __init__(self):
+        self.title = frappe._('Tractors')
         super().__init__()
     
     def get_brands(self):

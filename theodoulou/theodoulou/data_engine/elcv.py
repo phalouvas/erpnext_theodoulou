@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 class eLcvQuery(TheodoulouQuery):
 
     def __init__(self):
+        self.title = frappe._('eLong Commercial Vehicles')
         super().__init__()
     
     def get_brands(self):

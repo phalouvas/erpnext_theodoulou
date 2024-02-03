@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 class BusQuery(TheodoulouQuery):
 
     def __init__(self):
+        self.title = frappe._('Buses')
         super().__init__()
     
     def get_brands(self):
