@@ -12,36 +12,37 @@ from theodoulou.theodoulou.data_engine.cv import CvQuery
 
 class TheodoulouController:
     def __init__(self):
-        pass
+        self.vehicle_class = frappe.request.args.get('self.vehicle_class') or "pc"
+        super().__init__()
+
 
     def get_engine(self):
-        vehicle_class = frappe.request.args.get('vehicle_class') or "PC"
 
-        if vehicle_class == 'motorcycle':
+        if self.vehicle_class == 'motorcycle':
             return MotorcycleQuery()
         
-        if vehicle_class == 'lcv':
+        if self.vehicle_class == 'lcv':
             return LcvQuery()
         
-        if vehicle_class == 'emotorcycle':
+        if self.vehicle_class == 'emotorcycle':
             return eMotorcycleQuery()
         
-        if vehicle_class == 'elcv':
+        if self.vehicle_class == 'elcv':
             return eLcvQuery()
         
-        if vehicle_class == 'epc':
+        if self.vehicle_class == 'epc':
             return ePcQuery()
         
-        if vehicle_class == 'bus':
+        if self.vehicle_class == 'bus':
             return BusQuery()
         
-        if vehicle_class == 'ebus':
+        if self.vehicle_class == 'ebus':
             return eBusQuery()
         
-        if vehicle_class == 'tractor':
+        if self.vehicle_class == 'tractor':
             return TractorQuery()
         
-        if vehicle_class == 'cv':
+        if self.vehicle_class == 'cv':
             return CvQuery()
         
         return PcQuery()
