@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 class MotorcycleQuery(TheodoulouQuery):
 
     def __init__(self):
+        self.title = frappe._('Motorcycles')
         super().__init__()
     
     def get_brands(self):

@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 class ePcQuery(TheodoulouQuery):
 
     def __init__(self):
+        self.title = frappe._('ePassenger Cars')
         super().__init__()
     
     def get_brands(self):

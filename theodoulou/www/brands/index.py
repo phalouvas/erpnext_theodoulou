@@ -2,11 +2,7 @@ import frappe
 from frappe import _
 from theodoulou.theodoulou.data_engine.controller import TheodoulouController
 
-def get_context(context):
-    context.no_cache = 0
-    context.title = _('Motorcycles')
-    context.parents = [{"name": frappe._("Home"), "route": "/"}]
-
+def get_context(context):    
     query_controller = TheodoulouController()
     query_engine = query_controller.get_engine()
     context.categories_tree = query_engine.get_categories_tree('PKW')
@@ -19,4 +15,9 @@ def get_context(context):
                                 77, 80, 84, 88, 92, 93, 95, 1820, 99, 104, 106, 1138, 107, 109, 111, 120, 121,
                                 4055, 1131, 2760, 181, 1021, 2554, 185, 138, 4330, 2524, 2559, 4056]
         context.brands = [brand for brand in brands if brand['HERNR'] in popular_brands]
+
+    context.no_cache = 0
+    context.title = query_engine.title
+    context.parents = [{"name": frappe._("Home"), "route": "/"}]
+
     
