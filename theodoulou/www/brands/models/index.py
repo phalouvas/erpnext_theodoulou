@@ -19,7 +19,7 @@ def get_context(context):
     # get years
     context.years = query_engine.get_years()
 
-    context.categories_tree = query_engine.get_categories_tree('PKW')
+    context.categories_tree = query_engine.get_categories_tree()
     
     context.no_cache = 0
     context.BrandClass = query_controller.BrandClass

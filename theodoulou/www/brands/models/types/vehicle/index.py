@@ -19,7 +19,7 @@ def get_context(context):
     context.vehicle.FROM_YEAR = query_engine.convert_yyyymm(context.vehicle.FROM_YEAR)
     context.vehicle.TO_YEAR = query_engine.convert_yyyymm(context.vehicle.TO_YEAR)
 
-    context.categories_tree = query_engine.get_vehicle_categories_tree("PKW", context.KTypNo)
+    context.categories_tree = query_engine.get_categories_tree()
 
     context.no_cache = 0
     context.title = f"{ context.vehicle.MANUFACTURER } { context.vehicle.MODEL } { context.vehicle.TYPE }"

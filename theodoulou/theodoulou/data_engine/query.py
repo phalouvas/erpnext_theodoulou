@@ -274,26 +274,52 @@ class TheodoulouQuery():
 
         return data[0]
 
-    def get_categories_tree(self, type):
-        vehicle_id = frappe.request.args.get('vehicle_id') or frappe.request.cookies.get('vehicle_id')
-        if vehicle_id:
-            return self.get_vehicle_categories_tree(type, vehicle_id)
+    def get_categories_tree(self):
+        BrandClass = frappe.request.args.get('BrandClass') or frappe.request.cookies.get('BrandClass')
+        if BrandClass == "pc":
+            LnkTargetType = 2
+            TreeTypNo = 1
+        elif BrandClass == "motorcycle":
+            LnkTargetType = 3
+            TreeTypNo = 1
+        elif BrandClass == "lcv":
+            LnkTargetType = 999
+            TreeTypNo = 1
+        elif BrandClass == "emotorcycle":
+            LnkTargetType = 6
+            TreeTypNo = 1
+        elif BrandClass == "elcv":
+            LnkTargetType = 5
+            TreeTypNo = 1
+        elif BrandClass == "epc":
+            LnkTargetType = 4
+            TreeTypNo = 1
+        elif BrandClass == "cv":
+            LnkTargetType = 16
+            TreeTypNo = 2
+        elif BrandClass == "bus":
+            LnkTargetType = 17
+            TreeTypNo = 2
+        elif BrandClass == "ebus":
+            LnkTargetType = 20
+            TreeTypNo = 2
+        elif BrandClass == "tractor":
+            LnkTargetType = 18
+            TreeTypNo = 2
+        
+        KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
+        if KTypNo:
+            return self.get_vehicle_categories_tree(TreeTypNo, LnkTargetType, KTypNo)
         else:
-            return self.get_all_categories_tree(type)
+            return self.get_all_categories_tree(TreeTypNo)
 
-    def get_all_categories_tree(self, type):
+    def get_all_categories_tree(self, TreeTypNo):
 
         # Try to get data from the cache
-        categories_tree = frappe.cache().get_value('categories_tree_' + type)
+        categories_tree = frappe.cache().get_value(f"categories_tree_{TreeTypNo}")
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
-
-            if type == "PKW":
-                TREETYPNR = 1
-            else:
-                TREETYPNR = 2
-
             data = frappe.db.sql(f"""
                 SELECT DISTINCT	
                     T301.STUFE,  -- ACTIVE LEVES
@@ -312,7 +338,7 @@ class TheodoulouQuery():
                     LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
-                WHERE T301.TREETYPNR = { TREETYPNR }
+                WHERE T301.TREETYPNR = { TreeTypNo }
                 ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
             """, as_dict=True)
 
@@ -336,25 +362,17 @@ class TheodoulouQuery():
                     node = node[text]['children']
 
             # Set categories_tree in the cache
-            frappe.cache().set_value('categories_tree_' + type, categories_tree)
+            frappe.cache().set_value(f"categories_tree_{TreeTypNo}", categories_tree)
 
         return categories_tree
     
-    def get_vehicle_categories_tree(self, type, vehicle_id):
+    def get_vehicle_categories_tree(self, TreeTypNo, LnkTargetType, KTypNo):
 
         # Try to get data from the cache
-        categories_tree = frappe.cache().get_value('categories_tree_' + type + '_' + vehicle_id)
+        categories_tree = frappe.cache().get_value(f"categories_tree_{TreeTypNo}_{LnkTargetType}_{KTypNo}")
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
-
-            if type == "PKW":
-                VKNZIELART = 2
-                TREETYPNR = 1
-            else:
-                VKNZIELART = 16
-                TREETYPNR = 2
-
             data = frappe.db.sql(f"""
                 SELECT DISTINCT	
                     T301.STUFE,  -- ACTIVE LEVES
@@ -375,9 +393,9 @@ class TheodoulouQuery():
                     LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
-                WHERE T301.TREETYPNR = { TREETYPNR }
-                    AND T400.VKNZIELART = { VKNZIELART }
-                    AND T400.VKNZIELNR = { vehicle_id }
+                WHERE T301.TREETYPNR = { TreeTypNo }
+                    AND T400.VKNZIELART = { LnkTargetType }
+                    AND T400.VKNZIELNR = { KTypNo }
                 ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
             """, as_dict=True)
 
@@ -401,7 +419,7 @@ class TheodoulouQuery():
                     node = node[text]['children']
 
             # Set categories_tree in the cache
-            frappe.cache().set_value('categories_tree_' + type + '_' + vehicle_id, categories_tree)
+            frappe.cache().set_value(f"categories_tree_{TreeTypNo}_{LnkTargetType}_{KTypNo}", categories_tree)
 
         return categories_tree
     
