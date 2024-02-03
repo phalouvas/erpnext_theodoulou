@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.emotorcycle import eMotorcycleQuery
 from theodoulou.theodoulou.data_engine.elcv import eLcvQuery
 from theodoulou.theodoulou.data_engine.epc import ePcQuery
 from theodoulou.theodoulou.data_engine.pc import PcQuery
+from theodoulou.theodoulou.data_engine.bus import BusQuery
 
 class TheodoulouController:
     def __init__(self):
@@ -27,6 +28,9 @@ class TheodoulouController:
         
         if vehicle_class == 'epc':
             return ePcQuery()
+        
+        if vehicle_class == 'bus':
+            return BusQuery()
         
         return PcQuery()
         
