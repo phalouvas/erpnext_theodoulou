@@ -23,8 +23,9 @@ def get_context(context):
     context.node_id = frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id')
     context.page = int(frappe.request.args.get('page') or 1)
 
-    context.products = query_engine.get_vehicle_products("PKW", vehicle_id, context.node_id, manufacturer_id,context.page)
-    context.total_products = query_engine.get_vehicle_products_count("PKW", vehicle_id, context.node_id, manufacturer_id)
+    products = query_engine.get_products()
+    context.products = products['products']
+    context.total_products = products['total_products']
     context.last_page = math.ceil(context.total_products / 20)
 
     context.manufacturers = query_engine.get_vehicle_products_manufacturers("PKW", vehicle_id, context.node_id)

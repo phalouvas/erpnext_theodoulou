@@ -458,60 +458,33 @@ class TheodoulouQuery():
 
         return data
     
-    def get_vehicle_products_count(self, type, vehicle_id, node_id, manufacturer_id):
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
+    def get_products(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        
+        KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
+        if KTypNo:
+            filter_ktypno = f"AND T400.VKNZIELNR = { KTypNo }"
         else:
-            VKNZIELART = 16
-            TREETYPNR = 2
-
-        if manufacturer_id:
-            filter_manufacturer = f"AND T400.DLNR = { manufacturer_id }"
-        else:
-            filter_manufacturer = ""
-            manufacturer_id = ""
-
-        data = frappe.cache().get_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id + '_' + manufacturer_id)
-        if data is None:
-            data = frappe.db.sql(f"""
-                SELECT COUNT(DISTINCT T400.ARTNR, T400.DLNR) AS total_count
-                FROM `301` AS T301
-                    JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
-                    JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
-                    JOIN `320` AS T320 ON T320.GENARTNR = T400.GENARTNR
-                    JOIN `200` AS T200 ON T200.ARTNR = T400.ARTNR AND T200.DLNR = T400.DLNR						
-                    JOIN `001` AS T001 ON T001.DLNR = T200.DLNR			
-                    LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
-                    LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
-                    LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
-                WHERE T301.TREETYPNR = { TREETYPNR }	
-                    AND T301.NODE_ID = { node_id }
-                    AND T400.VKNZIELART = { VKNZIELART }
-                    AND T400.VKNZIELNR = { vehicle_id }
-                    { filter_manufacturer };
-            """, as_dict=True)
-            frappe.cache().set_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id + '_' + manufacturer_id, data)
-
-        return data[0]['total_count']
-    
-    def get_vehicle_products(self, type, vehicle_id, node_id, manufacturer_id, page):
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
-        else:
-            VKNZIELART = 16
-            TREETYPNR = 2
+            filter_ktypno = ""
+        
+        page = int(frappe.request.args.get('page') or 1)
 
         items_per_page = 20
         offset = (page - 1) * items_per_page
 
+        manufacturer_id = frappe.request.args.get('manufacturer_id')
         if manufacturer_id:
             filter_manufacturer = f"AND T001.DLNR = { manufacturer_id }"
         else:
             filter_manufacturer = ""
+
+        node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
+        if node_id:
+            filter_node_id = f"AND T301.NODE_ID = { node_id }"
+        else:
+            filter_node_id = ""
             
-        data = frappe.db.sql(f"""
+        paginated = frappe.db.sql(f"""
             SELECT DISTINCT
                 T400.VKNZIELART,
                 T400.VKNZIELNR,
@@ -533,16 +506,38 @@ class TheodoulouQuery():
                 LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
-            WHERE T301.TREETYPNR = { TREETYPNR }	
-                AND T301.NODE_ID = { node_id }
-                AND T400.VKNZIELART = { VKNZIELART }
-                AND T400.VKNZIELNR = { vehicle_id }
+            WHERE T301.TREETYPNR = { TreeTypNo }	
+                { filter_node_id }
+                AND T400.VKNZIELART = { LnkTargetType }
+                { filter_ktypno }
                 { filter_manufacturer }
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
         """, as_dict=True)
 
-        return data
+        total_products = frappe.cache().get_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}")
+        if total_products is None:
+            total_products = frappe.db.sql(f"""
+                SELECT COUNT(DISTINCT T400.ARTNR, T400.DLNR) AS total_products
+                FROM `301` AS T301
+                    JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
+                    JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
+                    JOIN `320` AS T320 ON T320.GENARTNR = T400.GENARTNR
+                    JOIN `200` AS T200 ON T200.ARTNR = T400.ARTNR AND T200.DLNR = T400.DLNR						
+                    JOIN `001` AS T001 ON T001.DLNR = T200.DLNR			
+                    LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
+                    LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
+                    LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                WHERE T301.TREETYPNR = { TreeTypNo }	
+                    { filter_node_id }
+                    AND T400.VKNZIELART = { LnkTargetType }
+                    { filter_ktypno }
+                    { filter_manufacturer };
+            """, as_dict=True)
+            total_products = total_products[0]['total_products']
+            frappe.cache().set_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}", total_products)
+
+        return {"products": paginated, "total_products": total_products}
     
     def dlnr_from_artnr(self, artnr):
         data = frappe.db.sql(f"""
