@@ -32,6 +32,16 @@ class TheodoulouQuery():
     def get_years(self):
         current_year = datetime.datetime.now().year
         return list(range(1900, current_year + 1))[::-1]
+    
+    def get_brand_type_from_vehicle_class(self, BrandClass):
+        pc_array = ['pc', 'motorcycle', 'lcv', 'emotorcycle', 'elcv', 'epc']
+        cv_array = ['cv', 'bus', 'ebus', 'tractor']
+        if BrandClass in pc_array:
+            return 'pc'
+        elif BrandClass in cv_array:
+            return 'cv'
+        else:
+            frappe.throw("BrandClass not found")
 
     def get_brands(self, type): 
         # Try to get data from the cache
@@ -91,6 +101,15 @@ class TheodoulouQuery():
                 frappe.cache().set_value('models_' + type + '_' + HERNR + '_' + NEEDYEAR, data)
     
             return data
+    
+    def get_types(self, BrandClass, KModNo, needyear):
+        type = self.get_brand_type_from_vehicle_class(BrandClass)
+        if type == 'pc':
+            return self.get_types_passenger_cars(KModNo, needyear)
+        elif type == 'cv':
+            return self.get_types_commercial_cars(KModNo, needyear)
+        else:
+            frappe.throw("Type not found")
     
     def get_types_passenger_cars(self, KMODNR, NEEDYEAR = 0):
         data = frappe.cache().get_value('types_passenger_cars_' + KMODNR + '_' + NEEDYEAR)

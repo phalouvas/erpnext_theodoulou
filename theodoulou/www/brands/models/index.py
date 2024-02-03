@@ -22,4 +22,5 @@ def get_context(context):
     context.categories_tree = query_engine.get_categories_tree('PKW')
     
     context.no_cache = 0
+    context.BrandClass = query_controller.BrandClass
     context.parents = [{"name": _("Home"), "route": "/"}, {"name": query_engine.title, "route": "/brands?BrandClass=" + query_controller.BrandClass}]
