@@ -24,7 +24,7 @@ def get_context(context):
     context.no_cache = 0
     context.title = f"{ context.vehicle.MANUFACTURER } { context.vehicle.MODEL } { context.vehicle.TYPE }"
     context.parents = [
-        {"name": frappe._("Home"), "route": "/"}, 
+        {"name": _("Home"), "route": "/"}, 
         {"name": query_engine.title, "route": f"/brands?BrandClass={query_controller.BrandClass}"},
         {"name": _("Models"), "route": f"/brands/models?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&needyear={context.needyear}"}, 
         {"name": _("Types"), "route": f"/brands/models/types?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&KModNo={context.KModNo}&needyear={context.needyear}"}, 

@@ -24,7 +24,7 @@
 <div class="row">
     {% for item in products %}
     <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
-        <a href="/pc/models/types/vehicle/products/product?manufacturer_id={{ item.DLNR }}&product_id={{ item.ARTNR }}"
+        <a href="/brands/models/types/vehicle/products/product?BrandNo={{ item.DLNR }}&ArtNo={{ item.ARTNR }}"
             class="card shadow rounded bg-info text-white">
             <div class="card-body text-center shadow rounded">
                 <!--
@@ -38,6 +38,6 @@
     </div>
     {% endfor %}
 </div>
-{{ render_pagination('/pc/models/types/vehicle/products?node_id=' + node_id, page, last_page) }}
+{{ render_pagination('/brands/models/types/vehicle/products?node_id=' + node_id, page, last_page) }}
 {% endif %}
 {% endblock %}

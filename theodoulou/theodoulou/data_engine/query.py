@@ -296,18 +296,16 @@ class TheodoulouQuery():
 
         return data
     
-    def get_node(self, type, node_id):
+    def get_node(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
         data = frappe.db.sql(f"""
             SELECT
                 NODE_ID AS ID,
                 GET_BEZNR(T301.BEZNR, { self.language }) AS NAME
             FROM `301` AS T301
             WHERE T301.NODE_ID = { node_id }
-                AND T301.TREETYPNR = (CASE
-                                        WHEN '{ type }' = 'PKW' THEN 1
-                                        WHEN '{ type }' = 'LKW' THEN 2
-                                        ELSE 0
-                                    END);
+                AND T301.TREETYPNR = { TreeTypNo };
         """, as_dict=True)
 
         return data[0]

@@ -30,12 +30,13 @@ def get_context(context):
 
     context.manufacturers = query_engine.get_products_manufacturers()
     context.categories_tree = query_engine.get_categories_tree()
-    context.active_node = query_engine.get_node("PKW", context.node_id)
+    context.active_node = query_engine.get_node()
 
     context.no_cache = 0
     context.title = f"{context.active_node.NAME}"
     context.parents = [
-        {"name": frappe._("Home"), "route": "/"}, 
-        {"name": frappe._("Passenger Cars"), "route": "/pc"}, 
-        {"name": frappe._("Vehicle"), "route": f"/pc/models/types/vehicle?brand_id={brand_id}&model_id={model_id}&needyear={needyear}&vehicle_id={vehicle_id}"}, 
+        {"name": _("Home"), "route": "/"}, 
+        {"name": query_engine.title, "route": f"/brands?BrandClass={query_controller.BrandClass}"},
+        {"name": _("Models"), "route": f"/brands/models?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&needyear={context.needyear}"}, 
+        {"name": _("Types"), "route": f"/brands/models/types?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&KModNo={context.KModNo}&needyear={context.needyear}"}, 
     ]
