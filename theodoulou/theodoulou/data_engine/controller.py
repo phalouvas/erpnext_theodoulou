@@ -12,7 +12,9 @@ from theodoulou.theodoulou.data_engine.cv import CvQuery
 
 class TheodoulouController:
     def __init__(self):
-        self.BrandClass = frappe.request.args.get('BrandClass') or "pc"
+        self.BrandClass = frappe.request.args.get('BrandClass') or frappe.request.cookies.get('BrandClass')
+        if not self.BrandClass:
+            self.BrandClass = 'pc'
         super().__init__()
 
 

@@ -5,7 +5,7 @@
         {% if data.children %}
         <span class="caret">{{ name }}</span>
         {% else %}
-        <a href="/brands/products?node_id={{ data.id }}">{{ name }}</a>
+        <a href="/brands/models/types/vehicle/products?node_id={{ data.id }}">{{ name }}</a>
         {% endif %}
         {% if data.children %}
         {{ render_node(data.children) }}

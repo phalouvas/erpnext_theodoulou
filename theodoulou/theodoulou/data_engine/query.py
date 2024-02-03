@@ -43,6 +43,44 @@ class TheodoulouQuery():
         else:
             frappe.throw("BrandClass not found")
 
+    def get_lnk_tree_from_brand_class(self):
+        BrandClass = frappe.request.args.get('BrandClass') or frappe.request.cookies.get('BrandClass')
+        if BrandClass == "pc":
+            LnkTargetType = 2
+            TreeTypNo = 1
+        elif BrandClass == "motorcycle":
+            LnkTargetType = 3
+            TreeTypNo = 1
+        elif BrandClass == "lcv":
+            LnkTargetType = 999
+            TreeTypNo = 1
+        elif BrandClass == "emotorcycle":
+            LnkTargetType = 6
+            TreeTypNo = 1
+        elif BrandClass == "elcv":
+            LnkTargetType = 5
+            TreeTypNo = 1
+        elif BrandClass == "epc":
+            LnkTargetType = 4
+            TreeTypNo = 1
+        elif BrandClass == "cv":
+            LnkTargetType = 16
+            TreeTypNo = 2
+        elif BrandClass == "bus":
+            LnkTargetType = 17
+            TreeTypNo = 2
+        elif BrandClass == "ebus":
+            LnkTargetType = 20
+            TreeTypNo = 2
+        elif BrandClass == "tractor":
+            LnkTargetType = 18
+            TreeTypNo = 2
+        else:
+            LnkTargetType = 2
+            TreeTypNo = 1
+
+        return LnkTargetType, TreeTypNo
+
     def get_brands(self, type): 
         # Try to get data from the cache
         data = frappe.cache().get_value('brands_' + type)
@@ -275,40 +313,7 @@ class TheodoulouQuery():
         return data[0]
 
     def get_categories_tree(self):
-        BrandClass = frappe.request.args.get('BrandClass') or frappe.request.cookies.get('BrandClass')
-        if BrandClass == "pc":
-            LnkTargetType = 2
-            TreeTypNo = 1
-        elif BrandClass == "motorcycle":
-            LnkTargetType = 3
-            TreeTypNo = 1
-        elif BrandClass == "lcv":
-            LnkTargetType = 999
-            TreeTypNo = 1
-        elif BrandClass == "emotorcycle":
-            LnkTargetType = 6
-            TreeTypNo = 1
-        elif BrandClass == "elcv":
-            LnkTargetType = 5
-            TreeTypNo = 1
-        elif BrandClass == "epc":
-            LnkTargetType = 4
-            TreeTypNo = 1
-        elif BrandClass == "cv":
-            LnkTargetType = 16
-            TreeTypNo = 2
-        elif BrandClass == "bus":
-            LnkTargetType = 17
-            TreeTypNo = 2
-        elif BrandClass == "ebus":
-            LnkTargetType = 20
-            TreeTypNo = 2
-        elif BrandClass == "tractor":
-            LnkTargetType = 18
-            TreeTypNo = 2
-        else:
-            LnkTargetType = 2
-            TreeTypNo = 1
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
         
         KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
         if KTypNo:

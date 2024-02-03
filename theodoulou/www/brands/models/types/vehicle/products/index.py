@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
+from theodoulou.theodoulou.data_engine.controller import TheodoulouController
 import math
 
 def get_context(context):
@@ -11,16 +11,18 @@ def get_context(context):
     # If the cookie is empty, throw an exception
     if not vehicleActiveSelectionName:
         frappe.throw(_("Please select a vehicle first."))
-    
-    vehicle_id = frappe.request.args.get('vehicle_id') or frappe.request.cookies.get('vehicle_id')
-    brand_id = frappe.request.args.get('brand_id') or frappe.request.cookies.get('brand_id')
-    needyear = frappe.request.args.get('needyear') or frappe.request.cookies.get('needyear')
-    model_id = frappe.request.args.get('model_id') or frappe.request.cookies.get('model_id')
+
+    query_controller = TheodoulouController()
+    query_engine = query_controller.get_engine()
+
+    context.BrandClass = query_controller.BrandClass
+    context.ManNo = frappe.request.args.get('ManNo') or frappe.request.cookies.get('ManNo')
+    context.KModNo = frappe.request.args.get('KModNo') or frappe.request.cookies.get('KModNo')
+    context.needyear = frappe.request.args.get('needyear') or frappe.request.cookies.get('needyear')
+    context.KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
     context.node_id = frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id')
     context.page = int(frappe.request.args.get('page') or 1)
-    manufacturer_id = frappe.request.args.get('manufacturer_id')
 
-    query_engine = TheodoulouQuery()
     context.products = query_engine.get_vehicle_products("PKW", vehicle_id, context.node_id, manufacturer_id,context.page)
     context.total_products = query_engine.get_vehicle_products_count("PKW", vehicle_id, context.node_id, manufacturer_id)
     context.last_page = math.ceil(context.total_products / 20)
