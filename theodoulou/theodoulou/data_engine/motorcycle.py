@@ -9,7 +9,7 @@ class MotorcycleQuery(TheodoulouQuery):
         super().__init__()
     
     def get_brands(self):
-        data = frappe.cache().get_value('motorcycles_brands')
+        data = frappe.cache().get_value('motorcycle_brands')
         if data is None:
             data = frappe.db.sql(f"""
                 SELECT DISTINCT 
@@ -22,18 +22,17 @@ class MotorcycleQuery(TheodoulouQuery):
                     AND T120.MOTART <> '040'
                 ORDER BY NAME;
             """, as_dict=True)
-            frappe.cache().set_value('motorcycles_brands', data)
+            frappe.cache().set_value('motorcycle_brands', data)
 
         return data
     
     def get_models(self, ManNo, NeedYear = 0):
             
-            data = frappe.cache().get_value('emotorcycles_brands' + '_' + ManNo + '_' + NeedYear)
-            data= None
+            data = frappe.cache().get_value('motorcycle_models' + '_' + ManNo + '_' + NeedYear)
 
             if data is None:
                 data = frappe.db.sql(f"""
-                    SELECT
+                    SELECT DISTINCT
                         T110.KMODNR AS KModNo,  -- ID MODEL
                         GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                         GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
@@ -53,6 +52,6 @@ class MotorcycleQuery(TheodoulouQuery):
                             END) = 1
                     ORDER BY T110.SORTNR;
                 """, as_dict=True)
-                frappe.cache().set_value('emotorcycles_brands' + '_' + ManNo + '_' + NeedYear, data)
+                frappe.cache().set_value('motorcycle_models' + '_' + ManNo + '_' + NeedYear, data)
     
             return data
