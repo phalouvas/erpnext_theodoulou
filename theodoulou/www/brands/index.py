@@ -18,7 +18,7 @@ def get_context(context):
 
     context.no_cache = 0
     context.title = query_engine.title
-    context.VehicleClass = query_controller.VehicleClass
+    context.BrandClass = query_controller.BrandClass
     context.parents = [{"name": frappe._("Home"), "route": "/"}]
 
     
