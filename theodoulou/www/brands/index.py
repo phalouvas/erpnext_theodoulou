@@ -5,7 +5,7 @@ from theodoulou.theodoulou.data_engine.controller import TheodoulouController
 def get_context(context):    
     query_controller = TheodoulouController()
     query_engine = query_controller.get_engine()
-    context.categories_tree = query_engine.get_categories_tree('PKW')
+    context.categories_tree = query_engine.get_categories_tree()
 
     brands = query_engine.get_brands()
     if 'show_all' in frappe.request.args:
@@ -18,6 +18,7 @@ def get_context(context):
 
     context.no_cache = 0
     context.title = query_engine.title
+    context.BrandClass = query_controller.BrandClass
     context.parents = [{"name": frappe._("Home"), "route": "/"}]
 
     

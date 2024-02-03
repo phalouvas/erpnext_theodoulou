@@ -10,6 +10,9 @@ class TheodoulouQuery():
 
     def convert_yyyymm(self, yyyymm):
 
+        if yyyymm is None:
+            return '...'
+
         if yyyymm == 'now':
             return 'now'
 
@@ -29,6 +32,54 @@ class TheodoulouQuery():
     def get_years(self):
         current_year = datetime.datetime.now().year
         return list(range(1900, current_year + 1))[::-1]
+    
+    def get_brand_type_from_vehicle_class(self, BrandClass):
+        pc_array = ['pc', 'motorcycle', 'lcv', 'emotorcycle', 'elcv', 'epc']
+        cv_array = ['cv', 'bus', 'ebus', 'tractor']
+        if BrandClass in pc_array:
+            return 'pc'
+        elif BrandClass in cv_array:
+            return 'cv'
+        else:
+            frappe.throw("BrandClass not found")
+
+    def get_lnk_tree_from_brand_class(self):
+        BrandClass = frappe.request.args.get('BrandClass') or frappe.request.cookies.get('BrandClass')
+        if BrandClass == "pc":
+            LnkTargetType = 2
+            TreeTypNo = 1
+        elif BrandClass == "motorcycle":
+            LnkTargetType = 3
+            TreeTypNo = 1
+        elif BrandClass == "lcv":
+            LnkTargetType = 999
+            TreeTypNo = 1
+        elif BrandClass == "emotorcycle":
+            LnkTargetType = 6
+            TreeTypNo = 1
+        elif BrandClass == "elcv":
+            LnkTargetType = 5
+            TreeTypNo = 1
+        elif BrandClass == "epc":
+            LnkTargetType = 4
+            TreeTypNo = 1
+        elif BrandClass == "cv":
+            LnkTargetType = 16
+            TreeTypNo = 2
+        elif BrandClass == "bus":
+            LnkTargetType = 17
+            TreeTypNo = 2
+        elif BrandClass == "ebus":
+            LnkTargetType = 20
+            TreeTypNo = 2
+        elif BrandClass == "tractor":
+            LnkTargetType = 18
+            TreeTypNo = 2
+        else:
+            LnkTargetType = 2
+            TreeTypNo = 1
+
+        return LnkTargetType, TreeTypNo
 
     def get_brands(self, type): 
         # Try to get data from the cache
@@ -89,6 +140,15 @@ class TheodoulouQuery():
     
             return data
     
+    def get_types(self, BrandClass, KModNo, needyear):
+        type = self.get_brand_type_from_vehicle_class(BrandClass)
+        if type == 'pc':
+            return self.get_types_passenger_cars(KModNo, needyear)
+        elif type == 'cv':
+            return self.get_types_commercial_cars(KModNo, needyear)
+        else:
+            frappe.throw("Type not found")
+    
     def get_types_passenger_cars(self, KMODNR, NEEDYEAR = 0):
         data = frappe.cache().get_value('types_passenger_cars_' + KMODNR + '_' + NEEDYEAR)
 
@@ -140,6 +200,15 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         return data
+    
+    def get_vehicle(self, BrandClass, KTypNo):
+        type = self.get_brand_type_from_vehicle_class(BrandClass)
+        if type == 'pc':
+            return self.get_vehicle_passenger(KTypNo)
+        elif type == 'cv':
+            return self.get_vehicle_commercial(KTypNo)
+        else:
+            frappe.throw("Vehicle Type not found")
     
     def get_vehicle_passenger(self, ID):
         data = frappe.db.sql(f"""
@@ -227,42 +296,36 @@ class TheodoulouQuery():
 
         return data
     
-    def get_node(self, type, node_id):
+    def get_node(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
         data = frappe.db.sql(f"""
             SELECT
                 NODE_ID AS ID,
                 GET_BEZNR(T301.BEZNR, { self.language }) AS NAME
             FROM `301` AS T301
             WHERE T301.NODE_ID = { node_id }
-                AND T301.TREETYPNR = (CASE
-                                        WHEN '{ type }' = 'PKW' THEN 1
-                                        WHEN '{ type }' = 'LKW' THEN 2
-                                        ELSE 0
-                                    END);
+                AND T301.TREETYPNR = { TreeTypNo };
         """, as_dict=True)
 
         return data[0]
 
-    def get_categories_tree(self, type):
-        vehicle_id = frappe.request.args.get('vehicle_id') or frappe.request.cookies.get('vehicle_id')
-        if vehicle_id:
-            return self.get_vehicle_categories_tree(type, vehicle_id)
+    def get_categories_tree(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        
+        KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
+        if KTypNo:
+            return self.get_vehicle_categories_tree(TreeTypNo, LnkTargetType, KTypNo)
         else:
-            return self.get_all_categories_tree(type)
+            return self.get_all_categories_tree(TreeTypNo)
 
-    def get_all_categories_tree(self, type):
+    def get_all_categories_tree(self, TreeTypNo):
 
         # Try to get data from the cache
-        categories_tree = frappe.cache().get_value('categories_tree_' + type)
+        categories_tree = frappe.cache().get_value(f"categories_tree_{TreeTypNo}")
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
-
-            if type == "PKW":
-                TREETYPNR = 1
-            else:
-                TREETYPNR = 2
-
             data = frappe.db.sql(f"""
                 SELECT DISTINCT	
                     T301.STUFE,  -- ACTIVE LEVES
@@ -281,7 +344,7 @@ class TheodoulouQuery():
                     LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
-                WHERE T301.TREETYPNR = { TREETYPNR }
+                WHERE T301.TREETYPNR = { TreeTypNo }
                 ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
             """, as_dict=True)
 
@@ -305,25 +368,17 @@ class TheodoulouQuery():
                     node = node[text]['children']
 
             # Set categories_tree in the cache
-            frappe.cache().set_value('categories_tree_' + type, categories_tree)
+            frappe.cache().set_value(f"categories_tree_{TreeTypNo}", categories_tree)
 
         return categories_tree
     
-    def get_vehicle_categories_tree(self, type, vehicle_id):
+    def get_vehicle_categories_tree(self, TreeTypNo, LnkTargetType, KTypNo):
 
         # Try to get data from the cache
-        categories_tree = frappe.cache().get_value('categories_tree_' + type + '_' + vehicle_id)
+        categories_tree = frappe.cache().get_value(f"categories_tree_{TreeTypNo}_{LnkTargetType}_{KTypNo}")
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
-
-            if type == "PKW":
-                VKNZIELART = 2
-                TREETYPNR = 1
-            else:
-                VKNZIELART = 16
-                TREETYPNR = 2
-
             data = frappe.db.sql(f"""
                 SELECT DISTINCT	
                     T301.STUFE,  -- ACTIVE LEVES
@@ -344,9 +399,9 @@ class TheodoulouQuery():
                     LEFT JOIN `301` AS T301_3 ON T301_3.NODE_ID = T301_2.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_4 ON T301_4.NODE_ID = T301_3.NODE_PARENT_ID
                     LEFT JOIN `301` AS T301_5 ON T301_5.NODE_ID = T301_4.NODE_PARENT_ID			
-                WHERE T301.TREETYPNR = { TREETYPNR }
-                    AND T400.VKNZIELART = { VKNZIELART }
-                    AND T400.VKNZIELNR = { vehicle_id }
+                WHERE T301.TREETYPNR = { TreeTypNo }
+                    AND T400.VKNZIELART = { LnkTargetType }
+                    AND T400.VKNZIELNR = { KTypNo }
                 ORDER BY STR_TEXT1, STR_TEXT2, STR_TEXT3, STR_TEXT4, STR_TEXT5;
             """, as_dict=True)
 
@@ -370,91 +425,72 @@ class TheodoulouQuery():
                     node = node[text]['children']
 
             # Set categories_tree in the cache
-            frappe.cache().set_value('categories_tree_' + type + '_' + vehicle_id, categories_tree)
+            frappe.cache().set_value(f"categories_tree_{TreeTypNo}_{LnkTargetType}_{KTypNo}", categories_tree)
 
         return categories_tree
     
-    def get_vehicle_products_manufacturers(self, type, vehicle_id, node_id):
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
+    def get_products_manufacturers(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        
+        KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
+        if KTypNo:
+            filter_ktypno = f"AND T400.VKNZIELNR = { KTypNo }"
         else:
-            VKNZIELART = 16
-            TREETYPNR = 2
+            filter_ktypno = ""
 
-        data = frappe.cache().get_value('vehicle_products_manufacturers_' + type + '_' + node_id + '_' + vehicle_id)
+        node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
+        if node_id:
+            filter_node_id = f"AND T301.NODE_ID = { node_id }"
+        else:
+            filter_node_id = ""
+
+        data = frappe.cache().get_value(f"products_manufacturers_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}")
         if data is None:
             data = frappe.db.sql(f"""
-            SELECT DISTINCT
-                T001.DLNR,
-                T001.MARKE AS MARKE
-            FROM `301` AS T301
-                JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
-                JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
-                JOIN `001` AS T001 ON T001.DLNR = T400.DLNR			
-            WHERE T301.TREETYPNR = { TREETYPNR }	
-                AND T301.NODE_ID = { node_id }
-                AND T400.VKNZIELART = { VKNZIELART }
-                AND T400.VKNZIELNR = { vehicle_id }
-            ORDER BY T001.MARKE;
-        """, as_dict=True)
-
-        return data
-    
-    def get_vehicle_products_count(self, type, vehicle_id, node_id, manufacturer_id):
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
-        else:
-            VKNZIELART = 16
-            TREETYPNR = 2
-
-        if manufacturer_id:
-            filter_manufacturer = f"AND T400.DLNR = { manufacturer_id }"
-        else:
-            filter_manufacturer = ""
-            manufacturer_id = ""
-
-        data = frappe.cache().get_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id + '_' + manufacturer_id)
-        if data is None:
-            data = frappe.db.sql(f"""
-                SELECT COUNT(DISTINCT T400.ARTNR, T400.DLNR) AS total_count
+                SELECT DISTINCT
+                    T001.DLNR,
+                    T001.MARKE AS MARKE
                 FROM `301` AS T301
                     JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
                     JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
-                    JOIN `320` AS T320 ON T320.GENARTNR = T400.GENARTNR
-                    JOIN `200` AS T200 ON T200.ARTNR = T400.ARTNR AND T200.DLNR = T400.DLNR						
-                    JOIN `001` AS T001 ON T001.DLNR = T200.DLNR			
-                    LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
-                    LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
-                    LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
-                WHERE T301.TREETYPNR = { TREETYPNR }	
-                    AND T301.NODE_ID = { node_id }
-                    AND T400.VKNZIELART = { VKNZIELART }
-                    AND T400.VKNZIELNR = { vehicle_id }
-                    { filter_manufacturer };
+                    JOIN `001` AS T001 ON T001.DLNR = T400.DLNR			
+                WHERE T301.TREETYPNR = { TreeTypNo }	
+                    { filter_node_id }
+                    AND T400.VKNZIELART = { LnkTargetType }
+                    { filter_ktypno }
+                ORDER BY T001.MARKE;
             """, as_dict=True)
-            frappe.cache().set_value('vehicle_products_count_' + type + '_' + node_id + '_' + vehicle_id + '_' + manufacturer_id, data)
+            frappe.cache().set_value(f"products_manufacturers_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}", data)
 
-        return data[0]['total_count']
+        return data
     
-    def get_vehicle_products(self, type, vehicle_id, node_id, manufacturer_id, page):
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
+    def get_products(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        
+        KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
+        if KTypNo:
+            filter_ktypno = f"AND T400.VKNZIELNR = { KTypNo }"
         else:
-            VKNZIELART = 16
-            TREETYPNR = 2
+            filter_ktypno = ""
+        
+        page = int(frappe.request.args.get('page') or 1)
 
         items_per_page = 20
         offset = (page - 1) * items_per_page
 
+        manufacturer_id = frappe.request.args.get('manufacturer_id')
         if manufacturer_id:
             filter_manufacturer = f"AND T001.DLNR = { manufacturer_id }"
         else:
             filter_manufacturer = ""
+
+        node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
+        if node_id:
+            filter_node_id = f"AND T301.NODE_ID = { node_id }"
+        else:
+            filter_node_id = ""
             
-        data = frappe.db.sql(f"""
+        paginated = frappe.db.sql(f"""
             SELECT DISTINCT
                 T400.VKNZIELART,
                 T400.VKNZIELNR,
@@ -476,16 +512,38 @@ class TheodoulouQuery():
                 LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
-            WHERE T301.TREETYPNR = { TREETYPNR }	
-                AND T301.NODE_ID = { node_id }
-                AND T400.VKNZIELART = { VKNZIELART }
-                AND T400.VKNZIELNR = { vehicle_id }
+            WHERE T301.TREETYPNR = { TreeTypNo }	
+                { filter_node_id }
+                AND T400.VKNZIELART = { LnkTargetType }
+                { filter_ktypno }
                 { filter_manufacturer }
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
         """, as_dict=True)
 
-        return data
+        total_products = frappe.cache().get_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}")
+        if total_products is None:
+            total_products = frappe.db.sql(f"""
+                SELECT COUNT(DISTINCT T400.ARTNR, T400.DLNR) AS total_products
+                FROM `301` AS T301
+                    JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
+                    JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
+                    JOIN `320` AS T320 ON T320.GENARTNR = T400.GENARTNR
+                    JOIN `200` AS T200 ON T200.ARTNR = T400.ARTNR AND T200.DLNR = T400.DLNR						
+                    JOIN `001` AS T001 ON T001.DLNR = T200.DLNR			
+                    LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
+                    LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
+                    LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                WHERE T301.TREETYPNR = { TreeTypNo }	
+                    { filter_node_id }
+                    AND T400.VKNZIELART = { LnkTargetType }
+                    { filter_ktypno }
+                    { filter_manufacturer };
+            """, as_dict=True)
+            total_products = total_products[0]['total_products']
+            frappe.cache().set_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}", total_products)
+
+        return {"products": paginated, "total_products": total_products}
     
     def dlnr_from_artnr(self, artnr):
         data = frappe.db.sql(f"""
@@ -694,11 +752,11 @@ class TheodoulouQuery():
             SELECT
                 T.KTYPE,
                 T.VKNZIELART,
-                T.BRAND_ID,
+                T.ManNo,
                 T.MANUFACTURER,
-                T.MODEL_ID,
+                T.KModNo,
                 T.MODEL,
-                T.VEHICLE_ID,
+                T.KTypNo,
                 T.TYPE,
                 T.BJVON,
                 T.BJBIS,
@@ -713,11 +771,11 @@ class TheodoulouQuery():
                 SELECT
                     T120.KTYPNR AS `KTYPE`, 
                     T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
-                    T100.HERNR AS BRAND_ID,  -- MANUFACTURER ID
+                    T100.HERNR AS ManNo,  -- MANUFACTURER ID
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
-                    T110.KMODNR AS MODEL_ID,  -- MODEL ID
+                    T110.KMODNR AS KModNo,  -- MODEL ID
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                    T120.KTYPNR AS VEHICLE_ID,  -- VEHICLE ID
+                    T120.KTYPNR AS KTypNo,  -- VEHICLE ID
                     GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                     T120.BJVON AS `BJVON`, 
                     IFNULL(T120.BJBIS, 'now') AS `BJBIS`, 
@@ -745,11 +803,11 @@ class TheodoulouQuery():
                 SELECT
                     T532.NTYPNR AS `KTYPE`, 
                     T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
-                    T100.HERNR AS BRAND_ID,  -- MANUFACTURER ID
+                    T100.HERNR AS ManNo,  -- MANUFACTURER ID
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
-                    T110.KMODNR AS MODEL_ID,  -- MODEL ID
+                    T110.KMODNR AS KModNo,  -- MODEL ID
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                    T532.NTYPNR AS VEHICLE_ID,  -- VEHICLE ID
+                    T532.NTYPNR AS KTypNo,  -- VEHICLE ID
                     GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                     T532.BJVON AS `BJVON`, 
                     IFNULL(T532.BJBIS, 'now') AS `BJBIS`, 		

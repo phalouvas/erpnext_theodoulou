@@ -28,10 +28,11 @@ function active_vehicle() {
 
     // Get the cookie value
     var vehicle_name = getCookie('vehicleActiveSelectionName');
-    var brand_id = getCookie('brand_id');
-    var model_id = getCookie('model_id');
-    var vehicle_id = getCookie('vehicle_id');
+    var BrandClass = getCookie('BrandClass');
+    var ManNo = getCookie('ManNo');
+    var KModNo = getCookie('KModNo');
     var needyear = getCookie('needyear');
+    var KTypNo = getCookie('KTypNo');
 
     // Get the span element
     // Add missing import for jQuery
@@ -40,7 +41,7 @@ function active_vehicle() {
     // Set the inner HTML of the span element to the cookie value
     if (element && vehicle_name) {
         element.html(vehicle_name);
-        element.attr('href', `/pc/models/types/vehicle?vehicle_id=${vehicle_id}&brand_id=${brand_id}&model_id=${model_id}&needyear=${needyear}`);
+        element.attr('href', `/brands/models/types/vehicle?BrandClass=${BrandClass}&ManNo=${ManNo}&KModNo=${KModNo}&needyear=${needyear}&KTypNo=${KTypNo}`);
     }
 
     if (element.html() != '') {
@@ -49,7 +50,12 @@ function active_vehicle() {
 
     $('#vehicleActiveSelectionClear').on('click', function () {
         document.cookie = 'vehicleActiveSelectionName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        window.location.href = '/pc';
+        document.cookie = 'BrandClass=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'ManNo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'KModNo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'needyear=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'KTypNo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        window.location.href = '/brands';
     });
 }
 
