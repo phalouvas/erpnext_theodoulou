@@ -5,6 +5,7 @@ from theodoulou.theodoulou.data_engine.controller import TheodoulouController
 def get_context(context):    
     query_controller = TheodoulouController()
     query_engine = query_controller.get_engine()
+    context.categories_tree = query_engine.get_categories_tree('PKW')
 
     brands = query_engine.get_brands()
     if 'show_all' in frappe.request.args:
