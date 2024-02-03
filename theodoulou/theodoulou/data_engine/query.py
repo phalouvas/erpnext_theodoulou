@@ -10,6 +10,9 @@ class TheodoulouQuery():
 
     def convert_yyyymm(self, yyyymm):
 
+        if yyyymm is None:
+            return '...'
+
         if yyyymm == 'now':
             return 'now'
 
