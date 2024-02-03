@@ -163,6 +163,15 @@ class TheodoulouQuery():
 
         return data
     
+    def get_vehicle(self, BrandClass, KTypNo):
+        type = self.get_brand_type_from_vehicle_class(BrandClass)
+        if type == 'pc':
+            return self.get_vehicle_passenger(KTypNo)
+        elif type == 'cv':
+            return self.get_vehicle_commercial(KTypNo)
+        else:
+            frappe.throw("Vehicle Type not found")
+    
     def get_vehicle_passenger(self, ID):
         data = frappe.db.sql(f"""
             SELECT			

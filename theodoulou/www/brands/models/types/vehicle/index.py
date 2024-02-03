@@ -1,29 +1,33 @@
 import frappe
+import frappe
 from frappe import _
-from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
+from theodoulou.theodoulou.data_engine.controller import TheodoulouController
 
-def get_context(context):
-    vehicle_id = frappe.request.args.get('vehicle_id')
-    brand_id = frappe.request.args.get('brand_id')
-    needyear = frappe.request.args.get('needyear')
-    model_id = frappe.request.args.get('model_id')
+def get_context(context):    
+    query_controller = TheodoulouController()
+    query_engine = query_controller.get_engine()
 
-    query_engine = TheodoulouQuery()
-    vehicle = query_engine.get_vehicle_passenger(vehicle_id)
+    context.BrandClass = query_controller.BrandClass
+    context.ManNo = frappe.request.args.get('ManNo')
+    context.KModNo = frappe.request.args.get('KModNo')
+    context.needyear = frappe.request.args.get('needyear') or '0'
+    context.KTypNo = frappe.request.args.get('KTypNo')
+
+    vehicle = query_engine.get_vehicle(context.BrandClass, context.KTypNo)
     
     context.vehicle = vehicle[0]
     context.vehicle.FROM_YEAR = query_engine.convert_yyyymm(context.vehicle.FROM_YEAR)
     context.vehicle.TO_YEAR = query_engine.convert_yyyymm(context.vehicle.TO_YEAR)
 
-    context.categories_tree = query_engine.get_vehicle_categories_tree("PKW", vehicle_id)
+    context.categories_tree = query_engine.get_vehicle_categories_tree("PKW", context.KTypNo)
 
     context.no_cache = 0
     context.title = f"{ context.vehicle.MANUFACTURER } { context.vehicle.MODEL } { context.vehicle.TYPE }"
     context.parents = [
         {"name": frappe._("Home"), "route": "/"}, 
-        {"name": frappe._("Passenger Cars"), "route": "/pc"}, 
-        {"name": frappe._("Models"), "route": f"/pc/models?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
-        {"name": frappe._("Types"), "route": f"/pc/models/types?brand_id={brand_id}&model_id={model_id}&needyear={needyear}"}, 
+        {"name": query_engine.title, "route": f"/brands?BrandClass={query_controller.BrandClass}"},
+        {"name": _("Models"), "route": f"/brands/models?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&needyear={context.needyear}"}, 
+        {"name": _("Types"), "route": f"/brands/models/types?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&KModNo={context.KModNo}&needyear={context.needyear}"}, 
     ]
 
     
