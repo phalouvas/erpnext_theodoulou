@@ -431,30 +431,38 @@ class TheodoulouQuery():
 
         return categories_tree
     
-    def get_vehicle_products_manufacturers(self, type, vehicle_id, node_id):
-        if type == "PKW":
-            VKNZIELART = 2
-            TREETYPNR = 1
+    def get_products_manufacturers(self):
+        LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+        
+        KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
+        if KTypNo:
+            filter_ktypno = f"AND T400.VKNZIELNR = { KTypNo }"
         else:
-            VKNZIELART = 16
-            TREETYPNR = 2
+            filter_ktypno = ""
 
-        data = frappe.cache().get_value('vehicle_products_manufacturers_' + type + '_' + node_id + '_' + vehicle_id)
+        node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
+        if node_id:
+            filter_node_id = f"AND T301.NODE_ID = { node_id }"
+        else:
+            filter_node_id = ""
+
+        data = frappe.cache().get_value(f"products_manufacturers_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}")
         if data is None:
             data = frappe.db.sql(f"""
-            SELECT DISTINCT
-                T001.DLNR,
-                T001.MARKE AS MARKE
-            FROM `301` AS T301
-                JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
-                JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
-                JOIN `001` AS T001 ON T001.DLNR = T400.DLNR			
-            WHERE T301.TREETYPNR = { TREETYPNR }	
-                AND T301.NODE_ID = { node_id }
-                AND T400.VKNZIELART = { VKNZIELART }
-                AND T400.VKNZIELNR = { vehicle_id }
-            ORDER BY T001.MARKE;
-        """, as_dict=True)
+                SELECT DISTINCT
+                    T001.DLNR,
+                    T001.MARKE AS MARKE
+                FROM `301` AS T301
+                    JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
+                    JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
+                    JOIN `001` AS T001 ON T001.DLNR = T400.DLNR			
+                WHERE T301.TREETYPNR = { TreeTypNo }	
+                    { filter_node_id }
+                    AND T400.VKNZIELART = { LnkTargetType }
+                    { filter_ktypno }
+                ORDER BY T001.MARKE;
+            """, as_dict=True)
+            frappe.cache().set_value(f"products_manufacturers_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}", data)
 
         return data
     

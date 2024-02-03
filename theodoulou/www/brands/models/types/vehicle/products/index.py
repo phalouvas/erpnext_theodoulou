@@ -28,8 +28,8 @@ def get_context(context):
     context.total_products = products['total_products']
     context.last_page = math.ceil(context.total_products / 20)
 
-    context.manufacturers = query_engine.get_vehicle_products_manufacturers("PKW", vehicle_id, context.node_id)
-    context.categories_tree = query_engine.get_categories_tree("PKW")
+    context.manufacturers = query_engine.get_products_manufacturers()
+    context.categories_tree = query_engine.get_categories_tree()
     context.active_node = query_engine.get_node("PKW", context.node_id)
 
     context.no_cache = 0
