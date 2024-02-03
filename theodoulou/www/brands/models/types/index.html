@@ -22,7 +22,7 @@
         {% for item in types %}
         <tr class="searchContainer" data-name="{{ item.TYPE | lower }}">
             <td><a
-                    href="/brands/models/types/vehicle?vehicle_id={{ item.ID }}&brand_id={{ brand_id }}&model_id={{ model_id }}&needyear={{ needyear }}">{{
+                    href="/pc/models/types/vehicle?vehicle_id={{ item.ID }}&brand_id={{ brand_id }}&model_id={{ model_id }}&needyear={{ needyear }}">{{
                     item.TYPE }}</a></td>
             <td>{{ item.YEARS }}</td>
         </tr>

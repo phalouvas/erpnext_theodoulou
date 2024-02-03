@@ -5,8 +5,8 @@ from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
 def get_context(context):
     query_engine = TheodoulouQuery()
 
-    context.brand_id = frappe.request.args.get('ManNo')
-    context.model_id = frappe.request.args.get('KModNo')
+    context.brand_id = frappe.request.args.get('brand_id')
+    context.model_id = frappe.request.args.get('model_id')
     context.needyear = frappe.request.args.get('needyear')    
 
     context.types = query_engine.get_types_passenger_cars(context.model_id, context.needyear)
