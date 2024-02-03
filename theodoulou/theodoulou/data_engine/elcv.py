@@ -24,10 +24,4 @@ class eLcvQuery(TheodoulouQuery):
             """, as_dict=True)
             frappe.cache().set_value('elcv_brands', data)
 
-        if 'show_all' in frappe.request.args:
-            popular_data = []
-        else:
-            popular_brands = [21, 35, 36, 183, 184, 74, 77, 80, 84, 88, 93, 111, 121]
-            popular_data = [brand for brand in data if brand['HERNR'] in popular_brands]
-        
-        return data, popular_data
+        return data

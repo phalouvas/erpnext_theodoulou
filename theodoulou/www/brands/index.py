@@ -13,7 +13,10 @@ def get_context(context):
 
     brands = query_engine.get_brands()
     if 'show_all' in frappe.request.args:
-        context.brands = brands[0]
+        context.brands = brands
     else:
-        context.brands = brands[1]
+        popular_brands = [2, 5, 16, 20, 21, 24, 25, 35, 36, 45, 183, 54, 56, 882, 184, 63, 72, 74, 1523,
+                                77, 80, 84, 88, 92, 93, 95, 1820, 99, 104, 106, 1138, 107, 109, 111, 120, 121,
+                                4055, 1131, 2760, 181, 1021, 2554, 185, 138, 4330, 2524, 2559, 4056]
+        context.brands = [brand for brand in brands if brand['HERNR'] in popular_brands]
     

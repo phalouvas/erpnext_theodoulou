@@ -24,10 +24,4 @@ class eMotorcycleQuery(TheodoulouQuery):
             """, as_dict=True)
             frappe.cache().set_value('e_motorcycles_brands', data)
 
-        if 'show_all' in frappe.request.args:
-            popular_data = []
-        else:
-            popular_brands = [16, 4055, 1131, 2760, 88, 181, 1021, 2554]
-            popular_data = [brand for brand in data if brand['HERNR'] in popular_brands]
-        
-        return data, popular_data
+        return data

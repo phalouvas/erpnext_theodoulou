@@ -23,11 +23,4 @@ class LcvQuery(TheodoulouQuery):
             """, as_dict=True)
             frappe.cache().set_value('lcv_brands', data)
 
-        if 'show_all' in frappe.request.args:
-            popular_data = []
-        else:
-            popular_brands = [2, 5, 16, 20, 21, 185, 24, 25, 35, 36, 45, 183,54, 882, 184, 63,
-                              72, 74, 1523, 77, 80, 84, 88, 93, 95, 104, 106, 109, 111, 120, 121, 138 ]
-            popular_data = [brand for brand in data if brand['HERNR'] in popular_brands]
-        
-        return data, popular_data
+        return data
