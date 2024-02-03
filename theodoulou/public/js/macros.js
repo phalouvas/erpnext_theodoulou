@@ -50,6 +50,11 @@ function active_vehicle() {
 
     $('#vehicleActiveSelectionClear').on('click', function () {
         document.cookie = 'vehicleActiveSelectionName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'BrandClass=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'ManNo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'KModNo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'needyear=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'KTypNo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         window.location.href = '/brands';
     });
 }

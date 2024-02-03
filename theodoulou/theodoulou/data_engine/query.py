@@ -306,6 +306,9 @@ class TheodoulouQuery():
         elif BrandClass == "tractor":
             LnkTargetType = 18
             TreeTypNo = 2
+        else:
+            LnkTargetType = 2
+            TreeTypNo = 1
         
         KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
         if KTypNo:
