@@ -17,7 +17,7 @@ class eLcvQuery(TheodoulouQuery):
                 FROM `100` AS T100
                     JOIN `110` AS T110 ON T100.HerNr = T110.HerNr
                     JOIN `120` AS T120 ON T110.KMODNR = T120.KMODNR
-                WHERE T110.Transporter = '1'
+                WHERE T110.Transporter = 1
                     AND T120.MOTART = '040'
                     AND T120.KRSTOFFART = '11'
                 ORDER BY NAME;

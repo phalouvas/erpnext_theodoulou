@@ -1,8 +1,6 @@
 import frappe
 
 from theodoulou.theodoulou.data_engine.query import TheodoulouQuery
-from theodoulou.theodoulou.data_engine.emotorcycle import eMotorcycleQuery
-from theodoulou.theodoulou.data_engine.elcv import eLcvQuery
 
 class ePcQuery(TheodoulouQuery):
 
@@ -21,20 +19,10 @@ class ePcQuery(TheodoulouQuery):
                     JOIN `120` AS T120 ON T110.KMODNR = T120.KMODNR
                 WHERE T120.MOTART = '040'
                     AND T120.KRSTOFFART = '11'
+                    AND T120.AUFBAUART <> '051'
+                    AND T110.Transporter = '0'
                 ORDER BY NAME;
             """, as_dict=True)
-
-            emotorcycle_engine = eMotorcycleQuery()
-            elcv_engine = eLcvQuery()
-            emotorcycle_brands = emotorcycle_engine.get_brands()
-            elcv_brands = elcv_engine.get_brands()
-
-            # Get the HERNR values from the brands to exclude
-            exclude_brands = [brand['HERNR'] for brand in emotorcycle_brands[0] + elcv_brands[0]]
-
-            # List comprehension
-            data = [item for item in data if item['HERNR'] not in exclude_brands]
-            
             frappe.cache().set_value('epc_brands', data)
 
         if 'show_all' in frappe.request.args:
