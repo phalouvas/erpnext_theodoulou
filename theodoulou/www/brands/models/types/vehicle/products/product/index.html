@@ -87,7 +87,7 @@
                     <th>{{ key }}</th>
                     <td>
                         {% for ARTNR in value %}
-                        <a href="/pc/models/types/vehicle/products/product?product_id={{ ARTNR }}"
+                        <a href="/brands/models/types/vehicle/products/product?ArtNo={{ ARTNR }}"
                             class="badge badge-info">{{ ARTNR }}</a>
                         {% endfor %}
                     </td>
@@ -122,8 +122,8 @@
                 <tr class="searchContainer_VEH"  data-name="{{ vehicle.MANUFACTURER | lower }} {{ vehicle.MODEL | lower }} {{ vehicle.TYPE | lower }}">
                     <td>
                         <a class="text-info"
-                            href="/pc/models/types/vehicle?vehicle_id={{ vehicle.VEHICLE_ID }}&brand_id={{ vehicle.BRAND_ID }}&model_id={{ vehicle.MODEL_ID }}&needyear=0">
-                            {{ vehicle.MANUFACTURER }} {{ vehicle.MODEL }} {{ vehicle.TYPE }}
+                            href="/brands/models/types/vehicle?BrandClass={{BrandClass}}&ManNo={{vehicle.ManNo}}&KModNo={{vehicle.KModNo}}&KTypNo={{vehicle.KTypNo}}">
+                        {{ vehicle.MANUFACTURER }} {{ vehicle.MODEL }} {{ vehicle.TYPE }}
                         </a>
                     </td>
                     <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>

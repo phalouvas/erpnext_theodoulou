@@ -752,11 +752,11 @@ class TheodoulouQuery():
             SELECT
                 T.KTYPE,
                 T.VKNZIELART,
-                T.BRAND_ID,
+                T.ManNo,
                 T.MANUFACTURER,
-                T.MODEL_ID,
+                T.KModNo,
                 T.MODEL,
-                T.VEHICLE_ID,
+                T.KTypNo,
                 T.TYPE,
                 T.BJVON,
                 T.BJBIS,
@@ -771,11 +771,11 @@ class TheodoulouQuery():
                 SELECT
                     T120.KTYPNR AS `KTYPE`, 
                     T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
-                    T100.HERNR AS BRAND_ID,  -- MANUFACTURER ID
+                    T100.HERNR AS ManNo,  -- MANUFACTURER ID
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
-                    T110.KMODNR AS MODEL_ID,  -- MODEL ID
+                    T110.KMODNR AS KModNo,  -- MODEL ID
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                    T120.KTYPNR AS VEHICLE_ID,  -- VEHICLE ID
+                    T120.KTYPNR AS KTypNo,  -- VEHICLE ID
                     GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                     T120.BJVON AS `BJVON`, 
                     IFNULL(T120.BJBIS, 'now') AS `BJBIS`, 
@@ -803,11 +803,11 @@ class TheodoulouQuery():
                 SELECT
                     T532.NTYPNR AS `KTYPE`, 
                     T400.VKNZIELART AS VKNZIELART, -- 2-PASSANGER, 16-TRUCK
-                    T100.HERNR AS BRAND_ID,  -- MANUFACTURER ID
+                    T100.HERNR AS ManNo,  -- MANUFACTURER ID
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
-                    T110.KMODNR AS MODEL_ID,  -- MODEL ID
+                    T110.KMODNR AS KModNo,  -- MODEL ID
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                    T532.NTYPNR AS VEHICLE_ID,  -- VEHICLE ID
+                    T532.NTYPNR AS KTypNo,  -- VEHICLE ID
                     GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
                     T532.BJVON AS `BJVON`, 
                     IFNULL(T532.BJBIS, 'now') AS `BJBIS`, 		
