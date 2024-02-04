@@ -526,6 +526,9 @@ class TheodoulouQuery():
             LIMIT { offset }, { items_per_page };
         """, as_dict=True)
 
+        for product in paginated:
+            product['shopping_cart'] = self.get_shopping_cart(product["ItemName"])
+
         total_products = frappe.cache().get_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}")
         if total_products is None:
             total_products = frappe.db.sql(f"""
@@ -1065,5 +1068,8 @@ class TheodoulouQuery():
             WHERE T.ItemName IS NOT NULL
             GROUP BY T.DLNR, T.ARTNR;
         """, as_dict=True)
+
+        for product in data:
+            product['shopping_cart'] = self.get_shopping_cart(product["ItemName"])
 
         return data
