@@ -78,3 +78,31 @@ class AxleQuery(TheodoulouQuery):
             frappe.cache().set_value(f"types_{BrandClass}_{KModNo}_{needyear}", data)
 
         return data
+    
+    def get_vehicle(self, BrandClass, KTypNo):
+        data = frappe.db.sql(f"""
+            SELECT			
+                T160.ATYPNR AS `TecDoc Type no`, 
+                GET_LBEZNR(T100.LBEZNR, {self.language}) AS Manufacturer,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, {self.language}) AS Model,  -- NAME MODEL
+                T160.BEZEICHNUNG AS Type,  -- NAME TYPE					
+                T160.BJVON AS `From Year`, 
+                IFNULL(T160.BJBIS, 'now') AS `To Year`, 	
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(68, T160.ACHSART, {self.language}), '') AS `Axle type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(95, T160.AUSFUHRUNG, {self.language}), '') AS `Style`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(83, T160.BREMSAUSF, {self.language}), '') AS `Brake type`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(214, T160.ACHSKORPER, {self.language}), '') AS `Axle-body`, 
+                IFNULL(T160.ZULLASTVON, '') AS `Maximum Axle Load in Kg from`, 
+                IFNULL(T160.ZULLASTBIS, '') AS `Maximum Axle Load in Kg to`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(213, T160.RADBEFESTIGUNG, {self.language}), '') AS `Wheel mounting`, 
+                IFNULL(T160.SPURWEITE, '') AS `Track width (mm)`, 
+                IFNULL(T160.NABENSYSTEM, '') AS `Hub system`, 
+                IFNULL(T160.FAHRHOHE_VON, '') AS `Distance between road pavement and vehicle frame from`, 
+                IFNULL(T160.FAHRHOHE_BIS, '') AS `Distance between road pavement and vehicle frame to`			
+            FROM `160` AS T160		
+                JOIN `110` AS T110 ON T110.KMODNR = T160.KMODNR			
+                JOIN `100` AS T100 ON T100.HERNR = T110.HERNR
+            WHERE T160.ATYPNR = {KTypNo};
+        """, as_dict=True)
+
+        return data
