@@ -44,4 +44,5 @@ def get_context(context):
         {"name": _("Models"), "route": f"/brands/models?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&needyear={context.needyear}"}, 
         {"name": _("Types"), "route": f"/brands/models/types?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&KModNo={context.KModNo}&needyear={context.needyear}"}, 
         {"name": _("Vehicle"), "route": f"/brands/models/types/vehicle?BrandClass={query_controller.BrandClass}&ManNo={context.ManNo}&KModNo={context.KModNo}&KTypNo={context.KTypNo}&needyear={context.needyear}"},
+        {"name": _("Products"), "route": f"/brands/models/types/vehicle/products?node_id={context.product_main_info.node_id}"},
     ]

@@ -503,7 +503,8 @@ class TheodoulouQuery():
                 IFNULL(GET_BEZNR(T324.BEZNR, { self.language }), '') AS ASSEMBLY_GROUP,
                 CONCAT(IFNULL(GET_BEZNR(T320.BEZNR, { self.language }), ''), IFNULL(CONCAT(' ', GET_BEZNR(T200.BEZNR, { self.language })), '')) AS `NAMEPRODUCT`,
                 IFNULL(GET_BEZNR(T323.BEZNR, { self.language }), '') AS STANDARD_GROUP,			
-                IFNULL(GET_BEZNR(T325.BEZNR, { self.language }), '') AS PURPOSE_GROUP                
+                IFNULL(GET_BEZNR(T325.BEZNR, { self.language }), '') AS PURPOSE_GROUP,
+                TItem.name AS `ItemName`            
             FROM `301` AS T301
                 JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
                 JOIN `400` AS T400 ON T302.GENARTNR = T400.GENARTNR					
@@ -513,6 +514,8 @@ class TheodoulouQuery():
                 LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T200.ARTNR
+                LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
             WHERE T301.TREETYPNR = { TreeTypNo }	
                 { filter_node_id }
                 AND T400.VKNZIELART = { LnkTargetType }
@@ -607,6 +610,7 @@ class TheodoulouQuery():
                         FROM `204` AS T204
                         WHERE T204.ARTNR = T200.ARTNR AND T204.DLNR = T200.DLNR
                         ORDER BY T204.SORT), '') AS LIST_REPLACEDNUMBERS, -- 204	
+                T302.NODE_ID AS `node_id`,
                 TItem.name AS `ItemName`		
             FROM `200` AS T200
                 JOIN `211` AS T211 ON T211.ARTNR = T200.ARTNR AND T211.DLNR = T200.DLNR
@@ -615,6 +619,7 @@ class TheodoulouQuery():
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
                 JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                JOIN `302` AS T302 ON T302.GENARTNR = T211.GENARTNR	
                 LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T200.ARTNR
                 LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
             WHERE T200.ARTNR = '{ artnr }'
@@ -934,16 +939,20 @@ class TheodoulouQuery():
                 IFNULL(GET_BEZNR(T320.BEZNR, {self.language}), '') AS `NAMEPRODUCT`,
                 IFNULL(GET_BEZNR(T324.BEZNR, {self.language}), '') AS ASSEMBLY_GROUP,
                 GROUP_CONCAT(DISTINCT CONCAT('[',T.TRUST,'%] - ',T.NOTE,CHAR(10)) SEPARATOR '') AS NOTE,
-                IF(MIN(T.TRUST) = MAX(T.TRUST), MIN(T.TRUST), CONCAT(MIN(CAST(T.TRUST AS UNSIGNED)), ' - ', MAX(CAST(T.TRUST AS UNSIGNED)))) AS TRUST_IN
+                IF(MIN(T.TRUST) = MAX(T.TRUST), MIN(T.TRUST), CONCAT(MIN(CAST(T.TRUST AS UNSIGNED)), ' - ', MAX(CAST(T.TRUST AS UNSIGNED)))) AS TRUST_IN,
+                T.ItemName
             FROM (
                     -- SEARCH IN STANDARD TABLE PRODUCTS TECDOC SUPPLIERS - CAN USE NUMBER EVEN WITH ADIDITONAL SYMBOLS
                     SELECT
                         T200.DLNR AS DLNR,					
                         T200.ARTNR AS ARTNR,
                         'FOUND IN MAIN TABLE PRODUCTS' AS NOTE,
-                        '100' AS TRUST
+                        '100' AS TRUST,
+                        TItem.name AS `ItemName`
                     FROM `200` AS T200
                         LEFT JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T200.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
                     WHERE T200.ARTNR = '{artnr}'
                         AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1
                     
@@ -954,8 +963,11 @@ class TheodoulouQuery():
                         T209.DLNR AS DLNR,					
                         T209.ARTNR AS ARTNR,
                         'FOUND IN EAN TABLE' AS NOTE,
-                        '100' AS TRUST
-                    FROM `209` AS T209					
+                        '100' AS TRUST,
+                        TItem.name AS `ItemName`
+                    FROM `209` AS T209			
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T209.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent		
                     WHERE T209.EANNR = '{artnr}'	
                     
                         UNION
@@ -965,9 +977,12 @@ class TheodoulouQuery():
                         T204.DLNR AS DLNR,					
                         T204.ARTNR AS ARTNR,
                         'FOUND IN SUPERSEDED TABLE PRODUCTS' AS NOTE,
-                        '100' AS TRUST
+                        '100' AS TRUST,
+                        TItem.name AS `ItemName`
                     FROM `204` AS T204
                         LEFT JOIN `001` AS T001 ON T001.DLNR = T204.DLNR
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T204.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
                     WHERE T204.ERSATZNR = '{artnr}'
                         AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1					
                         
@@ -978,8 +993,11 @@ class TheodoulouQuery():
                         T207.DLNR AS DLNR,					
                         T207.ARTNR AS ARTNR,
                         'FOUND IN USERNUMBER TABLE' AS NOTE,
-                        '100' AS TRUST
-                    FROM `207` AS T207					
+                        '100' AS TRUST,
+                        TItem.name AS `ItemName`
+                    FROM `207` AS T207		
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T207.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent			
                     WHERE T207.GEBRNR = '{artnr}'
                         
                         UNION
@@ -989,9 +1007,12 @@ class TheodoulouQuery():
                         T203.DLNR AS DLNR,
                         T203.ARTNR AS ARTNR,
                         CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE PRODUCT WITH SEARCH NUMBER "','{artnr}','" AND BRAND "',ifnull(GET_LBEZNR(T100.LBEZNR, 1), ''),'" INCLUDED IN OTHER PRODUCTS]') AS NOTE,
-                        '90' AS TRUST
+                        '90' AS TRUST,
+                        TItem.name AS `ItemName`
                     FROM `203` AS T203					
                         LEFT JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T203.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
                     WHERE T203.REFNR = '{artnr}'
                         AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND GET_LBEZNR(T100.LBEZNR, 1) = '{search_brand}'), 1, 0) = 1	
                     
@@ -1002,12 +1023,15 @@ class TheodoulouQuery():
                         T200_2.DLNR AS DLNR,					
                         T200_2.ARTNR AS ARTNR,
                         CONCAT('FOUND IN CROSSREFERENCE TABLE [WHERE OTHER PRODUCTS ARE INCLUDED IN PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
-                        '90' AS TRUST
+                        '90' AS TRUST,
+                        TItem.name AS `ItemName`
                     FROM `200` AS T200
                         JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
                         JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
                         JOIN `001` AS T001_2 ON T001_2.KHERNR = T203.KHERNR
-                        JOIN `200` AS T200_2 ON T200_2.ARTNR = T203.REFNR AND T200_2.DLNR = T001_2.DLNR					
+                        JOIN `200` AS T200_2 ON T200_2.ARTNR = T203.REFNR AND T200_2.DLNR = T001_2.DLNR	
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T200_2.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent				
                     WHERE T200.ARTNR = '{artnr}'
                         AND IF(TRIM('{search_brand}') = '' OR (TRIM('{search_brand}') <> '' AND T001.MARKE = '{search_brand}'), 1, 0) = 1				
 
@@ -1019,12 +1043,15 @@ class TheodoulouQuery():
                         T203_2.DLNR AS DLNR,
                         T203_2.ARTNR AS ARTNR,
                         CONCAT('FOUND IN CROSSREFERENCE TABLE [FOUND ANALOGS VIA OE-NUMBERS FOR PRODUCT WITH SEARCH NUMBER "',T200.ARTNR,'" AND BRAND "',T001.MARKE,'"]') AS NOTE,
-                        '80' AS TRUST
+                        '80' AS TRUST,
+                        TItem.name AS `ItemName`
                     FROM `200` AS T200
                         JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
                         JOIN `203` AS T203 ON T203.ARTNR = T200.ARTNR AND T203.DLNR = T200.DLNR
                         JOIN `100` AS T100 ON T100.HERNR = T203.KHERNR AND (T100.PKW = 1 OR T100.NKW = 1)
-                        JOIN `203` AS T203_2 ON T203_2.REFNR = T203.REFNR AND T203_2.KHERNR = T203.KHERNR															
+                        JOIN `203` AS T203_2 ON T203_2.REFNR = T203.REFNR AND T203_2.KHERNR = T203.KHERNR
+                        LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T203_2.ARTNR
+                        LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent															
                     WHERE TRIM('{search_brand}') <> ''
                         AND T200.ARTNR = '{artnr}'
                         AND T001.MARKE = '{search_brand}'

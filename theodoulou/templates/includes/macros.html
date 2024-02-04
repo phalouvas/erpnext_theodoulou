@@ -90,6 +90,7 @@
                     <th>Brand</th>
                     <th>Name</th>
                     <th>Product</th>
+                    <th>Availability</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +102,7 @@
                         <a href="/brands/models/types/vehicle/products/product?BrandNo={{ product.DLNR }}&ArtNo={{ product.ARTNR }}"
                             class="badge badge-info">{{ product.ARTNR }}</a>
                     </td>
+                    <td>{%if product.ItemName %}{{product.ItemName}}{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
