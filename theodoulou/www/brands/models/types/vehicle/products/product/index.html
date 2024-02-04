@@ -3,7 +3,11 @@
 
 {% block left_content %}
 {% if shopping_cart %}
-{% include "webshop/templates/generators/item/item_add_to_cart.html" %}
+<div class="row justify-content-end mb-4">
+    <div class="col-sm-12 col-md-4 shadow rounded">
+        {% include "webshop/templates/generators/item/item_add_to_cart.html" %}
+    </div>
+</div>
 {% endif %}
 <div class="row row-cols-1 row-cols-sm-2 shadow rounded">
     <div class="col">

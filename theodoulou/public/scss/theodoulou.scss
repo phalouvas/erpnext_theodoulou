@@ -28,3 +28,17 @@
 .caret:hover {
     cursor: pointer;
 }
+
+.product-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: var(--margin-sm) 0;
+    margin-bottom: auto !important;
+
+    .striked-price {
+        font-weight: 500;
+        font-size: 15px;
+        color: var(--gray-500);
+    }
+}
