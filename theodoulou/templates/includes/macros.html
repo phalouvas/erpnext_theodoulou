@@ -102,7 +102,47 @@
                         <a href="/brands/models/types/vehicle/products/product?BrandNo={{ product.DLNR }}&ArtNo={{ product.ARTNR }}"
                             class="badge badge-info">{{ product.ARTNR }}</a>
                     </td>
-                    <td>{%if product.ItemName %}{{product.ItemName}}{% endif %}</td>
+                    <td>
+                        {% set product_info = product.shopping_cart.product_info %}
+                        {% set price_info = product_info.price %}
+                        <div class="product-price text-primary">
+                            <!-- Final Price -->
+                            {{ price_info.formatted_price_sales_uom }}
+            
+                            <!-- Striked Price and Discount  -->
+                            {% if price_info.formatted_mrp %}
+                                <small class="formatted-price">
+                                    <s>MRP {{ price_info.formatted_mrp }}</s>
+                                </small>
+                                <small class="ml-1 formatted-price in-green">
+                                    -{{ price_info.get("formatted_discount_percent") or price_info.get("formatted_discount_rate")}}
+                                </small>
+                            {% endif %}
+            
+                            <!-- Price per UOM -->
+                            <small class="formatted-price ml-2">
+                                ({{ price_info.formatted_price }} / {{ product_info.uom }})
+                            </small>
+                        </div>
+                        <div class="mt-2">
+                            {% if product_info.get("on_backorder") %}
+                                <span class="no-stock out-of-stock" style="color: var(--primary-color);">
+                                    {{ _('Available on backorder') }}
+                                </span>
+                            {% elif product_info.in_stock == 0 %}
+                                <span class="no-stock out-of-stock">
+                                    {{ _('Out of stock') }}
+                                </span>
+                            {% elif product_info.in_stock == 1 %}
+                                <span class="in-green has-stock">
+                                    {{ _('In stock') }}
+                                    {% if product_info.show_stock_qty and product_info.stock_qty %}
+                                        ({{ product_info.stock_qty }})
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
