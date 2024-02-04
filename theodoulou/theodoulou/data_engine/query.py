@@ -1076,3 +1076,20 @@ class TheodoulouQuery():
             product['shopping_cart'] = self.get_shopping_cart(product["ItemName"])
 
         return data
+    
+    def search_vehicles_engines(self, engine_id):
+        data = frappe.db.sql(f"""
+            SELECT DISTINCT
+                GET_LBEZNR(T100.LBEZNR, {self.language}) AS MANUFACTURER_ENGINE,
+                T155.MOTNR,
+                T155.MCODE,
+                T125.KTYPNR,
+                T537.NTYPNR
+            FROM `155` AS T155
+                JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
+                LEFT JOIN `125` AS T125 ON T125.MOTNR = T155.MOTNR
+                LEFT JOIN `537` AS T537 ON T537.MOTNR = T155.MOTNR
+            WHERE T155.MCODE = '{engine_id}';
+        """, as_dict=True)
+
+        return data
