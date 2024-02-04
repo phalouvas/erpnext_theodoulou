@@ -9,6 +9,7 @@ from theodoulou.theodoulou.data_engine.bus import BusQuery
 from theodoulou.theodoulou.data_engine.ebus import eBusQuery
 from theodoulou.theodoulou.data_engine.tractor import TractorQuery
 from theodoulou.theodoulou.data_engine.cv import CvQuery
+from theodoulou.theodoulou.data_engine.axle import AxleQuery
 
 class TheodoulouController:
     def __init__(self):
@@ -46,6 +47,9 @@ class TheodoulouController:
         
         if self.BrandClass == 'cv':
             return CvQuery()
+        
+        if self.BrandClass == 'axle':
+            return AxleQuery()
         
         return PcQuery()
         
