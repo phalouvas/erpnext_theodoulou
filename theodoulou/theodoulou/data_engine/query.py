@@ -315,7 +315,7 @@ class TheodoulouQuery():
         
         KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
         if KTypNo:
-            return self.get_vehicle_categories_tree(TreeTypNo, LnkTargetType, KTypNo)
+            return self.get_vehicle_categories_tree(TreeTypNo, KTypNo)
         else:
             return self.get_all_categories_tree(TreeTypNo)
 
@@ -372,7 +372,12 @@ class TheodoulouQuery():
 
         return categories_tree
     
-    def get_vehicle_categories_tree(self, TreeTypNo, LnkTargetType, KTypNo):
+    def get_vehicle_categories_tree(self, TreeTypNo, KTypNo):
+
+        if TreeTypNo == 1:
+            LnkTargetType = 2
+        elif TreeTypNo == 2:
+            LnkTargetType = 16
 
         # Try to get data from the cache
         categories_tree = frappe.cache().get_value(f"categories_tree_{TreeTypNo}_{LnkTargetType}_{KTypNo}")
@@ -466,6 +471,11 @@ class TheodoulouQuery():
     
     def get_products(self):
         LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
+
+        if TreeTypNo == 1:
+            LnkTargetType = 2
+        elif TreeTypNo == 2:
+            LnkTargetType = 16
         
         KTypNo = frappe.request.args.get('KTypNo') or frappe.request.cookies.get('KTypNo')
         if KTypNo:
