@@ -2,6 +2,9 @@
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
+{% if shopping_cart %}
+{% include "webshop/templates/generators/item/item_add_to_cart.html" %}
+{% endif %}
 <div class="row row-cols-1 row-cols-sm-2 shadow rounded">
     <div class="col">
         <div class="row">
@@ -83,7 +86,7 @@
         <table class="table table-sm">
             <tbody>
                 {% for key, value in product_oe_numbers.items() %}
-                <tr class="searchContainer_OE"  data-name="{{ key | lower }}">
+                <tr class="searchContainer_OE" data-name="{{ key | lower }}">
                     <th>{{ key }}</th>
                     <td>
                         {% for ARTNR in value %}
@@ -119,11 +122,12 @@
             </thead>
             <tbody>
                 {% for vehicle in product_vehicles_applicability %}
-                <tr class="searchContainer_VEH"  data-name="{{ vehicle.MANUFACTURER | lower }} {{ vehicle.MODEL | lower }} {{ vehicle.TYPE | lower }}">
+                <tr class="searchContainer_VEH"
+                    data-name="{{ vehicle.MANUFACTURER | lower }} {{ vehicle.MODEL | lower }} {{ vehicle.TYPE | lower }}">
                     <td>
                         <a class="text-info"
                             href="/brands/models/types/vehicle?BrandClass={{BrandClass}}&ManNo={{vehicle.ManNo}}&KModNo={{vehicle.KModNo}}&KTypNo={{vehicle.KTypNo}}">
-                        {{ vehicle.MANUFACTURER }} {{ vehicle.MODEL }} {{ vehicle.TYPE }}
+                            {{ vehicle.MANUFACTURER }} {{ vehicle.MODEL }} {{ vehicle.TYPE }}
                         </a>
                     </td>
                     <td>{{ vehicle.BJVON }} - {{ vehicle.BJBIS }}</td>

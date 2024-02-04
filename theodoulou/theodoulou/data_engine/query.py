@@ -1,5 +1,6 @@
 import frappe
 import datetime
+from webshop.webshop.shopping_cart.product_info import get_product_info_for_website
 
 class TheodoulouQuery():
 
@@ -605,7 +606,8 @@ class TheodoulouQuery():
                             GROUP_CONCAT(DISTINCT T204.ERSATZNR)
                         FROM `204` AS T204
                         WHERE T204.ARTNR = T200.ARTNR AND T204.DLNR = T200.DLNR
-                        ORDER BY T204.SORT), '') AS LIST_REPLACEDNUMBERS -- 204			
+                        ORDER BY T204.SORT), '') AS LIST_REPLACEDNUMBERS, -- 204	
+                TItem.name AS `ItemName`		
             FROM `200` AS T200
                 JOIN `211` AS T211 ON T211.ARTNR = T200.ARTNR AND T211.DLNR = T200.DLNR
                 JOIN `320` AS T320 ON T320.GENARTNR = T211.GENARTNR
@@ -613,12 +615,19 @@ class TheodoulouQuery():
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
                 JOIN `001` AS T001 ON T001.DLNR = T200.DLNR
+                LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T200.ARTNR
+                LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
             WHERE T200.ARTNR = '{ artnr }'
                 AND T200.DLNR = { dlnr };
         """, as_dict=True)
 
         return data[0]
     
+    def get_shopping_cart(self, ItemName):
+        if not ItemName:
+            return None
+        return get_product_info_for_website(ItemName, skip_quotation_creation=True)    
+
     def get_product_criteria(self, dlnr, artnr):
         data = frappe.db.sql(f"""
             SELECT DISTINCT

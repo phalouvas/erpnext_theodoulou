@@ -24,6 +24,8 @@ def get_context(context):
 
     BrandNo = frappe.request.args.get('BrandNo') or query_engine.dlnr_from_artnr(ArtNo)
     context.product_main_info = query_engine.get_product_main_info(BrandNo, ArtNo)
+    context.shopping_cart = query_engine.get_shopping_cart(context.product_main_info.ItemName)
+    context.doc = {"offers": False}
     context.product_criteria = query_engine.get_product_criteria(BrandNo, ArtNo)
     context.product_additional_info = query_engine.get_product_additional_info(BrandNo, ArtNo)
     context.product_oe_numbers = query_engine.get_product_oe_numbers(BrandNo, ArtNo)
