@@ -542,9 +542,12 @@ class TheodoulouQuery():
                     LEFT JOIN `323` AS T323 ON T323.NARTNR = T320.NARTNR
                     LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                     LEFT JOIN `325` AS T325 ON T325.VERWNR = T320.VERWNR
+                    LEFT JOIN `tabItem Barcode` AS TItemBarcode ON TItemBarcode.barcode = T200.ARTNR
+                    LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
                 WHERE T301.TREETYPNR = { TreeTypNo }	
                     { filter_node_id }
                     AND T400.VKNZIELART = { LnkTargetType }
+                    AND TItem.name IS NOT NULL
                     { filter_ktypno }
                     { filter_manufacturer };
             """, as_dict=True)
