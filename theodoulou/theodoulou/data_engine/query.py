@@ -203,12 +203,12 @@ class TheodoulouQuery():
     def get_vehicle_passenger(self, ID):
         data = frappe.db.sql(f"""
             SELECT			
-			T120.KTYPNR AS `ID`, 
-                GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
-                GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
-                T120.BJVON AS `FROM_YEAR`, 
-                IFNULL(T120.BJBIS, 'now') AS `TO_YEAR`, 
+			T120.KTYPNR AS `TecDoc Type no`, 
+                GET_LBEZNR(T100.LBEZNR, { self.language }) AS Manufacturer,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS Model,  -- NAME MODEL
+                GET_LBEZNR(T120.LBEZNR, { self.language }) AS Type,  -- NAME TYPE					
+                T120.BJVON AS `From Year`, 
+                IFNULL(T120.BJBIS, 'now') AS `To Year`, 
                 IFNULL(T120.KW, '') AS `Engine output in kW`, 
                 IFNULL(T120.PS, '') AS `Engine output in HP`, 
                 IFNULL(T120.CCMSTEUER, '') AS `Engine capacity in cc (taxation value)`, 
@@ -258,19 +258,19 @@ class TheodoulouQuery():
     def get_vehicle_commercial(self, ID):
         data = frappe.db.sql(f"""
             SELECT			
-                T532.NTYPNR AS `ID`, 
-                GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
-                GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
-                GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE					
-                T532.BJVON AS `FROM_YEAR`, 
-                IFNULL(T532.BJBIS, 'now') AS `TO_YEAR`, 			
+                T532.NTYPNR AS `TecDoc Type no`, 
+                GET_LBEZNR(T100.LBEZNR, { self.language }) AS Manufacturer,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS Model,  -- NAME MODEL
+                GET_LBEZNR(T532.LBEZNR, { self.language }) AS Type,  -- NAME TYPE					
+                T532.BJVON AS `From Year`, 
+                IFNULL(T532.BJBIS, 'now') AS `To Year`, 			
                 IFNULL(GET_BEZNR_FOR_KEY_TABLE(67, T532.BAUART, { self.language }), '') AS `Body Type`, 
-                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `Engine Type`, 
-                IFNULL(T532.KWVON, '') AS `Engine output in kW from`, 
-                IFNULL(T532.KWBIS, '') AS `Engine output in kW to`, 
-                IFNULL(T532.PSVON, '') AS `Engine output in HP from`, 
-                IFNULL(T532.PSBIS, '') AS `Engine output in HP to`, 
-                IFNULL(T532.CCMTECH, '') AS `Engine capacity in cc (technical)`, 
+                IFNULL(GET_BEZNR_FOR_KEY_TABLE(80, T532.MOTART, { self.language }), '') AS `Engine type`, 
+                IFNULL(T532.KWVON, '') AS `Engine output in KW (from)`, 
+                IFNULL(T532.KWBIS, '') AS `Engine output in KW (to)`, 
+                IFNULL(T532.PSVON, '') AS `Engine output in HP (from)`, 
+                IFNULL(T532.PSBIS, '') AS `Engine output in HP (to)`, 
+                IFNULL(T532.CCMTECH, '') AS `Engine capacity in cc (technical value)`, 
                 IFNULL(T532.TONNAGE, '') AS `Tonnage in tonnes with 2 decimal spaces`, 
                 IFNULL(GET_BEZNR_FOR_KEY_TABLE(65, T532.ACHSCONFIG, { self.language }), '') AS `Axle Configuration`,
                 IFNULL((SELECT 

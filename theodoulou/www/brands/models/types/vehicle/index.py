@@ -16,13 +16,13 @@ def get_context(context):
     vehicle = query_engine.get_vehicle(context.BrandClass, context.KTypNo)
     
     context.vehicle = vehicle[0]
-    context.vehicle.FROM_YEAR = query_engine.convert_yyyymm(context.vehicle.FROM_YEAR)
-    context.vehicle.TO_YEAR = query_engine.convert_yyyymm(context.vehicle.TO_YEAR)
+    context.vehicle['From Year'] = query_engine.convert_yyyymm(context.vehicle['From Year'])
+    context.vehicle['To Year'] = query_engine.convert_yyyymm(context.vehicle['To Year'])
 
     context.categories_tree = query_engine.get_categories_tree()
 
     context.no_cache = 0
-    context.title = f"{ context.vehicle.MANUFACTURER } { context.vehicle.MODEL } { context.vehicle.TYPE }"
+    context.title = f"{ context.vehicle.Manufacturer } { context.vehicle.Model } { context.vehicle.Type }"
     context.parents = [
         {"name": _("Home"), "route": "/"}, 
         {"name": query_engine.title, "route": f"/brands?BrandClass={query_controller.BrandClass}"},
