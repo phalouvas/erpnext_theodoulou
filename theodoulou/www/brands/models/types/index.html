@@ -14,19 +14,19 @@
 <table class="table">
     <thead>
         <tr>
-            <th>#</th>
             <th>Type</th>
             <th>Years</th>
+            <th>#</th>
         </tr>
     </thead>
     <tbody>
         {% for item in types %}
         <tr class="searchContainer" data-name="{{ item.TYPE | lower }}">
-            <td>{{ item.KTypNo }}</td>
             <td><a class="btn btn-primary" title="View {{ item.TYPE }}"
                     href="/brands/models/types/vehicle?BrandClass={{BrandClass}}&ManNo={{ManNo}}&KModNo={{KModNo}}&needyear={{ needyear }}&KTypNo={{ item.KTypNo }}">{{
                     item.TYPE }}</a></td>
             <td>{{ item.YEARS }}</td>
+            <td>{{ item.KTypNo }}</td>
         </tr>
         {% endfor %}
     </tbody>
