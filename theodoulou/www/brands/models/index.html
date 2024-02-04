@@ -30,7 +30,8 @@
         {% for item in models %}
         <tr class="searchContainer" data-name="{{ item.MODEL | lower }}">
             <td>
-                <a href="/brands/models/types?BrandClass={{BrandClass}}&ManNo={{ ManNo }}&KModNo={{ item.KModNo }}&needyear={{ needyear }}">
+                <a <a class="btn btn-primary" title="View {{ item.MODEL }}"
+                href="/brands/models/types?BrandClass={{BrandClass}}&ManNo={{ ManNo }}&KModNo={{ item.KModNo }}&needyear={{ needyear }}">
                     {{ item.MODEL }}
                 </a>
             </td>

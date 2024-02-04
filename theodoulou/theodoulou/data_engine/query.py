@@ -102,16 +102,6 @@ class TheodoulouQuery():
 
         return data
     
-    def get_popular_brands(self, type, popular_brands):
-        data = frappe.cache().get_value('popular_brands_' + type)
-
-        if data is None:
-            all_brands = self.get_brands(type)
-            data = [brand for brand in all_brands if brand['HERNR'] in popular_brands]
-            frappe.cache().set_value('popular_brands_' + type, data)
-
-        return data
-    
     def get_models(self, type, HERNR, NEEDYEAR = 0):
             
             data = frappe.cache().get_value('models_' + type + '_' + HERNR + '_' + NEEDYEAR)
@@ -154,8 +144,8 @@ class TheodoulouQuery():
 
         if data is None:
             data = frappe.db.sql(f"""
-                SELECT
-                    T120.KTYPNR AS ID,  -- ID TYPE
+                SELECT DISTINCT
+                    T120.KTYPNR AS KTypNo,  -- ID TYPE
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                     GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                     GET_LBEZNR(T120.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE
@@ -179,8 +169,8 @@ class TheodoulouQuery():
     
     def get_types_commercial_cars(self, KMODNR, NEEDYEAR = 0):
         data = frappe.db.sql(f"""
-            SELECT
-                T532.NTYPNR AS ID,  -- ID TYPE
+            SELECT DISTINCT
+                T532.NTYPNR AS KTypNo,  -- ID TYPE
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS MODEL,  -- NAME MODEL
                 GET_LBEZNR(T532.LBEZNR, { self.language }) AS TYPE,  -- NAME TYPE
