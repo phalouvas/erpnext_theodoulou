@@ -521,6 +521,7 @@ class TheodoulouQuery():
                 AND T400.VKNZIELART = { LnkTargetType }
                 { filter_ktypno }
                 { filter_manufacturer }
+                AND TItem.name IS NOT NULL
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
         """, as_dict=True)
@@ -1061,6 +1062,7 @@ class TheodoulouQuery():
                 JOIN `320` AS T320 ON T320.GENARTNR = T211.GENARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `001` AS T001 ON T001.DLNR = T.DLNR	
+            WHERE T.ItemName IS NOT NULL
             GROUP BY T.DLNR, T.ARTNR;
         """, as_dict=True)
 
