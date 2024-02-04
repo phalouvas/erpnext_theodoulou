@@ -22,8 +22,7 @@
     <tbody>
         {% for item in types %}
         <tr class="searchContainer" data-name="{{ item.TYPE | lower }}">
-            <td><a class="btn btn-primary" title="View {{ item.TYPE }}"
-                    href="/brands/models/types/vehicle?BrandClass={{BrandClass}}&ManNo={{ManNo}}&KModNo={{KModNo}}&needyear={{ needyear }}&KTypNo={{ item.KTypNo }}">{{
+            <td><a href="/brands/models/types/vehicle?BrandClass={{BrandClass}}&ManNo={{ManNo}}&KModNo={{KModNo}}&needyear={{ needyear }}&KTypNo={{ item.KTypNo }}">{{
                     item.TYPE }}</a></td>
             <td>{{ item.YEARS }}</td>
             <td>{{ item.KTypNo }}</td>

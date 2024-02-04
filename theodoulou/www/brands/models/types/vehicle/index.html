@@ -4,61 +4,16 @@
 <div class="card text-white bg-info text-white shadow">
     <div class="card-header">Technical data</div>
     <div class="card-body">
-        <p class="card-text">
         <table class="table table-sm text-white">
             <tbody>
+                {% for key, value in vehicle.items() %}
                 <tr>
-                    <th>Model year:</th>
-                    <td>{{ vehicle.FROM_YEAR }} - {{ vehicle.TO_YEAR }}</td>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
                 </tr>
-                <tr>
-                    <th>Performance:</th>
-                    <td>{{ vehicle['Engine output in kW'] }} kW - {{ vehicle['Engine output in HP'] }} HP</td>
-                </tr>
-                <tr>
-                    <th>Capacity:</th>
-                    <td>{{ vehicle['Engine capacity in cc (technical value)'] }} cc - {{ vehicle['Engine
-                        capacity in litre *100 (99V99)'] }} lt</td>
-                </tr>
-                <tr>
-                    <th>Cylinders:</th>
-                    <td>{{ vehicle['Number of cylinders'] }}</td>
-                </tr>
-                <tr>
-                    <th>Valves:</th>
-                    <td>{{ vehicle['Number of valves'] }}</td>
-                </tr>
-                <tr>
-                    <th>Body style:</th>
-                    <td>{{ vehicle['Body type'] }}</td>
-                </tr>
-                <tr>
-                    <th>Drive type:</th>
-                    <td>{{ vehicle['Drive type'] }}</td>
-                </tr>
-                <tr>
-                    <th>Engine type:</th>
-                    <td>{{ vehicle['Engine type'] }}</td>
-                </tr>
-                <tr>
-                    <th>Engine codes:</th>
-                    <td>{{ vehicle['Engine numbers'] }}</td>
-                </tr>
-                <tr>
-                    <th>Fuel type:</th>
-                    <td>{{ vehicle['Fuel type'] }}</td>
-                </tr>
-                <tr>
-                    <th>Fuel preparation:</th>
-                    <td>{{ vehicle['Fuel mixture formation'] }}</td>
-                </tr>
-                <tr>
-                    <th>TecDoc type no:</th>
-                    <td>{{ vehicle['ID'] }}</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
-        </p>
     </div>
     <input type="hidden" id="vehicle_name" value="{{ title }}">
 </div>
