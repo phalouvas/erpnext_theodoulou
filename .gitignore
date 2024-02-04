@@ -6,3 +6,4 @@ tags
 theodoulou/docs/current
 node_modules/
 theodoulou/public/dist/*
+__init__.py

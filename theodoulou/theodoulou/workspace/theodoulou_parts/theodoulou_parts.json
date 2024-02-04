@@ -24,15 +24,7 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 1.0,
- "shortcuts": [
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Manufacturers",
-   "link_to": "TD Manufacturer",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
+ "shortcuts": [  
   {
    "color": "Grey",
    "doc_view": "List",
