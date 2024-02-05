@@ -1076,3 +1076,46 @@ class TheodoulouQuery():
             product['shopping_cart'] = self.get_shopping_cart(product["ItemName"])
 
         return data
+    
+    def search_vehicles_engines(self, engine_id):
+        pc = frappe.db.sql(f"""
+            SELECT DISTINCT
+                "pc" AS `BrandClass`,
+                GET_LBEZNR(T100.LBEZNR, {self.language}) AS `Manufacturer`,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS `Model`,  -- NAME MODEL
+                GET_LBEZNR(T120.LBEZNR, { self.language }) AS `Type`,  -- NAME TYPE
+                T120.BJVON AS `FROM_YEAR`, -- TYPE PRODUCTING FROM YEAR+MONTH
+                IFNULL(T120.BJBIS, 'now') AS `TO_YEAR`, -- TYPE PRODUCTING TO YEAR+MONTH
+                T100.HERNR AS `ManNo`,
+                T120.KMODNR AS `KModNo`,
+                T125.KTYPNR AS `KTypNo`,
+                T155.MCODE
+            FROM `155` AS T155
+                JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
+                LEFT JOIN `125` AS T125 ON T125.MOTNR = T155.MOTNR
+                LEFT JOIN `120` AS T120 ON T120.KTypNr = T125.KTypNr	
+                LEFT JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR 		
+            WHERE T155.MCODE = '{engine_id}';
+        """, as_dict=True)
+
+        cv = frappe.db.sql(f"""
+            SELECT DISTINCT
+                "cv" AS `BrandClass`,
+                GET_LBEZNR(T100.LBEZNR, {self.language}) AS `Manufacturer`,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS `Model`,  -- NAME MODEL
+                GET_LBEZNR(T532.LBEZNR, { self.language }) AS `Type`,  -- NAME TYPE
+                T532.BJVON AS `FROM_YEAR`, -- TYPE PRODUCTING FROM YEAR+MONTH
+                IFNULL(T532.BJBIS, 'now') AS `TO_YEAR`, -- TYPE PRODUCTING TO YEAR+MONTH
+                T100.HERNR AS `ManNo`,
+                T532.KModNr AS `KModNo`,
+                T532.NTYPNR AS `KTypNo`,
+                T155.MCODE
+            FROM `155` AS T155
+                JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
+                LEFT JOIN `537` AS T537 ON T537.MOTNR = T155.MOTNR
+                LEFT JOIN `532` AS T532 ON T532.NTYPNR = T537.NTYPNR
+                LEFT JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
+            WHERE T155.MCODE = '{engine_id}';
+        """, as_dict=True)
+        
+        return pc + cv

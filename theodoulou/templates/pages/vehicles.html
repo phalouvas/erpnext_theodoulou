@@ -12,6 +12,12 @@
             <input type="text" class="form-control" id="product_id" name="product_id" placeholder="Number, Article, OE...." aria-label="Search" aria-describedby="btnGroupAddon">
         </div>
         <button type="submit" class="btn btn-primary">Go</button>
+      </form>  
+      <form class="form-inline mr-2" action="/search/vehicles" method="get">
+        <div class="form-group mr-2">
+            <input type="text" class="form-control" id="vehicle_id" name="vehicle_id" placeholder="Engine" aria-label="Search" aria-describedby="btnGroupAddon">
+        </div>
+        <button type="submit" class="btn btn-primary">Go</button>
       </form>    
     {%- block header_actions_2 -%}{%- endblock -%}
 </div>
