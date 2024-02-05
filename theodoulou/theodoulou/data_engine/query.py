@@ -1093,11 +1093,28 @@ class TheodoulouQuery():
             FROM `155` AS T155
                 JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
                 LEFT JOIN `125` AS T125 ON T125.MOTNR = T155.MOTNR
-                LEFT JOIN `110` AS T110 ON T110.KMODNR = T155.MOTNR			
                 LEFT JOIN `120` AS T120 ON T120.KMODNR = T155.MOTNR	
-            WHERE T155.MCODE = '{engine_id}'
-            ORDER BY T120.SORTNR;
+                LEFT JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR		
+            WHERE T155.MCODE = '{engine_id}';
         """, as_dict=True)
-        data = {"pc": pc}
+
+        cv = frappe.db.sql(f"""
+            SELECT DISTINCT
+                "cv" AS `BrandClass`,
+                GET_LBEZNR(T100.LBEZNR, {self.language}) AS `Manufacturer`,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS `Model`,  -- NAME MODEL
+                GET_LBEZNR(T532.LBEZNR, { self.language }) AS `Type`,  -- NAME TYPE
+                T532.BJVON AS `FROM_YEAR`, -- TYPE PRODUCTING FROM YEAR+MONTH
+                IFNULL(T532.BJBIS, 'now') AS `TO_YEAR`, -- TYPE PRODUCTING TO YEAR+MONTH
+                T100.HERNR AS `ManNo`,
+                T155.MOTNR AS `KModNo`,
+                T532.NTYPNR AS `KTypNo`,
+                T155.MCODE
+            FROM `155` AS T155
+                JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
+                LEFT JOIN `532` AS T532 ON T532.KMODNR = T155.MOTNR	
+                LEFT JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
+            WHERE T155.MCODE = '{engine_id}';
+        """, as_dict=True)
         
-        return data
+        return pc + cv

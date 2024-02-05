@@ -12,9 +12,11 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in vehicles.pc %}
+        {% for item in vehicles %}
         <tr>
             <td>{{item.Manufacturer}}</td>
+            <td>{{item.Model}}</td>
+            <td>{{item.Type}}</td>
         </tr>
         {% endfor %}
     </tbody>
