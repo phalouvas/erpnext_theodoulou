@@ -33,6 +33,7 @@
                 <h5 class="card-title">{{ item.NAMEPRODUCT }}</h5>
                 <p class="badge badge-warning">{{ item.MARKE }}</p>
                 <p class="card-text">{{ item.ARTNR }}</p>
+                {% if item.shopping_cart %}
                 {% set product_info = item.shopping_cart.product_info %}
                 {% set price_info = product_info.price %}
                 <div class="product-price text-primary">
@@ -72,6 +73,7 @@
                         </span>
                     {% endif %}
                 </div>
+                {% endif %}
             </div>
         </a>
     </div>
