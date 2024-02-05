@@ -1087,14 +1087,14 @@ class TheodoulouQuery():
                 T120.BJVON AS `FROM_YEAR`, -- TYPE PRODUCTING FROM YEAR+MONTH
                 IFNULL(T120.BJBIS, 'now') AS `TO_YEAR`, -- TYPE PRODUCTING TO YEAR+MONTH
                 T100.HERNR AS `ManNo`,
-                T155.MOTNR AS `KModNo`,
+                T120.KMODNR AS `KModNo`,
                 T125.KTYPNR AS `KTypNo`,
                 T155.MCODE
             FROM `155` AS T155
                 JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
                 LEFT JOIN `125` AS T125 ON T125.MOTNR = T155.MOTNR
-                LEFT JOIN `120` AS T120 ON T120.KMODNR = T155.MOTNR	
-                LEFT JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR		
+                LEFT JOIN `120` AS T120 ON T120.KTypNr = T125.KTypNr	
+                LEFT JOIN `110` AS T110 ON T110.KMODNR = T120.KMODNR 		
             WHERE T155.MCODE = '{engine_id}';
         """, as_dict=True)
 
@@ -1107,12 +1107,13 @@ class TheodoulouQuery():
                 T532.BJVON AS `FROM_YEAR`, -- TYPE PRODUCTING FROM YEAR+MONTH
                 IFNULL(T532.BJBIS, 'now') AS `TO_YEAR`, -- TYPE PRODUCTING TO YEAR+MONTH
                 T100.HERNR AS `ManNo`,
-                T155.MOTNR AS `KModNo`,
+                T532.KModNr AS `KModNo`,
                 T532.NTYPNR AS `KTypNo`,
                 T155.MCODE
             FROM `155` AS T155
                 JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
-                LEFT JOIN `532` AS T532 ON T532.KMODNR = T155.MOTNR	
+                LEFT JOIN `537` AS T537 ON T537.MOTNR = T155.MOTNR
+                LEFT JOIN `532` AS T532 ON T532.NTYPNR = T537.NTYPNR
                 LEFT JOIN `110` AS T110 ON T110.KMODNR = T532.KMODNR			
             WHERE T155.MCODE = '{engine_id}';
         """, as_dict=True)

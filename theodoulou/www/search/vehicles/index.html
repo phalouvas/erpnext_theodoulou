@@ -1,23 +1,26 @@
 {% extends "theodoulou/templates/pages/vehicles.html" %}
 
 {% block left_content %}
-{{ vehicles }}
 
 <table class="table">
     <thead>
         <tr>
             <th>Manufacturer</th>
+            <th>Model</th>
+            <th>Type</th>
             <th>Years</th>
-            <th>#</th>
         </tr>
     </thead>
     <tbody>
         {% for item in vehicles %}
+        {%if item.KModNo and item.KTypNo %}
         <tr>
             <td>{{item.Manufacturer}}</td>
             <td>{{item.Model}}</td>
-            <td>{{item.Type}}</td>
+            <td><a href="/brands/models/types/vehicle?BrandClass={{item.BrandClass}}&ManNo={{item.ManNo}}&KModNo={{item.KModNo}}&needyear=0&KTypNo={{ item.KTypNo }}">{{item.Type}}</a></td>
+            <td>{{item.FROM_YEAR}} - {{item.TO_YEAR}}</td>
         </tr>
+        {%endif%}
         {% endfor %}
     </tbody>
 </table>
