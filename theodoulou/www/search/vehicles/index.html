@@ -2,4 +2,22 @@
 
 {% block left_content %}
 {{ vehicles }}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Manufacturer</th>
+            <th>Years</th>
+            <th>#</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in vehicles.pc %}
+        <tr>
+            <td>{{item.Manufacturer}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}

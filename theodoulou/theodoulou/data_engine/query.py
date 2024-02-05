@@ -1078,18 +1078,26 @@ class TheodoulouQuery():
         return data
     
     def search_vehicles_engines(self, engine_id):
-        data = frappe.db.sql(f"""
+        pc = frappe.db.sql(f"""
             SELECT DISTINCT
-                GET_LBEZNR(T100.LBEZNR, {self.language}) AS MANUFACTURER_ENGINE,
-                T155.MOTNR,
-                T155.MCODE,
-                T125.KTYPNR,
-                T537.NTYPNR
+                "pc" AS `BrandClass`,
+                GET_LBEZNR(T100.LBEZNR, {self.language}) AS `Manufacturer`,  -- NAME MANUFACTURER
+                GET_LBEZNR(T110.LBEZNR, { self.language }) AS `Model`,  -- NAME MODEL
+                GET_LBEZNR(T120.LBEZNR, { self.language }) AS `Type`,  -- NAME TYPE
+                T120.BJVON AS `FROM_YEAR`, -- TYPE PRODUCTING FROM YEAR+MONTH
+                IFNULL(T120.BJBIS, 'now') AS `TO_YEAR`, -- TYPE PRODUCTING TO YEAR+MONTH
+                T100.HERNR AS `ManNo`,
+                T155.MOTNR AS `KModNo`,
+                T125.KTYPNR AS `KTypNo`,
+                T155.MCODE
             FROM `155` AS T155
                 JOIN `100` AS T100 ON T100.HERNR = T155.HERNR
                 LEFT JOIN `125` AS T125 ON T125.MOTNR = T155.MOTNR
-                LEFT JOIN `537` AS T537 ON T537.MOTNR = T155.MOTNR
-            WHERE T155.MCODE = '{engine_id}';
+                LEFT JOIN `110` AS T110 ON T110.KMODNR = T155.MOTNR			
+                LEFT JOIN `120` AS T120 ON T120.KMODNR = T155.MOTNR	
+            WHERE T155.MCODE = '{engine_id}'
+            ORDER BY T120.SORTNR;
         """, as_dict=True)
-
+        data = {"pc": pc}
+        
         return data
