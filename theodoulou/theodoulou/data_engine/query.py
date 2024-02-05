@@ -493,7 +493,7 @@ class TheodoulouQuery():
 
         # Check if visitor is guest or logged in. If user is logged in check if the user is having role Customer
         filter_item = ""
-        if frappe.session.user == "Guest" or frappe.get_roles(frappe.session.user).count("Customer") > 0:
+        if (frappe.session.user == "Guest" or frappe.get_roles(frappe.session.user).count("Customer") > 0 ) and frappe.get_roles(frappe.session.user).count("System Manager") == 0:
             filter_item += " AND TItem.name IS NOT NULL"
             
         paginated = frappe.db.sql(f"""
