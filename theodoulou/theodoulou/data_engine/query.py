@@ -490,6 +490,11 @@ class TheodoulouQuery():
             filter_node_id = f"AND T301.NODE_ID = { node_id }"
         else:
             filter_node_id = ""
+
+        # Check if visitor is guest or logged in. If user is logged in check if the user is having role Customer
+        filter_item = ""
+        if frappe.session.user == "Guest" or frappe.get_roles(frappe.session.user).count("Customer") > 0:
+            filter_item += " AND TItem.name IS NOT NULL"
             
         paginated = frappe.db.sql(f"""
             SELECT DISTINCT
@@ -521,7 +526,7 @@ class TheodoulouQuery():
                 AND T400.VKNZIELART = { LnkTargetType }
                 { filter_ktypno }
                 { filter_manufacturer }
-                AND TItem.name IS NOT NULL
+                { filter_item}
             ORDER BY ASSEMBLY_GROUP, NAMEPRODUCT
             LIMIT { offset }, { items_per_page };
         """, as_dict=True)
@@ -547,7 +552,7 @@ class TheodoulouQuery():
                 WHERE T301.TREETYPNR = { TreeTypNo }	
                     { filter_node_id }
                     AND T400.VKNZIELART = { LnkTargetType }
-                    AND TItem.name IS NOT NULL
+                    { filter_item }
                     { filter_ktypno }
                     { filter_manufacturer };
             """, as_dict=True)
@@ -938,6 +943,11 @@ class TheodoulouQuery():
     
     def get_product_analogs(self, artnr, search_brand = ''):
 
+        # Check if visitor is guest or logged in. If user is logged in check if the user is having role Customer
+        filter_item = ""
+        if frappe.session.user == "Guest" or frappe.get_roles(frappe.session.user).count("Customer") > 0:
+            filter_item += " WHERE T.ItemName IS NOT NULL"
+
         data = frappe.db.sql(f"""
             SELECT 
                 T.DLNR AS DLNR,
@@ -1068,7 +1078,7 @@ class TheodoulouQuery():
                 JOIN `320` AS T320 ON T320.GENARTNR = T211.GENARTNR
                 LEFT JOIN `324` AS T324 ON T324.BGNR = T320.BGNR
                 LEFT JOIN `001` AS T001 ON T001.DLNR = T.DLNR	
-            WHERE T.ItemName IS NOT NULL
+            {filter_item}
             GROUP BY T.DLNR, T.ARTNR;
         """, as_dict=True)
 
