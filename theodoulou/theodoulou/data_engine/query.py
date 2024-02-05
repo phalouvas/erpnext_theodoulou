@@ -204,7 +204,7 @@ class TheodoulouQuery():
     def get_vehicle_passenger(self, ID):
         data = frappe.db.sql(f"""
             SELECT			
-			T120.KTYPNR AS `TecDoc Type no`, 
+			T120.KTYPNR AS `Article no`, 
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS Manufacturer,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS Model,  -- NAME MODEL
                 GET_LBEZNR(T120.LBEZNR, { self.language }) AS Type,  -- NAME TYPE					
@@ -259,7 +259,7 @@ class TheodoulouQuery():
     def get_vehicle_commercial(self, ID):
         data = frappe.db.sql(f"""
             SELECT			
-                T532.NTYPNR AS `TecDoc Type no`, 
+                T532.NTYPNR AS `Article no`, 
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS Manufacturer,  -- NAME MANUFACTURER
                 GET_LBEZNR(T110.LBEZNR, { self.language }) AS Model,  -- NAME MODEL
                 GET_LBEZNR(T532.LBEZNR, { self.language }) AS Type,  -- NAME TYPE					
