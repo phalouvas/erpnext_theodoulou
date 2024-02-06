@@ -11,7 +11,7 @@ class ePcQuery(TheodoulouQuery):
     def get_brands(self):
         data = frappe.cache().get_value('epc_brands')
         if data is None:
-            data = frappe.db.sql(f"""
+            data = self.frappe_db.sql(f"""
                 SELECT DISTINCT 
                     T100.HERNR,  -- ID MANUFACTURER
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS NAME  -- NAME MANUFACTURER
@@ -33,7 +33,7 @@ class ePcQuery(TheodoulouQuery):
             data = frappe.cache().get_value('epc_models' + '_' + ManNo + '_' + NeedYear)
 
             if data is None:
-                data = frappe.db.sql(f"""
+                data = self.frappe_db.sql(f"""
                     SELECT DISTINCT
                         T110.KMODNR AS KModNo,  -- ID MODEL
                         GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER

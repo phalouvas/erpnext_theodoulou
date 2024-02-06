@@ -8,6 +8,7 @@ class TheodoulouQuery():
         self.settings = frappe.get_doc("Theodoulou Settings")
         self.language = self.settings.get_language()
         self.country = self.settings.get_country()
+        self.frappe_db = frappe.database.mariadb.database.MariaDBDatabase(frappe.conf.db_host, self.settings.db_name, frappe.conf.db_password, self.settings.db_name)
 
     def convert_yyyymm(self, yyyymm):
 
@@ -88,7 +89,7 @@ class TheodoulouQuery():
 
         # If data is not in the cache, fetch it from the database
         if data is None:
-            data = frappe.db.sql(f"""
+            data = self.frappe_db.sql(f"""
                 SELECT distinct
                     T100.HERNR,  -- ID MANUFACTURER
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS NAME  -- NAME MANUFACTURER
@@ -108,7 +109,7 @@ class TheodoulouQuery():
             data = frappe.cache().get_value('models_' + type + '_' + HERNR + '_' + NEEDYEAR)
 
             if data is None:
-                data = frappe.db.sql(f"""
+                data = self.frappe_db.sql(f"""
                     SELECT
                         T110.KMODNR,  -- ID MODEL
                         GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
@@ -144,7 +145,7 @@ class TheodoulouQuery():
         data = frappe.cache().get_value('types_passenger_cars_' + KMODNR + '_' + NEEDYEAR)
 
         if data is None:
-            data = frappe.db.sql(f"""
+            data = self.frappe_db.sql(f"""
                 SELECT DISTINCT
                     T120.KTYPNR AS KTypNo,  -- ID TYPE
                     GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
@@ -169,7 +170,7 @@ class TheodoulouQuery():
         return data
     
     def get_types_commercial_cars(self, KMODNR, NEEDYEAR = 0):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 T532.NTYPNR AS KTypNo,  -- ID TYPE
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS MANUFACTURER,  -- NAME MANUFACTURER
@@ -202,7 +203,7 @@ class TheodoulouQuery():
             frappe.throw("Vehicle Type not found")
     
     def get_vehicle_passenger(self, ID):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT			
 			T120.KTYPNR AS `Article no`, 
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS Manufacturer,  -- NAME MANUFACTURER
@@ -257,7 +258,7 @@ class TheodoulouQuery():
         return data
     
     def get_vehicle_commercial(self, ID):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT			
                 T532.NTYPNR AS `Article no`, 
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS Manufacturer,  -- NAME MANUFACTURER
@@ -290,7 +291,7 @@ class TheodoulouQuery():
     def get_node(self):
         LnkTargetType, TreeTypNo = self.get_lnk_tree_from_brand_class()
         node_id = int(frappe.request.args.get('node_id') or frappe.request.cookies.get('node_id'))
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT
                 NODE_ID AS ID,
                 GET_BEZNR(T301.BEZNR, { self.language }) AS NAME
@@ -317,7 +318,7 @@ class TheodoulouQuery():
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
-            data = frappe.db.sql(f"""
+            data = self.frappe_db.sql(f"""
                 SELECT DISTINCT	
                     T301.STUFE,  -- ACTIVE LEVES
                     ELT(T301.STUFE, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT1,
@@ -375,7 +376,7 @@ class TheodoulouQuery():
 
         # If data is not in the cache, fetch it from the database
         if categories_tree is None:
-            data = frappe.db.sql(f"""
+            data = self.frappe_db.sql(f"""
                 SELECT DISTINCT	
                     T301.STUFE,  -- ACTIVE LEVES
                     ELT(T301.STUFE, GET_BEZNR(T301.BEZNR, { self.language }), GET_BEZNR(T301_2.BEZNR, { self.language }), GET_BEZNR(T301_3.BEZNR, { self.language }), GET_BEZNR(T301_4.BEZNR, { self.language }), GET_BEZNR(T301_5.BEZNR, { self.language })) AS STR_TEXT1,
@@ -442,7 +443,7 @@ class TheodoulouQuery():
 
         data = frappe.cache().get_value(f"products_manufacturers_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}")
         if data is None:
-            data = frappe.db.sql(f"""
+            data = self.frappe_db.sql(f"""
                 SELECT DISTINCT
                     T001.DLNR,
                     T001.MARKE AS MARKE
@@ -496,7 +497,7 @@ class TheodoulouQuery():
         if (frappe.session.user == "Guest" or frappe.get_roles(frappe.session.user).count("Customer") > 0 ) and frappe.get_roles(frappe.session.user).count("System Manager") == 0:
             filter_item += " AND TItem.name IS NOT NULL"
             
-        paginated = frappe.db.sql(f"""
+        paginated = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 T400.VKNZIELART,
                 T400.VKNZIELNR,
@@ -536,7 +537,7 @@ class TheodoulouQuery():
 
         total_products = frappe.cache().get_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}")
         if total_products is None:
-            total_products = frappe.db.sql(f"""
+            total_products = self.frappe_db.sql(f"""
                 SELECT COUNT(DISTINCT T400.ARTNR, T400.DLNR) AS total_products
                 FROM `301` AS T301
                     JOIN `302` AS T302 ON T302.NODE_ID = T301.NODE_ID			
@@ -562,7 +563,7 @@ class TheodoulouQuery():
         return {"products": paginated, "total_products": total_products}
     
     def dlnr_from_artnr(self, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT
                 T200.DLNR
             FROM `200` AS T200
@@ -572,7 +573,7 @@ class TheodoulouQuery():
         return data[0]['DLNR']
     
     def get_product_main_info(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT
                 -- PRODUCT TABLE
                 T200.ARTNR AS `ARTNR`, 
@@ -646,7 +647,7 @@ class TheodoulouQuery():
         return get_product_info_for_website(ItemName, skip_quotation_creation=True)    
 
     def get_product_criteria(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 IFNULL(GET_BEZNR(T050.BEZNR, { self.language }), '') AS NAME,						
                 IF(T050.TYP <> 'K', 
@@ -664,7 +665,7 @@ class TheodoulouQuery():
         return data
     
     def get_product_additional_info(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 IFNULL(GET_BEZNR_FOR_KEY_TABLE(72, T206.INFART, { self.language }), '') AS `INFART`,
                 T035.TEXT AS ADDITIONAL_TEXT
@@ -680,7 +681,7 @@ class TheodoulouQuery():
         return data
     
     def get_product_oe_numbers(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 GET_LBEZNR(T100.LBEZNR, { self.language }) AS CROSS_BRAND,
                 T203.REFNR AS CROSS_ARTNR,
@@ -706,7 +707,7 @@ class TheodoulouQuery():
         return grouped_oe_numbers
     
     def get_product_oe_numbers_advanced(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT 
                 T.CROSS_BRAND,
                 T.CROSS_ARTNR,
@@ -774,7 +775,7 @@ class TheodoulouQuery():
         """, as_dict=True)
     
     def get_product_vehicles_applicability(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT
                 T.KTYPE,
                 T.VKNZIELART,
@@ -865,7 +866,7 @@ class TheodoulouQuery():
         return data
 
     def get_product_media(self, dlnr, artnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT
                 IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
                 GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
@@ -905,7 +906,7 @@ class TheodoulouQuery():
         return data
 
     def get_manufacturer_logo(self, dlnr):
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT
                 IFNULL(GET_BEZNR(T014.BEZNR, { self.language }), '') AS INFO,
                 GET_BEZNR_FOR_KEY_TABLE(143, T231.BILDTYPE, { self.language }) AS `BILDTYPE`, 
@@ -948,7 +949,7 @@ class TheodoulouQuery():
         if frappe.session.user == ("Guest" or frappe.get_roles(frappe.session.user).count("Customer") > 0) and frappe.get_roles(frappe.session.user).count("System Manager") == 0:
             filter_item += " WHERE T.ItemName IS NOT NULL"
 
-        data = frappe.db.sql(f"""
+        data = self.frappe_db.sql(f"""
             SELECT 
                 T.DLNR AS DLNR,
                 T001.MARKE AS BRAND,
@@ -1088,7 +1089,7 @@ class TheodoulouQuery():
         return data
     
     def search_vehicles_engines(self, engine_id):
-        pc = frappe.db.sql(f"""
+        pc = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 "pc" AS `BrandClass`,
                 GET_LBEZNR(T100.LBEZNR, {self.language}) AS `Manufacturer`,  -- NAME MANUFACTURER
@@ -1108,7 +1109,7 @@ class TheodoulouQuery():
             WHERE T155.MCODE = '{engine_id}';
         """, as_dict=True)
 
-        cv = frappe.db.sql(f"""
+        cv = self.frappe_db.sql(f"""
             SELECT DISTINCT
                 "cv" AS `BrandClass`,
                 GET_LBEZNR(T100.LBEZNR, {self.language}) AS `Manufacturer`,  -- NAME MANUFACTURER
