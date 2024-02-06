@@ -533,7 +533,7 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         for product in paginated:
-            product['shopping_cart'] = self.get_shopping_cart(product["ItemName"])
+            product['shopping_cart'] = self.get_shopping_cart(product["ARTNR"])
 
         total_products = frappe.cache().get_value(f"vehicle_products_{TreeTypNo}_{LnkTargetType}_{KTypNo}_{node_id}_{manufacturer_id}_{page}")
         if total_products is None:
@@ -641,9 +641,18 @@ class TheodoulouQuery():
 
         return data[0]
     
-    def get_shopping_cart(self, ItemName):
-        if not ItemName:
+    def get_shopping_cart(self, artnr):
+        data = self.frappe_db.sql(f"""
+            SELECT
+                TItem.name AS `ItemName`		
+            FROM `tabItem Barcode` AS TItemBarcode
+                LEFT JOIN `tabItem` AS TItem ON TItem.name = TItemBarcode.parent
+            WHERE TItemBarcode.barcode = '{ artnr }'
+        """, as_dict=True)
+        if not data:
             return None
+
+        ItemName = data[0]["ItemName"]
         return get_product_info_for_website(ItemName, skip_quotation_creation=True)    
 
     def get_product_criteria(self, dlnr, artnr):
@@ -1084,7 +1093,7 @@ class TheodoulouQuery():
         """, as_dict=True)
 
         for product in data:
-            product['shopping_cart'] = self.get_shopping_cart(product["ItemName"])
+            product['shopping_cart'] = self.get_shopping_cart(product["ARTNR"])
 
         return data
     
