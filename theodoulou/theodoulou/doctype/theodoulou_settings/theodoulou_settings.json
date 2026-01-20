@@ -23,20 +23,16 @@
    "reqd": 1
   },
   {
-   "default": "cy",
    "fieldname": "country",
    "fieldtype": "Link",
    "label": "Country",
-   "options": "Country",
-   "reqd": 1
+   "options": "Country"
   },
   {
-   "default": "en",
    "fieldname": "language",
    "fieldtype": "Link",
    "label": "Language",
-   "options": "Language",
-   "reqd": 1
+   "options": "Language"
   },
   {
    "fieldname": "pdf_url",
